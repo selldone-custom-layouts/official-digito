@@ -35,7 +35,7 @@ node scripts/kalio-svg-flatten.mjs dist/app | tail -1
 
 # 5. Checks that block a release.
 J=$(find dist/app -type f \( -name '*.js' -o -name '*.mjs' \) -exec file -b --mime-type {} \; | grep -c text/x-java || true)
-S=$(grep -l 'from"../shop.js"' -r dist/app | wc -l)
+S=$( (grep -l 'from"../shop.js"' -r dist/app || true) | wc -l)
 N=$(find dist -type f | wc -l)
 echo "java-mime:$J shop.js-imports:$S files:$N (keep under ~360)"
 [ "$J" = 0 ] && [ "$S" = 0 ] || { echo "CHECK FAILED"; exit 1; }
