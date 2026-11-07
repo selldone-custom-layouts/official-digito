@@ -17,7 +17,7 @@
 <template>
   <article :class="{ '-sale': was }" class="t-card">
     <router-link :to="to" class="t-card__pic" tabindex="-1" aria-hidden="true">
-      <img v-if="picture" :alt="product.title" :src="picture" :srcset="srcset(product)" loading="lazy" sizes="(max-width: 760px) 44vw, 220px" @error="dropSrcset" />
+      <img v-if="picture" :alt="product.title" :src="picture" :srcset="srcset(product)" loading="lazy" sizes="(max-width: 760px) 53vw, 260px" @error="dropSrcset" />
       <span v-if="off > 0" class="t-card__tag">-{{ off }}%</span>
     </router-link>
 

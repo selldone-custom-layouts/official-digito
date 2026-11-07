@@ -844,16 +844,21 @@ a:hover > .t-photo .t-photo__pack.-p1 {
     border-radius: 10px;
     background: var(--k-well);
 
+    /* Every product photo is a square with the pack's longest side at 70%,
+       centred (all 160 measured, 7 November 2026). Drawn at 120% of the
+       well, the pack fills about 84% of it, as on the big grocers' cards;
+       at 78% it filled only 55%. */
     img {
-      width: 78%;
-      height: 78%;
+      width: 100%;
+      height: 100%;
       object-fit: contain;
       mix-blend-mode: multiply;
+      transform: scale(1.2);
       transition: transform 220ms ease;
     }
 
     &:hover img {
-      transform: scale(1.04);
+      transform: scale(1.25);
     }
   }
 
