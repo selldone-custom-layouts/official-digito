@@ -27,7 +27,7 @@ The Layout reads everything from your shop. Nothing about molino is hard-coded. 
 - **Photos:** a clean packshot on a plain or transparent background. Every product sits on the same pale "well", so busy photos look out of place.
 - **Title:** two lines show on cards, then an ellipsis.
 - **Unit:** fill Selldone's *unit* field (pack, bottle, lb…). Cards show "per pack".
-- **Sizes:** use **variants**, so the card says "See options" and the product page shows the sizes. Don't use separate products for each size.
+- **Sizes:** use **variants**, so the card says "Choose options" and the product page shows the sizes. Don't use separate products for each size.
 - **Stock:** quantity 0 shows "Out of stock".
 - **Description:** what a shopper needs. No notes from whoever generated the data.
 

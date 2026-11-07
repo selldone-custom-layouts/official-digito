@@ -76,7 +76,7 @@ Do not change my shop's settings (payments, shipping, login modes). Do not place
 ## 4. Check the result yourself
 
 - Open your shop's address. You should see the deals banner, the aisle row and product rows, not Selldone's default home.
-- Tap "Add to basket" on a card: it becomes "− 1 in basket +".
+- Tap "Add to cart" on a card: it becomes "− 1 in cart +".
 - Open the basket from the header and add an address on the map.
 - If something is off, see [Troubleshooting](Troubleshooting).
 

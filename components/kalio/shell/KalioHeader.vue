@@ -1,5 +1,12 @@
 <!--
-  Kalio — Header.
+  Kalio — Header. Tario (design A, 7 November 2026): a big-box store's top —
+  a red promo strip that scrolls away (the shop's own free-shipping rule,
+  or its deals), then a white bar: the wordmark, a "Categories" menu, Deals,
+  New arrivals and Sellers, a wide search pill with a round red button,
+  Sign in and the cart with its count. No aisle strip: the categories are
+  the menu and the home page's circles.
+
+  Molino's header, which Tario started from:
 
   One sticky white bar — the shop's name as a wordmark, an "Aisles" menu,
   the search, then the shopper's own things: orders, saved, account and the
@@ -16,7 +23,18 @@
   (the layout decides), and a native app shell shows none.
 -->
 <template>
-  <header v-if="!$store.getters.getIsNative" class="k-header">
+  <header v-if="!$store.getters.getIsNative" class="k-header -promo">
+    <!-- ▆▆▆▆▆▆▆▆ Promo strip ▆▆▆▆▆▆▆▆ -->
+    <div class="t-promo">
+      <div class="t-promo__row k-wrap">
+        <span v-if="promo" class="t-promo__text">
+          Free shipping on orders over <u-price :amount="promo.amount" :currency="promo.currency" />
+        </span>
+        <span v-else class="t-promo__text">Real savings in every aisle, every week</span>
+        <router-link :to="dealsRoute">Shop deals</router-link>
+      </div>
+    </div>
+
     <div class="k-header__bar">
       <div class="k-header__row k-wrap">
         <button
@@ -42,8 +60,7 @@
         >
           <template v-slot:activator="{ props }">
             <button class="k-header__aisles" type="button" v-bind="props">
-              <v-icon size="20">grid_view</v-icon>
-              Aisles
+              Categories
               <v-icon :class="{ 'rotate-180': aisles_open }" class="t-all-400" size="18">expand_more</v-icon>
             </button>
           </template>
@@ -68,6 +85,26 @@
             </div>
           </div>
         </v-menu>
+
+        <nav v-if="!compact" aria-label="Shop" class="t-nav">
+          <router-link :to="dealsRoute" class="t-nav__link">Deals</router-link>
+          <router-link :to="newRoute" class="t-nav__link">New arrivals</router-link>
+          <v-menu v-if="sellerList.length" location="bottom start" offset="12">
+            <template v-slot:activator="{ props }">
+              <button class="t-nav__link" type="button" v-bind="props">
+                Sellers<v-icon size="18">expand_more</v-icon>
+              </button>
+            </template>
+            <div class="k-mega t-sellers-menu">
+              <p class="k-eyebrow">Shop by seller</p>
+              <router-link v-for="seller in sellerList" :key="seller.id" :to="sellerRoute(seller)" class="t-sellers-menu__item">
+                <img v-if="seller.icon" :src="vendorImage(seller, true)" alt="" height="36" loading="lazy" width="36" />
+                <span v-else class="t-sellers-menu__mark">{{ (seller.name || "?").charAt(0) }}</span>
+                {{ seller.name }}
+              </router-link>
+            </div>
+          </v-menu>
+        </nav>
 
         <div v-if="showSearch && !compact" class="k-header__search">
           <s-storefront-search-box
@@ -108,16 +145,6 @@
               <v-icon size="20">receipt_long</v-icon>
               Orders
             </router-link>
-            <component
-              :is="user ? 'router-link' : 'button'"
-              :to="user ? savedRoute : undefined"
-              class="k-header__link"
-              :type="user ? undefined : 'button'"
-              @click="!user && signIn()"
-            >
-              <v-icon size="20">favorite_border</v-icon>
-              Saved
-            </component>
           </template>
 
           <s-header-section-user v-if="user && !compact"></s-header-section-user>
@@ -140,13 +167,12 @@
           </template>
 
           <button
-            :aria-label="`Basket, ${itemsCount} items`"
+            :aria-label="`Cart, ${itemsCount} items`"
             class="k-header__basket"
             type="button"
             @click="basket = true"
           >
-            <v-icon size="20">shopping_bag</v-icon>
-            <span v-if="!compact">Basket</span>
+            <v-icon size="26">shopping_cart</v-icon>
             <em v-if="itemsCount">{{ itemsCount }}</em>
           </button>
         </nav>
@@ -172,41 +198,11 @@
           @onSearch="(event) => { phone_search = false; $emit('search', event); }"
         />
         <button v-else class="k-header__search-pill" type="button" @click="phone_search = true">
-          <v-icon size="20">search</v-icon>
           Search milk, bread, berries…
+          <span aria-hidden="true" class="t-search-go"><v-icon size="20">search</v-icon></span>
         </button>
       </div>
     </div>
-
-    <!-- ▆▆▆▆▆▆▆▆ Aisle strip ▆▆▆▆▆▆▆▆ -->
-    <nav v-if="!compact && aisleList.length" aria-label="Aisles" class="k-strip">
-      <!-- (5 November 2026) A row longer than the window shows a "›" at
-           its end and turns the mouse wheel sideways: at 1024 px seven
-           aisles sat past the edge with only a fade to hint at them. -->
-      <div :class="{ '-more': strip_more, '-back': strip_back }" class="k-strip__frame k-wrap">
-      <button v-if="strip_back" aria-label="Earlier aisles" class="k-strip__nudge -back" tabindex="-1" type="button" @click="stripNudge(-1)">
-        <v-icon class="k-flip" size="20">chevron_left</v-icon>
-      </button>
-      <div ref="strip" class="k-strip__row" @scroll.passive="stripMeasure" @wheel="stripWheel">
-        <router-link :to="dealsRoute" class="k-strip__link -deals">
-          <v-icon size="18">local_offer</v-icon>
-          Deals
-        </router-link>
-        <router-link
-          v-for="aisle in aisleList"
-          :key="aisle.id"
-          :class="{ '-on': $route.params.category_name === aisle.name }"
-          :to="aisleRoute(aisle)"
-          class="k-strip__link"
-        >
-          {{ aisle.title || aisle.name }}
-        </router-link>
-      </div>
-      <button v-if="strip_more" aria-label="More aisles" class="k-strip__nudge -on" tabindex="-1" type="button" @click="stripNudge(1)">
-        <v-icon class="k-flip" size="20">chevron_right</v-icon>
-      </button>
-      </div>
-    </nav>
 
     <!-- ▆▆▆▆▆▆▆▆ Basket drawer ▆▆▆▆▆▆▆▆ -->
     <teleport to="body">
@@ -219,7 +215,7 @@
       >
         <div class="k-drawer__head">
           <p class="k-drawer__title">
-            Your basket<small v-if="basketUnits">{{ basketUnits }} {{ basketUnits === 1 ? "item" : "items" }}</small>
+            Your cart<small v-if="basketUnits">{{ basketUnits }} {{ basketUnits === 1 ? "item" : "items" }}</small>
           </p>
           <button aria-label="Close" class="k-header__icon" type="button" @click="basket = false">
             <v-icon>close</v-icon>
@@ -229,7 +225,7 @@
              nowhere to go; Kalio's offers the way back to the shelves. -->
         <div v-if="!itemsCount" class="k-drawer__empty">
           <span aria-hidden="true" class="k-drawer__empty-mark"><v-icon size="30">shopping_bag</v-icon></span>
-          <p class="k-drawer__empty-title">Your basket is empty</p>
+          <p class="k-drawer__empty-title">Your cart is empty</p>
           <p class="k-drawer__empty-text">Pick something from the aisles and it will wait for you here.</p>
           <div class="k-drawer__empty-ctas">
             <router-link :to="dealsRoute" class="k-btn k-btn--solid" @click="basket = false">Shop today’s deals</router-link>
@@ -279,8 +275,9 @@
           <button v-else class="k-btn k-btn--solid" type="button" @click="menu = false; signIn()">Sign in</button>
         </div>
 
-        <p class="k-eyebrow k-drawer__label">Aisles</p>
+        <p class="k-eyebrow k-drawer__label">Categories</p>
         <router-link :to="dealsRoute" class="k-drawer__link -deals" @click="menu = false"><v-icon size="20">local_offer</v-icon>Deals</router-link>
+        <router-link :to="newRoute" class="k-drawer__link" @click="menu = false"><v-icon size="20">fiber_new</v-icon>New arrivals</router-link>
         <router-link
           v-for="aisle in aisleList"
           :key="aisle.id"
@@ -315,7 +312,8 @@ import SLanguageSelector from "@selldone/components-vue/storefront/language/sele
 import UCurrencySelector from "@selldone/components-vue/ui/currency/selector/UCurrencySelector.vue";
 import KalioBasketDrawer from "./KalioBasketDrawer.vue";
 import { EventBus } from "@selldone/components-vue/utils/events/EventBus.ts";
-import { aisleImage, aisleRoute, aisles, catalogueRoute, dealsRoute, tintFor } from "../kalio-catalog";
+import { aisleImage, aisleRoute, aisles, catalogueRoute, dealsRoute, sellerRoute, tintFor, vendorImage, vendors } from "../kalio-catalog";
+import { freeShippingFrom } from "../../tario/tario-home";
 import { basketView } from "../kalio-basket";
 
 export default {
@@ -346,8 +344,7 @@ export default {
       menu: false,
       phone_search: false,
       windowWidth: window.innerWidth,
-      strip_more: false,
-      strip_back: false,
+      sellerList: [],
       avatar_failed: false,
     };
   },
@@ -387,6 +384,13 @@ export default {
     catalogueRoute() {
       return catalogueRoute();
     },
+    newRoute() {
+      return catalogueRoute({ sort: "newest" });
+    },
+    /** The promo strip's offer: the lowest basket total that ships free. */
+    promo() {
+      return freeShippingFrom(this.$shop);
+    },
     ordersRoute() {
       return { name: window.$storefront.routes.HISTORY_ORDERS_PHYSICAL };
     },
@@ -418,13 +422,10 @@ export default {
   },
 
   mounted() {
-    aisles().then((list) => {
-      this.aisleList = list;
-      this.$nextTick(this.stripMeasure);
-    });
+    aisles().then((list) => (this.aisleList = list));
+    vendors().then((list) => (this.sellerList = list));
     this.onResize = () => {
       this.windowWidth = window.innerWidth;
-      this.stripMeasure();
     };
     window.addEventListener("resize", this.onResize, { passive: true });
   },
@@ -436,30 +437,11 @@ export default {
   methods: {
     aisleRoute,
     aisleImage,
+    sellerRoute,
+    vendorImage,
     tint: tintFor,
     signIn() {
       EventBus.$emit("need-login", true);
-    },
-    /** Whether the aisle row runs past either edge. */
-    stripMeasure() {
-      const row = this.$refs.strip;
-      if (!row) return;
-      const left = Math.abs(row.scrollLeft);
-      this.strip_back = left > 4;
-      this.strip_more = left + row.clientWidth < row.scrollWidth - 4;
-    },
-    stripNudge(step) {
-      const row = this.$refs.strip;
-      if (!row) return;
-      const rtl = getComputedStyle(row).direction === "rtl";
-      row.scrollBy({ left: (rtl ? -step : step) * Math.round(row.clientWidth * 0.6), behavior: "smooth" });
-    },
-    /** A mouse wheel over the row moves it sideways. */
-    stripWheel(e) {
-      const row = this.$refs.strip;
-      if (!row || row.scrollWidth <= row.clientWidth || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-      e.preventDefault();
-      row.scrollLeft += e.deltaY;
     },
   },
 };

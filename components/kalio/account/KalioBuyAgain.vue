@@ -17,7 +17,7 @@
           <router-link :aria-label="product.title" :to="productRoute(product)">
             <img v-if="image(product)" :src="image(product)" alt="" loading="lazy" />
           </router-link>
-          <span v-if="inBasket(product)" class="k-again__have">{{ inBasket(product) }} in basket</span>
+          <span v-if="inBasket(product)" class="k-again__have">{{ inBasket(product) }} in cart</span>
           <button :aria-label="`Add ${product.title}`" :disabled="adding(product)" class="k-again__add" type="button" @click="add(product)">
             <v-progress-circular v-if="adding(product)" indeterminate size="16" width="2" />
             <v-icon v-else size="20">add</v-icon>

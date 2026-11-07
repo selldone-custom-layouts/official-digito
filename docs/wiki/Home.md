@@ -2,7 +2,7 @@
 
 ![Tario Market on desktop and phone](https://raw.githubusercontent.com/selldone-custom-layouts/official-tario/main/docs/screenshots/cover.jpg)
 
-**Tario Market** is a custom storefront **Layout** for Selldone shops: a multi-vendor grocery marketplace dressed like a bright red big-box store, with a red aisle bar, white cards and a checkout in numbered steps. It runs on **[tario.selldone.shop](https://tario.selldone.shop)**, a second address of the shop molino, whose main address carries [Molino Market Hall](https://github.com/selldone-custom-layouts/official-molino): one shop, one Layout per domain (see [Go Live](Go-Live)). It is built on the official [selldone/storefront](https://github.com/selldone/storefront), so Selldone's basket, checkout, payments, vendor offers and orders keep working underneath a completely new design.
+**Tario Market** is a custom storefront **Layout** for Selldone shops: a multi-vendor grocery marketplace built like a bright red big-box store: a hero that turns, round categories, rows of cards with a red Add to cart, promo tiles with lifestyle photos, and a checkout in numbered steps. It runs on **[tario.selldone.shop](https://tario.selldone.shop)**, a second address of the shop molino, whose main address carries [Molino Market Hall](https://github.com/selldone-custom-layouts/official-molino): one shop, one Layout per domain (see [Go Live](Go-Live)). It is built on the official [selldone/storefront](https://github.com/selldone/storefront), so Selldone's basket, checkout, payments, vendor offers and orders keep working underneath a completely new design.
 
 ## Start here
 
@@ -26,7 +26,7 @@
 ## What you get
 
 - **Home:** a deals banner, two rows of aisles, a row of best sellers for every aisle, an aisle mosaic, seller cards and a market shelf.
-- **Cards:** "Add to basket" turns into "− n in basket +" in place, "See options" for products with sizes, and the seller is named on every card.
+- **Cards:** "Add to cart" turns into "− n in cart +" in place, "Choose options" for products with sizes, and the seller is named on every card.
 - **Shop pages:** a compact aisle head, quiet filters built from product specs, one sort menu.
 - **Product page:** gallery, details and a sticky buy box with every seller's offer.
 - **Seller storefronts.**

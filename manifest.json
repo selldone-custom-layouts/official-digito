@@ -3,8 +3,8 @@
   "deploy_path": "",
   "package": "tario-market",
   "name": "Tario Market",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "storefront": true,
   "backoffice": false,
-  "description": "A bright red, big-box style storefront for a grocery marketplace: a deals hero, round category shelf, rows with Add to cart, and a step-by-step checkout."
+  "description": "A bright red, big-box style storefront for a grocery marketplace: a promo strip, a split hero that turns, round categories, rows of cards with Add to cart, promo and lifestyle tiles, and a step-by-step checkout."
 }

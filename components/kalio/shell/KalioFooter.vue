@@ -1,5 +1,9 @@
 <!--
-  Kalio — Footer.
+  Kalio — Footer. Tario (design A, 7 November 2026): a light big-box footer
+  under a red rule — the wordmark and the shop's description, the aisles,
+  the sellers, the shop's own menu and the account — with no band above it.
+
+  Molino's footer, which Tario started from:
 
   Two parts. A light green band that sends a shopper back into the aisles
   (every aisle as a round picture). Then the footer proper on deep green:
@@ -15,35 +19,8 @@
 -->
 <template>
   <footer class="k-footer">
-    <!-- ▆▆▆▆▆▆▆▆ Back to the aisles ▆▆▆▆▆▆▆▆ -->
-    <!-- What the shop is, in three counts read live, and the way back in. -->
-    <section v-if="aisleList.length" aria-labelledby="k-footer-aisles" class="k-footer__band">
-      <div class="k-wrap k-footer__band-row">
-        <div class="k-footer__band-copy">
-          <p class="k-eyebrow">{{ shopTitle }}</p>
-          <h2 id="k-footer-aisles" class="k-footer__band-title">Everything for the weekly shop</h2>
-        </div>
-        <dl class="k-footer__facts">
-          <div>
-            <dt>{{ aisleList.length }}</dt>
-            <dd>{{ aisleList.length === 1 ? "aisle" : "aisles" }}</dd>
-          </div>
-          <div v-if="sellerList.length > 1">
-            <dt>{{ sellerList.length }}</dt>
-            <dd>independent sellers</dd>
-          </div>
-          <div>
-            <dt>1</dt>
-            <dd>{{ sellerList.length > 1 ? "basket for all of them" : "basket, one checkout" }}</dd>
-          </div>
-        </dl>
-        <router-link :to="catalogueRoute" class="k-btn k-btn--solid">
-          Browse every aisle
-          <v-icon class="k-flip" size="20">chevron_right</v-icon>
-        </router-link>
-      </div>
-    </section>
-
+    <!-- Tario (design A): no band over the footer; the home page ends
+         on its own "Browse every product". -->
     <!-- ▆▆▆▆▆▆▆▆ Footer ▆▆▆▆▆▆▆▆ -->
     <div class="k-footer__main">
       <div class="k-wrap k-footer__grid">
@@ -63,12 +40,12 @@
         </div>
 
         <nav aria-labelledby="k-footer-shop" class="k-footer__col">
-          <h3 id="k-footer-shop" class="k-footer__head">Aisles</h3>
+          <h3 id="k-footer-shop" class="k-footer__head">Categories</h3>
           <router-link :to="dealsRoute">Deals</router-link>
           <router-link v-for="aisle in aisleList.slice(0, 8)" :key="aisle.id" :to="aisleRoute(aisle)">
             {{ aisle.title || aisle.name }}
           </router-link>
-          <router-link v-if="aisleList.length > 8" :to="catalogueRoute" class="-more">All aisles</router-link>
+          <router-link v-if="aisleList.length > 8" :to="catalogueRoute" class="-more">All categories</router-link>
         </nav>
 
         <nav v-if="sellerList.length" aria-labelledby="k-footer-sellers" class="k-footer__col">
@@ -92,7 +69,7 @@
             <router-link :to="{ name: window.$storefront.routes.USER_FAVORITES_PAGE }">Saved</router-link>
           </template>
           <button v-else class="k-footer__textbtn" type="button" @click="signIn">Sign in</button>
-          <router-link :to="{ name: window.$storefront.routes.BASKET_PAGE, params: { type: 'PHYSICAL' } }">Basket</router-link>
+          <router-link :to="{ name: window.$storefront.routes.BASKET_PAGE, params: { type: 'PHYSICAL' } }">Cart</router-link>
         </nav>
       </div>
 
@@ -160,8 +137,8 @@ export default {
       if (!this.aisleList.length) return null;
       const sellers = this.sellerList.length;
       return sellers > 1
-        ? `${this.aisleList.length} aisles of groceries from ${sellers} independent sellers, in one basket.`
-        : `${this.aisleList.length} aisles of groceries, in one basket.`;
+        ? `${this.aisleList.length} aisles of groceries from ${sellers} independent sellers, in one cart.`
+        : `${this.aisleList.length} aisles of groceries, in one cart.`;
     },
     /* The merchant's footer menu (Selldone menus, type FOOTER), flattened,
        or the standard pages when the shop has none. */

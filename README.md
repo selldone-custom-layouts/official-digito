@@ -32,8 +32,8 @@
 **Tario Market** dresses a grocery marketplace like a big-box store:
 - red for every action and every saving;
 - near-black headings in a heavy sans;
+- a big-box home: a hero that turns, round categories, rows of cards with a red **Add to cart**, promo tiles and lifestyle photos;
 - white cards on light-grey wells;
-- a red aisle bar under the header;
 - a checkout laid out as numbered steps.
 
 It runs on **[tario.selldone.shop](https://tario.selldone.shop)**, a second address of the same Selldone shop, molino. The shop's main address keeps its own Layout, [Molino Market Hall](https://github.com/selldone-custom-layouts/official-molino). Selldone lets each domain of a shop carry its own Layout.
@@ -42,15 +42,18 @@ Selldone's own basket, checkout, payments, vendor offers and orders keep working
 
 ## Highlights
 
-- **Header:** a red rule on top, the shop's wordmark with a round red mark, an Aisles menu, a wide search, Saved, Sign in and a red Basket. Below it, a **red aisle bar** with every aisle.
+- **Header:** a red promo strip with the shop's own free-shipping rule, then the wordmark with its round red dot, **Categories**, Deals, New arrivals and **Sellers** menus, a wide search pill with a round red button, Sign in and the cart with its count.
 - **Home:**
-  - a red deals hero with a rail of today's best savings;
-  - "Shop by aisle" as two rows of round pictures;
-  - a row of best sellers for every aisle;
-  - an aisle mosaic, seller cards and a market shelf.
+  - a split hero that turns: the week's deals ("up to N% off", read live), what is new, and the fresh aisle;
+  - "Shop by category" as rows of round pictures;
+  - **Top deals** and **New arrivals** rows;
+  - "Deals for every aisle": promo tiles that say what each aisle has on offer;
+  - "Ways to get it": pickup, delivery and shipping with their free rules, from the shop's settings;
+  - "Fresh finds": three tall editorial tiles;
+  - "Trending in" every aisle, and the sellers.
 
-  Empty sections fold away.
-- **Cards:** the price in heavy type (red when on offer, with the regular price struck) and "★★★★☆ 4.2 (19)" once rated. A red **Add to basket** turns into "− 1 in basket +" in place; products with sizes say "See options".
+  Eleven lifestyle photos ship in [`assets/tario/`](assets/tario/); a missing one is replaced by the aisle's own packshots. Empty sections fold away.
+- **Cards:** the price first and large (red on offer, "reg $x" and "Sale" beside it), the name, "★★★★☆ 4.2 (19)" once rated, who sells it, and a square red **Add to cart** that turns into "− 1 in cart +" in place; products with sizes say "Choose options".
 - **Product page:**
   - a gallery, details and a sticky buy box with every seller's offer;
   - the struck price and percentage follow the chosen seller;
@@ -60,7 +63,7 @@ Selldone's own basket, checkout, payments, vendor offers and orders keep working
   - **2 Delivery & contact**: delivery method, a map-first address sheet that suggests while typing and works in two steps on phones, and the email;
   - **3 Order summary**: every line of Selldone's bill and a red button that leads to whatever is missing before it pays.
 - **Orders and account:** the receipt, delivery card, the trip and chat, and the buyer account.
-- **Everywhere:** no "Added to basket" pop-ups and no phone bottom bar.
+- **Everywhere:** no "Added to cart" pop-ups and no phone bottom bar.
 
 ## Use it on your shop
 
@@ -91,7 +94,8 @@ Releases: `bash scripts/release.sh <new-version> desk`. See [Build and Upload](h
 
 | Area | Files |
 | --- | --- |
-| Tario's dress: the aisle bar, wells, footer, checkout steps | [`style/tario-skin.scss`](style/tario-skin.scss) |
+| The home page (design A) and its photos | [`components/tario/`](components/tario/), [`style/tario-home.scss`](style/tario-home.scss), [`assets/tario/`](assets/tario/) |
+| Tario's dress: header, footer, wells, checkout steps | [`style/tario-skin.scss`](style/tario-skin.scss), [`style/tario-home.scss`](style/tario-home.scss) |
 | Tokens: red, near-black, Inter, corners | [`style/kalio-tokens.scss`](style/kalio-tokens.scss) |
 | What Tario changed from Molino, and why | [`TARIO.md`](TARIO.md) |
 | The components and every behaviour (shared with Molino) | [`components/kalio/`](components/kalio/), [`KALIO.md`](KALIO.md) |

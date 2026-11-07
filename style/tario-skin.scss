@@ -1,12 +1,15 @@
 /* ▆▆▆▆▆▆▆▆▆▆▆▆▆▆ Tario — the big-box red dress ▆▆▆▆▆▆▆▆▆▆▆▆▆▆
 
    Tario (7 November 2026) is the same storefront as Molino Market Hall —
-   every page, every behaviour the owner asked for (Add to basket that turns
+   every page, every behaviour the owner asked for (Add to cart that turns
    into − n +, the two-step map address sheet, no pop-ups, the receipt, the
-   reviews) — dressed as a bright big-box store: a red rule over a white
-   header, a red aisle bar, heavy Inter headings, red prices on offer, white
-   cards on light-grey wells, and a checkout laid out as numbered steps.
-   Loaded last (storefront.scss), so it only overrides. */
+   reviews) — dressed as a bright big-box store: heavy Inter headings, red
+   prices on offer, white cards on light-grey wells, and a checkout laid out
+   as numbered steps. Loaded after Kalio's sheets, so it only overrides.
+
+   Design A (7 November 2026) replaced the first header and footer (a red
+   rule, a red aisle bar, a charcoal footer) and the home page itself: see
+   tario-home.scss, loaded after this file. */
 
 /* ── Type: heavy sans headings instead of a serif ── */
 h1,
@@ -18,8 +21,6 @@ h3,
 
 /* ── Header ── */
 .k-header {
-  border-top: 4px solid var(--k-green);
-
   &__brand {
     align-items: center !important;
     gap: 7px !important;
@@ -51,78 +52,12 @@ h3,
   }
 }
 
-/* ── The aisle bar: red, white words (the big-box signature) ── */
-.k-strip {
-  background: var(--k-green) !important;
-
-  &__link {
-    color: #fff !important;
-    font-weight: 600 !important;
-
-    &::after {
-      background: #fff !important;
-    }
-
-    &:hover,
-    &.-on {
-      color: #fff !important;
-    }
-
-    &.-deals {
-      color: #fff !important;
-      font-weight: 800 !important;
-
-      .v-icon {
-        color: #fff !important;
-      }
-
-      &::after {
-        background: #fff !important;
-      }
-    }
-  }
-}
-
 /* ── Product pictures: one light-grey well everywhere, not aisle pastels.
    (The aisle rings and the mosaic keep their colours.) ── */
 .k-rail__cell,
 .k-seller-cards li,
 [style*="--k-tint"]:has(.s--product-card) {
   --k-tint: var(--k-well) !important;
-}
-
-/* ── Footer: charcoal, white words, red marks ── */
-.k-footer__main {
-  background: #1b1b1b !important;
-  color: rgba(255, 255, 255, 0.78) !important;
-}
-
-.k-footer__head {
-  color: #ff8a8a !important;
-}
-
-.k-footer__col a:hover,
-.k-footer__col .-on {
-  color: #fff !important;
-}
-
-.k-footer__mark i,
-.k-footer__mark::after {
-  background: var(--k-green) !important;
-}
-
-.k-footer__mark {
-  align-items: center !important;
-  gap: 8px !important;
-  color: #fff !important;
-  font-weight: 800 !important;
-  letter-spacing: -0.05em !important;
-
-  i {
-    order: -1;
-    margin-top: 0 !important;
-    border-radius: 50% !important;
-  }
 }
 
 /* ── Checkout: numbered steps, a white order summary, a red Place button ── */

@@ -35,7 +35,7 @@
           <li><v-icon size="20">local_shipping</v-icon>Follow every order to your door</li>
           <li><v-icon size="20">favorite_border</v-icon>Keep your favourites for next week</li>
           <li v-if="sellerCount > 1">
-            <v-icon size="20">storefront</v-icon>One basket across {{ sellerCount }} independent sellers
+            <v-icon size="20">storefront</v-icon>One cart across {{ sellerCount }} independent sellers
           </li>
         </ul>
 

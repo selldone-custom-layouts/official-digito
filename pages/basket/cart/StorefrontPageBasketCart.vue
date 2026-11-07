@@ -39,7 +39,7 @@
       <div class="k-cart__head">
         <h1 class="k-cart__title">Your basket</h1>
         <span v-if="seller_count > 1" class="k-cart__one">
-          <v-icon size="18">storefront</v-icon>{{ seller_count }} sellers, one basket and one checkout.
+          <v-icon size="18">storefront</v-icon>{{ seller_count }} sellers, one cart and one checkout.
         </span>
         <s-shop-share-order-button v-if="basket?.items?.length" :basket="basket" class="k-cart__share" />
       </div>

@@ -14,8 +14,9 @@ Change the tokens and the whole site follows: buttons, badges, the compare badge
 
 | Part | Files |
 | --- | --- |
-| Home sections | `components/kalio/KalioHome.vue`, `KalioHero.vue`, `KalioAisleRibbon.vue`, `KalioRail.vue`, `KalioMosaic.vue`, `KalioSellerCards.vue`, `KalioShelf.vue` |
-| Card foot ("Add to basket" ↔ "− n +") | `components/kalio/KalioCardStep.vue`, `kalio-card-basket.ts`, `kalio-basket.ts` |
+| Home sections (design A) | `components/tario/TarioHome.vue`, `TarioHero.vue`, `TarioCircles.vue`, `TarioRow.vue`, `TarioCard.vue`, `TarioTiles.vue`, `TarioWays.vue`, `TarioFinds.vue`, `TarioSellers.vue`, `tario-home.ts`; styles in `style/tario-home.scss` |
+| Home photos | `assets/tario/` (eleven files; a missing one becomes a still life of the aisle's packshots) |
+| Card foot ("Add to cart" ↔ "− n +") | `components/kalio/KalioCardStep.vue`, `kalio-card-basket.ts`, `kalio-basket.ts` |
 | Header, footer, drawers, sign-in | `components/kalio/shell/`, `style/kalio-shell.scss` |
 | Shop pages (aisle, catalogue, seller) | `pages/products/StorefrontPageProducts.vue`, `KalioShelfHead.vue`, `KalioAisleHeader.vue`, `KalioSellerHero.vue` |
 | Product page | `pages/product/StorefrontPageProduct.vue`, `components/kalio/product/`, `style/kalio-product.scss` |

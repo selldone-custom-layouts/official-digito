@@ -139,7 +139,7 @@
 
             <button v-if="['ok', 'off'].includes(standing(order).tone)" :disabled="busy[order.id]" class="k-btn -line" type="button" @click="buyAgain(order)">
               <v-progress-circular v-if="busy[order.id]" indeterminate size="16" width="2" />
-              <v-icon v-else size="17">{{ done[order.id] ? "check" : "replay" }}</v-icon>{{ done[order.id] ? "In your basket" : "Buy again" }}
+              <v-icon v-else size="17">{{ done[order.id] ? "check" : "replay" }}</v-icon>{{ done[order.id] ? "In your cart" : "Buy again" }}
             </button>
             <router-link v-else-if="standing(order).tone === 'pay'" :to="orderRoute(order)" class="k-btn -line">View order</router-link>
             <router-link v-else :to="orderRoute(order)" class="k-btn -line">Track it</router-link>

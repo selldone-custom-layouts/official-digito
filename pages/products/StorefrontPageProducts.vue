@@ -83,7 +83,8 @@
       <!-- Shown on the bare shop page only. Every narrowing action the
            listing performs travels as a query parameter, so the home page
            gets out of the way the moment a shopper searches or filters. -->
-      <kalio-home v-if="show_home" />
+      <!-- Tario: a big-box home (design A, 7 November 2026), not Molino's. -->
+      <tario-home v-if="show_home" />
       </div>
 
       <!-- ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆ Products Listing ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆ -->
@@ -110,7 +111,7 @@
 <script lang="ts">
 import SProductsListing from "@selldone/components-vue/storefront/products/listing/SProductsListing.vue";
 import TemplateMixin from "@selldone/components-vue/mixin/template/TemplateMixin.ts";
-import KalioHome from "../../components/kalio/KalioHome.vue";
+import TarioHome from "../../components/tario/TarioHome.vue";
 import KalioAisleHeader from "../../components/kalio/KalioAisleHeader.vue";
 import KalioCatalogueHeader from "../../components/kalio/KalioCatalogueHeader.vue";
 import KalioSellerShelf from "../../components/kalio/KalioSellerShelf.vue";
@@ -125,7 +126,7 @@ export default {
   name: "StorefrontPageProducts",
   components: {
     SProductsListing,
-    KalioHome,
+    TarioHome,
     KalioAisleHeader,
     KalioCatalogueHeader,
     KalioQuickBuy,
