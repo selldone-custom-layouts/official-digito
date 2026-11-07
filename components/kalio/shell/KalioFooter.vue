@@ -25,7 +25,7 @@
     <div class="k-footer__main">
       <div class="k-wrap k-footer__grid">
         <div class="k-footer__brand">
-          <router-link :to="{ path: '/' }" class="k-footer__mark">{{ shopTitle }}<i aria-hidden="true"></i></router-link>
+          <router-link :to="{ path: '/' }" class="k-footer__mark -logo"><img :src="BRAND.mark" alt="" class="k-brand-mark" height="30" width="30" />{{ shopTitle }}</router-link>
           <p v-if="lede" class="k-footer__lede">{{ lede }}</p>
           <s-storefront-social-buttons class="k-footer__social"></s-storefront-social-buttons>
           <div class="k-footer__pickers">
@@ -87,6 +87,7 @@
 </template>
 
 <script>
+import { BRAND } from "../kalio-brand";
 import SStorefrontSocialButtons from "@selldone/components-vue/storefront/social/SStorefrontSocialButtons.vue";
 import SLanguageSelector from "@selldone/components-vue/storefront/language/selector/SLanguageSelector.vue";
 import UCurrencySelector from "@selldone/components-vue/ui/currency/selector/UCurrencySelector.vue";
@@ -108,6 +109,7 @@ export default {
 
   data() {
     return {
+      BRAND,
       window: window,
       aisleList: [],
       sellerList: [],

@@ -86,14 +86,21 @@ export default {
     off() {
       return percentOff(this.shop, this.product);
     },
-    /* The CDN has the original and a 128px thumbnail only; a card is
-       wider than 128px, so the original. */
+    /* The original stays the src; the srcset (productSrcset) gives the
+       browser the size the card is shown at. */
     picture() {
       return productImage(this.product);
     },
     to() {
       return { name: window.$storefront.routes.PRODUCT_PAGE, params: { product_id: this.product.id } };
     },
+  },
+
+  methods: {
+    srcset(product) {
+      return productSrcset(product);
+    },
+    dropSrcset,
   },
 };
 </script>

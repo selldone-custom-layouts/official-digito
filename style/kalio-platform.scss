@@ -676,36 +676,8 @@
       }
     }
 
-    /* Secondary: compare, in the picture's bottom corner (the sale tag has
-       the top one). A tick box with its word (7 November 2026):
-       the round ring before it read as a loading spinner to a tester, and
-       once picked it blinked. Shown on hover; once in the list it stays,
-       ticked and in the action colour, so the shopper sees what is picked. */
-    .v-btn + .v-btn {
-      inset-inline-start: 10px;
-      bottom: 10px;
-      width: auto !important;
-      height: 30px !important;
-      padding: 0 10px 0 8px !important;
-      border-radius: 999px !important;
-      font-size: 12.5px !important;
-      font-weight: 700 !important;
-      opacity: 0;
-
-      .v-btn__content {
-        gap: 5px;
-      }
-
-      .v-icon {
-        font-size: 17px !important;
-      }
-
-      &.-on {
-        opacity: 1;
-        background: var(--k-green) !important;
-        color: #fff !important;
-      }
-    }
+    /* Secondary: compare. Drawn at the foot of the card: see "Compare
+       under the card" at the end of this file. */
   }
 
   &:hover .quick-buy .v-btn + .v-btn,
@@ -2085,4 +2057,88 @@ button.k-compare-fab.s--storefront-products-comparison-circle-progress {
 .k-offer.-on .k-offer__name,
 .v-chip--selected {
   font-weight: 800 !important;
+}
+
+/* ▆▆▆▆▆▆▆▆ The Layout's logo (kalio-brand.ts, 7 November 2026) ▆▆▆▆▆▆▆▆
+   The mark stands before the wordmark in the header, the phone menu and the
+   footer, in place of the small dot or leaf drawn in CSS before it. */
+.k-header__brand.-logo,
+.k-footer__mark.-logo {
+  align-items: center !important;
+  gap: 9px !important;
+}
+
+.k-brand-mark {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+}
+
+.k-drawer .k-brand-mark,
+.k-footer .k-brand-mark {
+  width: 30px;
+  height: 30px;
+}
+
+@media (max-width: 760px) {
+  .k-header .k-brand-mark {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+/* ▆▆▆▆▆▆▆▆ Compare under the card (7 November 2026) ▆▆▆▆▆▆▆▆
+   The owner found the "Comparing" pill on the picture hid the sale tag. Big
+   shops (Best Buy, Home Depot, Lowe's) and Baymard's research put "Compare"
+   as a small tick box under the product, quieter than Add to cart, with a
+   "Compare n" button once something is picked. Here: "☐ Compare" in grey at
+   the foot of the card, "☑ Comparing" in bold action colour once picked, and
+   the "⇄ Compare n" pill at the window's foot. A touch screen has no compare
+   (as before), so a phone's cards keep their height. */
+@media (hover: hover) {
+  /* The room under the foot is in the card's own frame (.card-wrap), which
+     the compare line is placed in. */
+  .s--product-card .card-wrap:has(> .quick-buy .k-compare-toggle) {
+    padding-bottom: 38px !important;
+  }
+
+  .s--product-card .quick-buy:has(.k-compare-toggle) {
+    inset: 0 !important;
+    height: auto !important;
+  }
+
+  .s--product-card .quick-buy .v-btn.k-compare-toggle {
+    inset: auto auto 6px 6px !important;
+    width: auto !important;
+    height: 30px !important;
+    padding: 0 8px 0 4px !important;
+    border-radius: 6px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: var(--k-muted) !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    opacity: 1 !important;
+    transform: none !important;
+
+    .v-btn__content {
+      gap: 5px;
+    }
+
+    .v-icon {
+      font-size: 19px !important;
+    }
+
+    &:hover {
+      color: var(--k-ink) !important;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    &.-on {
+      color: var(--k-green) !important;
+      font-weight: 800 !important;
+    }
+  }
 }

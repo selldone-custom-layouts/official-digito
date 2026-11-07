@@ -211,7 +211,7 @@ index 009f831..9d48ba6 100644
        this.step = 1;
        this.email = this.predefine_email;
 diff --git a/storefront/product/card/SShopProductCard.vue b/storefront/product/card/SShopProductCard.vue
-index 337d45a..1c44d54 100644
+index 337d45a..1ac2682 100644
 --- a/storefront/product/card/SShopProductCard.vue
 +++ b/storefront/product/card/SShopProductCard.vue
 @@ -65,7 +65,10 @@
@@ -229,9 +229,10 @@ index 337d45a..1c44d54 100644
                    ? 'small'
                    : undefined
              "
+-            :title="$t('global.commons.compare')"
 +            :aria-pressed="existInComparisonList ? 'true' : 'false'"
 +            :class="{ '-on': existInComparisonList }"
-             :title="$t('global.commons.compare')"
++            :title="existInComparisonList ? 'Take it out of the comparison' : 'Compare up to 10 products side by side'"
              block
 +            class="k-compare-toggle"
              color="primary"

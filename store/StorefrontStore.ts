@@ -12,6 +12,7 @@
  * Tread carefully, for you're treading on dreams.
  */
 
+import { applyBrand } from "../components/kalio/kalio-brand";
 import type {ActionContext} from "vuex";
 import {createStore} from "vuex";
 import type {ICurrency} from "@selldone/core-js/enums/payment/Currency";
@@ -182,6 +183,7 @@ export default createStore<IState>({
 
   mutations: {
     setShop(state, shop) {
+      applyBrand(shop); // Kalio: the Layout's own name and tab icon (kalio-brand.ts)
       state.shop = shop;
       OverrideCustomVariantsName(shop); // Apply custom variants name
       //console.log("-------shop save---------");

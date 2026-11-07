@@ -20,6 +20,21 @@ export interface JournalQuery {
   search?: string;
 }
 
+/* Selldone seeds a new shop's blog with another shop's sample posts
+   (molino's power tools, AI, microphones and MSI posts came from shop 839).
+   Once the shop has written posts of its own (7 November 2026: four grocery
+   articles), the samples are left out of every list: the journal, "Most
+   read", "More from the journal". They stay on Selldone, untouched, and
+   their own links still open. */
+let ownPosts = false;
+
+function withoutSamples(list: any[]): any[] {
+  const shop = (window as any).shop;
+  if (!shop?.id || !Array.isArray(list)) return list || [];
+  if (list.some((article) => !isDemoPost(article, shop))) ownPosts = true;
+  return ownPosts ? list.filter((article) => !isDemoPost(article, shop)) : list;
+}
+
 export function journalPage(q: JournalQuery): Promise<{ articles: any[]; total: number }> {
   const limit = q.limit || 10;
   return window.axios
@@ -36,7 +51,9 @@ export function journalPage(q: JournalQuery): Promise<{ articles: any[]; total: 
     })
     .then(({ data }: any) => {
       if (data?.error) throw new Error(data.error_msg);
-      return { articles: data.articles || [], total: data.total || 0 };
+      const all = data.articles || [];
+      const kept = withoutSamples(all);
+      return { articles: kept, total: Math.max(kept.length, (data.total || 0) - (all.length - kept.length)) };
     });
 }
 
@@ -47,11 +64,10 @@ export function journalExtra() {
   if (!extraRead) {
     extraRead = window.axios
       .get(window.XAPI.GET_SHOP_BLOGS(window.$storefront.name), { params: { extra: true, offset: 0, limit: 1 } })
-      .then(({ data }: any) => ({
-        popular: data?.popular || [],
-        categories: data?.categories || [],
-        latest: data?.last_articles || [],
-      }))
+      .then(({ data }: any) => {
+        const latest = withoutSamples(data?.last_articles || []);
+        return { popular: withoutSamples(data?.popular || []), categories: data?.categories || [], latest };
+      })
       .catch(() => {
         extraRead = null;
         return { popular: [], categories: [], latest: [] };
