@@ -145,7 +145,7 @@ export default {
   },
 
   created() {
-    this.setPageTitle("My favorites"); // Set Page Title!
+    this.setPageTitle("Saved"); // Set Page Title!
   },
 
   methods: {

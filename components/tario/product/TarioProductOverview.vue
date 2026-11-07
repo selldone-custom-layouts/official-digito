@@ -213,7 +213,7 @@
             <label class="t-fbt__im">
               <input v-model="ticked" :value="item.id" type="checkbox" :aria-label="'Include ' + item.title" />
               <span class="t-fbt__cbx"><v-icon size="16">check</v-icon></span>
-              <img v-if="item.image" :src="item.image" alt="" loading="lazy" />
+              <img v-if="item.image" :src="item.image" :srcset="item.srcset" alt="" loading="lazy" sizes="(max-width: 760px) 72px, 150px" @error="dropSrcset" />
             </label>
             <div>
               <u-price :amount="item.price" :class="{ '-sale': item.sale }" :currency="currency" class="t-fbt__price" />
@@ -250,7 +250,7 @@
 import KalioProductOverview from "../../kalio/product/KalioProductOverview.vue";
 import KalioQuickBuy from "../../kalio/KalioQuickBuy.vue";
 import { waysOf } from "../tario-home";
-import { aisles, priceOf, productImage } from "../../kalio/kalio-catalog";
+import { aisles, dropSrcset, priceOf, productImage, productSrcset } from "../../kalio/kalio-catalog";
 import { basketLine, hasSizes, quickAdd } from "../../kalio/kalio-basket";
 
 /* The aisles that go with an aisle, as a grocer would pair them. Matched on
@@ -337,7 +337,7 @@ export default {
       const self = this.$product;
       const now = this.selfPrice();
       return [
-        { id: self.id, title: self.title, image: productImage(self, true), price: now.now, sale: !!now.was, self: true },
+        { id: self.id, title: self.title, image: productImage(self), srcset: productSrcset(self), price: now.now, sale: !!now.was, self: true },
         ...this.pairs,
       ];
     },
@@ -364,6 +364,7 @@ export default {
   },
 
   methods: {
+    dropSrcset,
     wayNote(way) {
       return NOTES[way.key] || way.line + ".";
     },
@@ -413,7 +414,7 @@ export default {
       if (this.$product?.id !== id) return;
       this.pairs = picks.map(({ product }) => {
         const price = priceOf(this.shop, product, this.currency);
-        return { id: product.id, title: product.title, image: productImage(product, true), price: price.now, sale: !!price.was, product };
+        return { id: product.id, title: product.title, image: productImage(product), srcset: productSrcset(product), price: price.now, sale: !!price.was, product };
       });
       this.ticked = [id, ...this.pairs.map((p) => p.id)];
     },

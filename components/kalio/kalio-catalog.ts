@@ -250,6 +250,43 @@ export function productImage(product: any, thumb = false): string | null {
   return product?.icon ? window.CDN.GET_SHOP_IMAGE_PATH(product.icon, thumb ? 128 : null) : null;
 }
 
+/* ━━━━━━━━━━━━ Product photos at the size they are shown ━━━━━━━━━━━━
+   Selldone keeps every product photo at 1000x1000 (about 110KB as WebP) and
+   its CDN offers only 64 and 128 thumbnails, so a card 200px wide pulled the
+   whole photo (a tester measured the traffic, 7 November 2026). A srcset
+   lets the browser take the smallest that is sharp on its screen: Selldone's
+   own 128 thumbnail, or 256 to 768 from the shop's resizer (the kalio
+   Worker's /img route: Cloudflare Images, AVIF or WebP at quality 65, cached
+   for a year, Selldone's CDN only). The full photo stays the src, and an
+   image that fails drops the srcset and loads it (dropSrcset). */
+const RESIZER = "https://kalio.selldone.shop/img";
+const RESIZED = [256, 384, 512, 768];
+
+export function photoSrcset(full: string | null, thumb: string | null = null): string | null {
+  if (!full || !full.startsWith("https://cdn.selldone.com/")) return null;
+  const list = thumb ? [`${thumb} 128w`] : [];
+  for (const w of RESIZED) list.push(`${RESIZER}?u=${encodeURIComponent(full)}&w=${w} ${w}w`);
+  return list.join(", ");
+}
+
+/** The srcset of a product's main photo (or a variant's own picture). */
+export function productSrcset(product: any, icon: string | null = null): string | null {
+  const path = icon || product?.icon;
+  if (!path) return null;
+  return photoSrcset(window.CDN.GET_SHOP_IMAGE_PATH(path, null), window.CDN.GET_SHOP_IMAGE_PATH(path, 128));
+}
+
+/** An <img>'s error handler: forget the srcset and show the full photo. */
+export function dropSrcset(event: Event): void {
+  const img = event?.target as HTMLImageElement | null;
+  if (img && img.getAttribute("srcset")) {
+    img.removeAttribute("srcset");
+    img.removeAttribute("sizes");
+    const src = img.getAttribute("src");
+    if (src) img.src = src;
+  }
+}
+
 /* How many products a listing holds: an aisle (its category name), a
    seller (vendor_id), or the whole shop, optionally narrowed by a filter. */
 export function countProducts(dir: string | null, options: Record<string, any> = {}): Promise<number | null> {

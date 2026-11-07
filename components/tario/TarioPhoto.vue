@@ -18,16 +18,19 @@
         :key="product.id"
         :class="'-p' + (i + 1)"
         :src="picture(product)"
+        :srcset="srcset(product)"
         alt=""
         class="t-photo__pack"
         loading="lazy"
+        sizes="(max-width: 760px) 40vw, 220px"
+        @error="dropSrcset"
       />
     </template>
   </div>
 </template>
 
 <script>
-import { productImage } from "../kalio/kalio-catalog";
+import { productImage, productSrcset, dropSrcset } from "../kalio/kalio-catalog";
 
 export default {
   name: "TarioPhoto",
@@ -51,6 +54,10 @@ export default {
   },
 
   methods: {
+    srcset(product) {
+      return productSrcset(product);
+    },
+    dropSrcset,
     picture(product) {
       return productImage(product);
     },

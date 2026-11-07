@@ -11,7 +11,7 @@
   <div class="k-mini">
     <div class="k-mini__well">
       <router-link :to="productRoute" aria-hidden="true" tabindex="-1">
-        <img :src="picture" alt="" loading="lazy" />
+        <img :src="picture" :srcset="srcset(product)" alt="" loading="lazy" sizes="64px" @error="dropSrcset" />
       </router-link>
       <kalio-card-step v-if="inBasket" :product="product" class="k-mini__step" inline />
       <button v-else :aria-label="`Add ${product.title}`" class="k-mini__add" type="button" @click="add">
@@ -30,7 +30,7 @@
 import CurrencyMixin from "@selldone/components-vue/mixin/currency/CurrencyMixin.ts";
 import KalioCardStep from "../KalioCardStep.vue";
 import { basketLine, hasSizes, pendingLine, quickAdd, shownCount } from "../kalio-basket";
-import { priceOf, productImage } from "../kalio-catalog";
+import { priceOf, productImage, productSrcset, dropSrcset } from "../kalio-catalog";
 
 export default {
   name: "KalioMiniProduct",
@@ -64,6 +64,10 @@ export default {
   },
 
   methods: {
+    srcset(product) {
+      return productSrcset(product);
+    },
+    dropSrcset,
     add() {
       return quickAdd(this, this.product, (picked) => this.$emit("sheet", picked));
     },

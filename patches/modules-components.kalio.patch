@@ -1,3 +1,88 @@
+diff --git a/storefront/comparison/button/SComparisonButton.vue b/storefront/comparison/button/SComparisonButton.vue
+index e7752ff..922b8fd 100644
+--- a/storefront/comparison/button/SComparisonButton.vue
++++ b/storefront/comparison/button/SComparisonButton.vue
+@@ -17,25 +17,20 @@
+     v-if="products && products.length"
+     class="s--storefront-products-comparison-button"
+   >
+-    <u-progress-radial
+-      :class="{ 'force-on-top': show, 'is-mobile': isMobile }"
+-      :completed-steps="products.length"
+-      :diameter="84"
+-      :inner-stroke-color="ThemeColorDeepDark"
+-      :stroke-width="10"
+-      :total-steps="10"
+-      class="widget-hover s--storefront-products-comparison-circle-progress"
+-      start-color="#C2185B"
+-      stop-color="#9C27B0"
++    <!-- Kalio (7 November 2026): a pill that says what it is and how many,
++         not a ring that filled up like a loading spinner. It bumps once
++         when a product joins the list, so the shopper sees where it went. -->
++    <button
++      :aria-label="show ? 'Close the comparison' : `Compare ${products.length} products`"
++      :class="{ 'force-on-top': show, 'is-mobile': isMobile, '-bump': bump }"
++      class="widget-hover s--storefront-products-comparison-circle-progress k-compare-fab"
++      type="button"
+       @click="!show ? showDialog() : (show = false)"
+     >
+-      <v-icon :size="24">
+-        {{ show ? "close" : "search" }}
+-      </v-icon>
+-      <p class="m-0 x-small">
+-        {{ $t("product_comparison.action_button") }}
+-      </p>
+-    </u-progress-radial>
++      <v-icon :size="20">{{ show ? "close" : "compare_arrows" }}</v-icon>
++      <span>{{ $t("product_comparison.action_button") }}</span>
++      <b class="k-compare-fab__n">{{ products.length }}</b>
++    </button>
+ 
+     <v-dialog v-model="show" fullscreen transition="dialog-bottom-transition">
+       <v-card class="text-start">
+@@ -66,7 +61,6 @@
+ <script lang="ts">
+ import NotificationService from "@selldone/components-vue/plugins/notification/NotificationService.ts";
+ 
+-import UProgressRadial from "../../../ui/progress/radial/UProgressRadial.vue";
+ import SComparisonList from "../list/SComparisonList.vue";
+ import TemplateMixin from "@selldone/components-vue/mixin/template/TemplateMixin.ts";
+ 
+@@ -75,10 +69,11 @@ export default {
+   name: "SComparisonButton",
+   mixins: [TemplateMixin ],
+ 
+-  components: { SComparisonList, UProgressRadial },
++  components: { SComparisonList },
+   data: () => ({
+     show: false,
+     busy: false,
++    bump: false,
+   }),
+ 
+   computed: {
+@@ -92,7 +87,21 @@ export default {
+     },
+   },
+ 
++  watch: {
++    "products.length"(now, before) {
++      if (!(now > (before || 0))) return;
++      this.bump = false;
++      this.$nextTick(() => {
++        this.bump = true;
++        clearTimeout(this.bump_timer);
++        this.bump_timer = setTimeout(() => (this.bump = false), 1400);
++      });
++    },
++  },
+   mounted() {},
++  beforeUnmount() {
++    clearTimeout(this.bump_timer);
++  },
+   methods: {
+     showDialog() {
+       if (this.need_updates.length) {
 diff --git a/storefront/footer/navigarion/SFooterNavigation.vue b/storefront/footer/navigarion/SFooterNavigation.vue
 index 6eb04f5..c8a2fb2 100644
 --- a/storefront/footer/navigarion/SFooterNavigation.vue
@@ -75,6 +160,176 @@ index 6eb04f5..c8a2fb2 100644
      },
  
      in_custom_home_page() {
+diff --git a/storefront/login/SShopLogin.vue b/storefront/login/SShopLogin.vue
+index e1374c1..a797dda 100644
+--- a/storefront/login/SShopLogin.vue
++++ b/storefront/login/SShopLogin.vue
+@@ -437,7 +437,6 @@
+ <script lang="ts">
+ import NotificationService from "@selldone/components-vue/plugins/notification/NotificationService.ts";
+ 
+-import { SoundHelper } from "@selldone/core-js/helper/sound/SoundHelper";
+ import UCountDown from "../../ui/count-down/UCountDown.vue";
+ import { SetupService } from "@selldone/core-js/server/SetupService";
+ 
+@@ -551,9 +550,9 @@ export default {
+     EventBus.$off("get-me:error");
+   },
+   methods: {
+-    tick() {
+-      SoundHelper.playTick(0.1);
+-    },
++    /* Kalio (7 November 2026): silent. A "tick" while signing in is not
++       something the web does, and a tester took it for something wrong. */
++    tick() {},
+ 
+     requestSendCode() {
+       this.show_resend = false;
+diff --git a/storefront/login/widgets/ShopEmailLogin.vue b/storefront/login/widgets/ShopEmailLogin.vue
+index 009f831..9d48ba6 100644
+--- a/storefront/login/widgets/ShopEmailLogin.vue
++++ b/storefront/login/widgets/ShopEmailLogin.vue
+@@ -163,7 +163,6 @@
+ </template>
+ 
+ <script lang="ts">
+-import { SoundHelper } from "@selldone/core-js/helper/sound/SoundHelper";
+ import GlobalRules from "@selldone/core-js/helper/rules/GlobalRules";
+ import NotificationService from "@selldone/components-vue/plugins/notification/NotificationService.ts";
+ 
+@@ -205,9 +204,9 @@ export default {
+   created() {},
+ 
+   methods: {
+-    tick() {
+-      SoundHelper.playTick(0.1);
+-    },
++    /* Kalio (7 November 2026): silent. A "tick" while signing in is not
++       something the web does, and a tester took it for something wrong. */
++    tick() {},
+     show() {
+       this.step = 1;
+       this.email = this.predefine_email;
+diff --git a/storefront/product/card/SShopProductCard.vue b/storefront/product/card/SShopProductCard.vue
+index 337d45a..1c44d54 100644
+--- a/storefront/product/card/SShopProductCard.vue
++++ b/storefront/product/card/SShopProductCard.vue
+@@ -65,7 +65,10 @@
+           :class="{ contain: is_image_contain }"
+           :cover="!is_image_contain"
+           :src="product_image"
++          :srcset="kalio_srcset"
+           class="card__img--hover"
++          sizes="(max-width: 599px) 48vw, (max-width: 1099px) 30vw, 260px"
++          @error="kalio_srcset_failed = true"
+         >
+           <slot name="dynamic-background-layout"></slot>
+           <template v-slot:placeholder>
+@@ -149,8 +152,11 @@
+                   ? 'small'
+                   : undefined
+             "
++            :aria-pressed="existInComparisonList ? 'true' : 'false'"
++            :class="{ '-on': existInComparisonList }"
+             :title="$t('global.commons.compare')"
+             block
++            class="k-compare-toggle"
+             color="primary"
+             tile
+             variant="text"
+@@ -160,14 +166,10 @@
+                 : addToProductComparison(product, null, true)
+             "
+           >
+-            <v-icon
+-              v-if="existInComparisonList"
+-              class="blink-me"
+-              color="success"
+-              size="small"
+-              >lens
+-            </v-icon>
+-            <v-icon v-else size="small">data_saver_on</v-icon>
++            <!-- Kalio (7 November 2026): a box that gets a tick and the word,
++                 not a ring (read as "loading") and a blinking dot. -->
++            <v-icon size="small">{{ existInComparisonList ? "check_box" : "check_box_outline_blank" }}</v-icon>
++            <span class="k-compare-toggle__t">{{ existInComparisonList ? "Comparing" : $t("global.commons.compare") }}</span>
+           </v-btn>
+         </div>
+ 
+@@ -379,7 +381,10 @@
+             "
+             :height="$vuetify.display.smAndDown ? 64 : 84"
+             :src="product_image"
++            :srcset="kalio_srcset"
+             :width="$vuetify.display.smAndDown ? 64 : 84"
++            sizes="84px"
++            @error="kalio_srcset_failed = true"
+             class="flex-grow-0 rounded me-0 me-sm-2"
+             cover
+           >
+@@ -538,6 +543,7 @@ import UPriceInvalid from "@selldone/components-vue/ui/price/invalid/UPriceInval
+ import ProductMixin from "@selldone/components-vue/mixin/product/ProductMixin.ts";
+ import { ModeView } from "@selldone/core-js/enums/shop/ModeView.ts";
+ import StorefrontMixin from "@app-storefront/mixin/StorefrontMixin.ts";
++import { productSrcset } from "@app-storefront/components/kalio/kalio-catalog";
+ 
+ export default {
+   name: "SShopProductCard",
+@@ -614,6 +620,7 @@ export default {
+   },
+   data() {
+     return {
++      kalio_srcset_failed: false, // Kalio: the resized photo failed, show the original
+       ProductType: ProductType,
+ 
+       rating_test: 4.5,
+@@ -726,6 +733,13 @@ export default {
+       );
+     },
+ 
++    /* Kalio (7 November 2026): the photo at the size the card shows it
++       (kalio-catalog.ts productSrcset), not always the 1000px original. */
++    kalio_srcset() {
++      if (this.kalio_srcset_failed) return undefined;
++      return productSrcset(this.product, this.current_variant?.image || null) || undefined;
++    },
++
+     product_image() {
+       return this.getShopImagePath(
+         this.current_variant?.image
+diff --git a/storefront/product/section/extra-buttons/SProductSectionExtraButtons.vue b/storefront/product/section/extra-buttons/SProductSectionExtraButtons.vue
+index 1f8ebe4..9270f1c 100644
+--- a/storefront/product/section/extra-buttons/SProductSectionExtraButtons.vue
++++ b/storefront/product/section/extra-buttons/SProductSectionExtraButtons.vue
+@@ -28,7 +28,7 @@
+         variant="text"
+         @click="addToProductComparison($product, currentVariant)"
+       >
+-        <v-icon start>add</v-icon>
++        <v-icon start>check_box_outline_blank</v-icon>
+ 
+         <div
+           :class="{ small: $vuetify.display.xs }"
+@@ -52,7 +52,8 @@
+         variant="text"
+         @click="removeFromProductComparison($product, currentVariant)"
+       >
+-        <v-icon class="blink-me me-1" size="10">lens</v-icon>
++        <!-- Kalio (7 November 2026): a ticked box, not a blinking dot. -->
++        <v-icon class="me-1" size="20">check_box</v-icon>
+         {{ $t("product_info.compare_be_in_list") }}
+       </v-btn>
+ 
+@@ -60,7 +61,8 @@
+       <v-btn
+         :color="inWishlist ? 'red' : '#444'"
+         :loading="wishlist_busy"
+-        :title="inWishlist ? 'In my list' : 'Add to favorites'"
++        :aria-label="inWishlist ? 'Saved — remove from Saved' : 'Save'"
++        :title="inWishlist ? 'Saved' : 'Save'"
+         icon
+         min-width="54px"
+         size="44"
 diff --git a/storefront/product/section/price/SProductSectionPrice.vue b/storefront/product/section/price/SProductSectionPrice.vue
 index 579e8c9..1f5d878 100644
 --- a/storefront/product/section/price/SProductSectionPrice.vue

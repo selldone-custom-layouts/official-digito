@@ -51,7 +51,7 @@
           <template v-else>
             <div v-for="product in products" :key="product.id" class="k-shelf__item">
               <router-link :to="productRoute(product)" aria-hidden="true" class="k-shelf__pic" tabindex="-1">
-                <img :src="picture(product)" alt="" loading="lazy" />
+                <img :src="picture(product)" :srcset="srcset(product)" alt="" loading="lazy" sizes="(max-width: 600px) 40vw, 180px" @error="dropSrcset" />
               </router-link>
               <div :class="{ '-offer': labels.get(product.id).was }" class="k-shelf__tag">
                 <span v-if="labels.get(product.id).off" class="k-shelf__save">
@@ -118,6 +118,8 @@ import {
   priceOf,
   productImage,
   tintFor,
+  productSrcset,
+  dropSrcset,
 } from "./kalio-catalog";
 
 const PER_SHELF = 6;
@@ -191,6 +193,10 @@ export default {
   },
 
   methods: {
+    srcset(product) {
+      return productSrcset(product);
+    },
+    dropSrcset,
     aisleRoute,
     aisleImage,
 

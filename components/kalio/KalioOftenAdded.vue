@@ -15,7 +15,7 @@
       <div v-for="product in suggestions" :key="product.id" class="k-often__item">
         <div class="k-often__pic">
           <router-link :aria-label="product.title" :to="productRoute(product.id)" @click="$emit('navigate')">
-            <img v-if="image(product)" :src="image(product)" alt="" loading="lazy" />
+            <img v-if="image(product)" :src="image(product)" :srcset="srcset(product)" alt="" loading="lazy" sizes="(max-width: 600px) 30vw, 160px" @error="dropSrcset" />
           </router-link>
           <button
             :aria-label="`Add ${product.title}`"
@@ -40,7 +40,7 @@
 <script>
 import CurrencyMixin from "@selldone/components-vue/mixin/currency/CurrencyMixin.ts";
 import { hasSizes, pendingLine, quickAdd } from "./kalio-basket";
-import { offers, priceOf, productImage } from "./kalio-catalog";
+import { offers, priceOf, productImage, productSrcset, dropSrcset } from "./kalio-catalog";
 
 export default {
   name: "KalioOftenAdded",
@@ -96,6 +96,10 @@ export default {
   },
 
   methods: {
+    srcset(product) {
+      return productSrcset(product);
+    },
+    dropSrcset,
     image(product) {
       return productImage(product, true);
     },

@@ -676,16 +676,34 @@
       }
     }
 
-    /* Secondary: compare. */
+    /* Secondary: compare, in the picture's bottom corner (the sale tag has
+       the top one). A tick box with its word (7 November 2026):
+       the round ring before it read as a loading spinner to a tester, and
+       once picked it blinked. Shown on hover; once in the list it stays,
+       ticked and in the action colour, so the shopper sees what is picked. */
     .v-btn + .v-btn {
-      inset-inline-end: 10px;
-      top: 10px;
-      width: 34px !important;
-      height: 34px !important;
+      inset-inline-start: 10px;
+      bottom: 10px;
+      width: auto !important;
+      height: 30px !important;
+      padding: 0 10px 0 8px !important;
+      border-radius: 999px !important;
+      font-size: 12.5px !important;
+      font-weight: 700 !important;
       opacity: 0;
 
+      .v-btn__content {
+        gap: 5px;
+      }
+
       .v-icon {
-        font-size: 18px !important;
+        font-size: 17px !important;
+      }
+
+      &.-on {
+        opacity: 1;
+        background: var(--k-green) !important;
+        color: #fff !important;
       }
     }
   }
@@ -1906,35 +1924,76 @@
    (StorefrontApp.vue). The phone's bottom bar is gone, so it sits at the
    foot; on a product page it stands above the floating buy bar. Selldone
    draws an 84px circle at 0.7 scale: `bottom` is set for the drawn one. */
-.s--storefront-products-comparison-circle-progress {
-  bottom: calc(2px + env(safe-area-inset-bottom)) !important;
-  left: 0 !important;
+/* Since 7 November 2026 a pill, "⇄ Compare 2", not a ring: the ring filled
+   up like a loading spinner and was easy to miss (a tester's feedback). It
+   bumps once when a product joins the list (SComparisonButton). */
+.k-compare-fab.s--storefront-products-comparison-circle-progress {
+  bottom: calc(14px + env(safe-area-inset-bottom)) !important;
+  left: 14px !important;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 8px 0 16px;
+  border: 0;
+  border-radius: 999px !important;
   background-color: var(--k-green-deep) !important;
   color: #fff !important;
-  box-shadow: 0 14px 28px -14px rgba(163, 0, 0, 0.75);
+  box-shadow: 0 14px 28px -12px rgba(14, 63, 46, 0.7);
   font-family: var(--k-body);
+  font-size: 15px;
+  font-weight: 700;
 
-  stop:first-child {
-    stop-color: #ffc9c9;
+  &:hover {
+    background-color: var(--k-green) !important;
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
-  stop:last-child {
-    stop-color: #ff6b6b;
-  }
-
-  /* The ring's track under the progress. */
-  circle:first-of-type {
-    stroke: rgba(255, 255, 255, 0.16);
+  &:focus-visible {
+    outline: 3px solid var(--k-ink);
+    outline-offset: 3px;
   }
 
   .v-icon {
     color: #fff !important;
   }
 
-  p {
-    font-size: 11px !important;
-    font-weight: 600;
-    letter-spacing: 0;
+  &.-bump {
+    animation: k-compare-bump 1.3s ease;
+  }
+}
+
+.k-compare-fab__n {
+  display: inline-grid;
+  place-items: center;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--k-green-deep);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+/* Selldone's scoped style shrinks the old ring to 0.7; the pill keeps its
+   size (no !important here, or the bump could not move it). */
+button.k-compare-fab.s--storefront-products-comparison-circle-progress {
+  transform: none;
+}
+
+@keyframes k-compare-bump {
+  0% { transform: translateY(0) scale(1); }
+  15% { transform: translateY(-8px) scale(1.08); }
+  30% { transform: translateY(0) scale(1); }
+  45% { transform: translateY(-4px) scale(1.04); }
+  60%, 100% { transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .k-compare-fab.-bump {
+    animation: none;
   }
 }
 
@@ -1980,4 +2039,50 @@
   .k-card-rate__n {
     display: none;
   }
+}
+
+/* ▆▆▆▆▆▆▆▆ States that do not lean on colour alone ▆▆▆▆▆▆▆▆
+
+   A tester asked for hover and selection that colour-blind shoppers can
+   see too (7 November 2026). Colour still changes; each state now also
+   changes shape or weight:
+   - keyboard focus: a dark ring around anything that can be pressed;
+   - hover on a filled button: its words are underlined;
+   - a chosen size or option: a thicker ring, bold words and a tick. */
+:where(a, button, summary, [role="button"], [role="radio"], [role="tab"], .v-btn):focus-visible {
+  outline: 3px solid var(--k-ink) !important;
+  outline-offset: 2px !important;
+}
+
+.k-btn--solid:hover,
+.k-card-add:not(.-none):hover,
+.k-cart__go:hover,
+.k-bdrawer__go:hover,
+.s--shop-buy-button:hover,
+.k-sheet__go:hover {
+  text-decoration: underline !important;
+  text-decoration-thickness: 2px !important;
+  text-underline-offset: 3px !important;
+}
+
+.s-product-variants__options .var-sel.selected {
+  position: relative;
+  box-shadow: 0 0 0 2px rgb(var(--v-theme-primary)) !important;
+  font-weight: 700 !important;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: -7px;
+    right: -7px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--k-ink) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23fff' d='M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z'/%3E%3C/svg%3E") center / 13px no-repeat;
+  }
+}
+
+.k-offer.-on .k-offer__name,
+.v-chip--selected {
+  font-weight: 800 !important;
 }

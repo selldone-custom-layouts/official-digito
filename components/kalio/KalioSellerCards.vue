@@ -36,7 +36,7 @@
         <ul class="k-seller__shelf">
           <li v-for="product in card.pics" :key="product.id" :style="{ '--k-tint': tint(product) }">
             <router-link :to="productRoute(product)" :aria-label="product.title">
-              <img :src="picture(product)" alt="" loading="lazy" />
+              <img :src="picture(product)" :srcset="srcset(product)" alt="" loading="lazy" sizes="72px" @error="dropSrcset" />
             </router-link>
           </li>
         </ul>
@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import { aisleIndex, offers, productImage, sellerRoute, tintFor, vendorImage, vendors } from "./kalio-catalog";
+import { aisleIndex, offers, productImage, sellerRoute, tintFor, vendorImage, vendors, productSrcset, dropSrcset } from "./kalio-catalog";
 
 export default {
   name: "KalioSellerCards",
@@ -82,6 +82,10 @@ export default {
   },
 
   methods: {
+    srcset(product) {
+      return productSrcset(product);
+    },
+    dropSrcset,
     /* The 128px thumbnail is soft at this size on a dense screen, and no
        size in between exists, so the original is used. */
     picture(product) {

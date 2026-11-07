@@ -30,7 +30,7 @@ index cca6510..1e99184 100644
      physical: {
        popular_selling_with_low_quantity:"🔥 Popular choice! Stocks are running low, grab yours while you can!",
 diff --git a/shop/en.ts b/shop/en.ts
-index 7ef09f4..7b126c8 100644
+index 7ef09f4..a99df80 100644
 --- a/shop/en.ts
 +++ b/shop/en.ts
 @@ -69,7 +69,7 @@ export default {
@@ -42,6 +42,17 @@ index 7ef09f4..7b126c8 100644
      nothing: "Nothing",
      most_views: "Most Views",
      most_likes: "Most Popular",
+@@ -91,8 +91,8 @@ export default {
+     fake: "Fake",
+     action: "Auction",
+     compare_limit: "10 items limit",
+-    compare_add: "Add to Compare",
+-    compare_be_in_list: "In compare list",
++    compare_add: "Compare",
++    compare_be_in_list: "Comparing", // Kalio: as the product cards say it
+ 
+     type: "Type",
+     brand: "Brand",
 @@ -133,10 +133,10 @@ export default {
      inform_me_when_available: "Waiting for this?",
      pay_buy: "Pay & Buy",
@@ -55,6 +66,24 @@ index 7ef09f4..7b126c8 100644
      buy: "Buy",
      subscribe_now: "Subscribe Now",
      unsubscribe: "Unsubscribe",
+@@ -173,7 +173,7 @@ export default {
+     shop_menu: {
+       orders_history: "Orders History",
+       profile: "My Profile",
+-      favorites: "Favorite Items",
++      favorites: "Saved", // Kalio: one word for it everywhere
+       gift_cards: "Gift Cards",
+       return_requests: "Returned Orders",
+       basket: "Shopping Cart",
+@@ -229,7 +229,7 @@ export default {
+     menu: {
+       gift_card: "Gift Card",
+       comments: "Comments",
+-      favorites: "Favorites",
++      favorites: "Saved", // Kalio: one word for it everywhere
+       return_requests: "Returns",
+       addresses: "Addresses",
+       profile: "profile",
 @@ -443,7 +443,7 @@ export default {
      custom_billing_info: "Different billing address",
      custom_billing_info_desc:
@@ -64,3 +93,12 @@ index 7ef09f4..7b126c8 100644
      extra_shipping_count: "You will receive {count} packages.",
      select_location_error:
        "Find the place of receipt of the shipment on the map and click on the indicator in the middle of the map to determine the exact address of the recipient.",
+@@ -500,7 +500,7 @@ export default {
+ 
+   /** {@see StorefrontPageUserWishlist} **/
+   user_favorites: {
+-    title: "Wishlist",
++    title: "Saved", // Kalio: the header and the account say "Saved"
+   },
+   /** {@see StorefrontPageUserComments} **/
+   user_comments: {

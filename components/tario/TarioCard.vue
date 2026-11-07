@@ -17,7 +17,7 @@
 <template>
   <article :class="{ '-sale': was }" class="t-card">
     <router-link :to="to" class="t-card__pic" tabindex="-1" aria-hidden="true">
-      <img v-if="picture" :alt="product.title" :src="picture" loading="lazy" />
+      <img v-if="picture" :alt="product.title" :src="picture" :srcset="srcset(product)" loading="lazy" sizes="(max-width: 760px) 44vw, 220px" @error="dropSrcset" />
       <span v-if="off > 0" class="t-card__tag">-{{ off }}%</span>
     </router-link>
 
@@ -52,7 +52,7 @@ import CurrencyMixin from "@selldone/components-vue/mixin/currency/CurrencyMixin
 import KalioCardStep from "../kalio/KalioCardStep.vue";
 import KalioCardRating from "../kalio/KalioCardRating.vue";
 import KalioSellerLine from "../kalio/KalioSellerLine.vue";
-import { percentOff, priceOf, productImage } from "../kalio/kalio-catalog";
+import { percentOff, priceOf, productImage, productSrcset, dropSrcset } from "../kalio/kalio-catalog";
 
 export default {
   name: "TarioCard",
