@@ -88,6 +88,10 @@ export default {
     lazy: Boolean,
     /** Deal the products out aisle by aisle. */
     spread: Boolean,
+    /** One seller's products only. */
+    vendor: { type: [Number, String], default: null },
+    /** A product to leave out (the one the page is about). */
+    exclude: { type: [Number, String], default: null },
   },
 
   emits: ["loaded"],
@@ -132,10 +136,11 @@ export default {
       this.busy = true;
       const options = { products_only: true, sort: this.sort, available: true };
       if (this.filter) options.filter = JSON.stringify(this.filter);
+      if (this.vendor) options.vendor_id = this.vendor;
       window.$storefront.products
         .list(this.dir, 0, this.limit, options)
         .then(({ products }) => {
-          products = (products || []).slice(0, this.limit);
+          products = (products || []).filter((p) => !this.exclude || String(p.id) !== String(this.exclude)).slice(0, this.limit);
           this.products = this.spread ? spreadByAisle(products) : products;
         })
         .catch(() => (this.products = []))

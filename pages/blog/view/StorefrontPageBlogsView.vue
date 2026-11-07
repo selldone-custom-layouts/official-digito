@@ -76,7 +76,7 @@
               @click="addAll"
             >
               <v-icon size="20">{{ allIn ? "check" : "shopping_basket" }}</v-icon>
-              <template v-if="allIn">All in your basket</template>
+              <template v-if="allIn">All in your cart</template>
               <template v-else>Add all {{ addable.length }} · <u-price :amount="addableTotal" :currency="currency" /></template>
             </button>
           </header>

@@ -14,63 +14,84 @@
   basket of another type (a file or a service) gets its own receipt.
 -->
 <template>
-  <div class="k-bdrawer">
-    <section v-for="group in groups" :key="group.type" class="k-bdrawer__group">
-      <div :class="{ '-settling': group.settling }" class="k-bdrawer__receipt">
-        <div class="k-bdrawer__sum">
-          <p class="k-bdrawer__total">
-            <small>
-              Subtotal · {{ group.units }} {{ group.units === 1 ? "item" : "items" }}
-              <template v-if="groups.length > 1"> · {{ typeName(group.type) }}</template>
-            </small>
-            <u-price :amount="group.total" :currency="group.currency" />
-          </p>
-          <span v-if="group.saved >= 0.01" class="k-bdrawer__save">
-            You save <u-price :amount="group.saved" :currency="group.currency" />
-          </span>
+  <!-- Tario 1.2.0 (drawer design A): how far from free shipping, the lines
+       under each seller, three often added, and the totals with View cart
+       and Check out at the foot. -->
+  <div class="k-bdrawer t-bdrawer">
+    <div class="t-bdrawer__body">
+      <section v-for="group in groups" :key="group.type" class="k-bdrawer__group">
+        <p v-if="groups.length > 1" class="t-bdrawer__type">{{ typeName(group.type) }}</p>
+        <div v-if="free_from && group.type === 'PHYSICAL'" class="t-meter2">
+          <template v-if="freeLeft(group) > 0">
+            Add <b><u-price :amount="freeLeft(group)" :currency="group.currency" /></b> more for free shipping
+          </template>
+          <template v-else><b>Free shipping</b> on this order</template>
+          <div class="t-meter__bar"><i :style="{ width: freePct(group) + '%' }"></i></div>
         </div>
-        <router-link :to="checkoutRoute(group.type)" class="k-bdrawer__go" @click="$emit('close')">
-          <v-icon size="20">shopping_bag</v-icon>
-          Checkout
-        </router-link>
+        <template v-for="sg in bySeller(group)" :key="sg.key">
+          <p class="t-bdrawer__seller">
+            <img v-if="sg.logo" :src="sg.logo" alt="" height="22" width="22" />
+            Sold by {{ sg.name }}
+          </p>
+          <ul class="k-bdrawer__rows">
+            <li v-for="item in sg.items" :key="item.id" class="k-bdrawer__row">
+              <router-link :to="productRoute(item.product_id)" class="k-bdrawer__pic" @click="$emit('close')">
+                <img v-if="image(item.product)" :src="image(item.product)" alt="" height="36" loading="lazy" width="36" />
+              </router-link>
+              <div class="t-bdrawer__mid">
+                <router-link :to="productRoute(item.product_id)" class="k-bdrawer__name" @click="$emit('close')">
+                  <span>{{ item.product?.title }}</span>
+                  <small v-if="size(item)">{{ size(item) }}</small>
+                </router-link>
+                <div
+                  :aria-label="`Quantity of ${item.product?.title || 'this item'}`"
+                  :class="{ '-busy': settling(item.product, item) }"
+                  class="k-bdrawer__qty"
+                  role="group"
+                >
+                  <button :aria-label="shown(item) > 1 ? 'One fewer' : 'Remove from cart'" type="button" @click="step(item, -1)">
+                    <v-icon size="16">{{ shown(item) > 1 ? "remove" : "delete_outline" }}</v-icon>
+                  </button>
+                  <output aria-live="polite">{{ shown(item) }}</output>
+                  <button :disabled="shown(item) >= max(item)" aria-label="One more" type="button" @click="step(item, 1)">
+                    <v-icon size="16">add</v-icon>
+                  </button>
+                </div>
+              </div>
+              <span class="t-bdrawer__prices">
+                <u-price :amount="item.price * shown(item)" :class="{ '-sale': item.dis > 0 }" :currency="item.currency" class="k-bdrawer__price" />
+                <s v-if="item.dis > 0"><u-price :amount="(item.price + item.dis) * shown(item)" :currency="item.currency" /></s>
+              </span>
+            </li>
+          </ul>
+        </template>
+      </section>
+      <kalio-often-added :count="3" class="k-bdrawer__often" @navigate="$emit('close')" />
+    </div>
+
+    <footer v-for="group in groups.slice(0, 1)" :key="'f' + group.type" :class="{ '-settling': group.settling }" class="t-bdrawer__foot">
+      <p class="t-bdrawer__row">
+        <span>Items ({{ group.units }})</span><u-price :amount="group.total + group.saved" :currency="group.currency" />
+      </p>
+      <p v-if="group.saved >= 0.01" class="t-bdrawer__row -save">
+        <span>You save</span><span>−<u-price :amount="group.saved" :currency="group.currency" /></span>
+      </p>
+      <p class="t-bdrawer__row -tot">
+        <span>Subtotal</span><u-price :amount="group.total" :currency="group.currency" />
+      </p>
+      <div class="t-bdrawer__btns">
+        <router-link :to="checkoutRoute(group.type)" class="t-btn -line" @click="$emit('close')">View cart</router-link>
+        <router-link :to="checkoutRoute(group.type)" class="t-btn -red" @click="$emit('close')">Check out</router-link>
       </div>
-
-      <ul class="k-bdrawer__rows">
-        <li v-for="item in group.items" :key="item.id" class="k-bdrawer__row">
-          <router-link :to="productRoute(item.product_id)" class="k-bdrawer__pic" @click="$emit('close')">
-            <img v-if="image(item.product)" :src="image(item.product)" alt="" height="36" loading="lazy" width="36" />
-          </router-link>
-          <router-link :to="productRoute(item.product_id)" class="k-bdrawer__name" @click="$emit('close')">
-            <span>{{ item.product?.title }}</span>
-            <small v-if="meta(item)">{{ meta(item) }}</small>
-          </router-link>
-          <div
-            :aria-label="`Quantity of ${item.product?.title || 'this item'}`"
-            :class="{ '-busy': settling(item.product, item) }"
-            class="k-bdrawer__qty"
-            role="group"
-          >
-            <button :aria-label="shown(item) > 1 ? 'One fewer' : 'Remove from basket'" type="button" @click="step(item, -1)">
-              <v-icon size="16">{{ shown(item) > 1 ? "remove" : "delete_outline" }}</v-icon>
-            </button>
-            <output aria-live="polite">{{ shown(item) }}</output>
-            <button :disabled="shown(item) >= max(item)" aria-label="One more" type="button" @click="step(item, 1)">
-              <v-icon size="16">add</v-icon>
-            </button>
-          </div>
-          <u-price :amount="item.price * shown(item)" :currency="item.currency" class="k-bdrawer__price" />
-        </li>
-      </ul>
-    </section>
-
-    <kalio-often-added :count="3" class="k-bdrawer__often" @navigate="$emit('close')" />
+    </footer>
   </div>
 </template>
 
 <script>
 import { ProductType } from "@selldone/core-js/enums/product/ProductType";
 import { settling, shownCount, stepTo } from "../kalio-basket";
-import { productImage, vendors } from "../kalio-catalog";
+import { productImage, vendorImage, vendors } from "../kalio-catalog";
+import { freeShippingFrom } from "../../tario/tario-home";
 import KalioOftenAdded from "../KalioOftenAdded.vue";
 
 /* The size of a variant in words: its volume, weight, pack, colour or style. */
@@ -88,10 +109,14 @@ export default {
   data() {
     return {
       sellerNames: new Map(),
+      sellerList: [],
     };
   },
 
   computed: {
+    free_from() {
+      return freeShippingFrom(this.$shop || this.getShop?.());
+    },
     /* One receipt per basket with something in it: usually the one basket
        of groceries. Rows taken to zero leave at once; the bill follows. */
     groups() {
@@ -122,6 +147,7 @@ export default {
   created() {
     vendors().then((list) => {
       this.sellerNames = new Map(list.map((vendor) => [vendor.id, vendor.name]));
+      this.sellerList = list;
     });
   },
 
@@ -130,6 +156,37 @@ export default {
 
     image(product) {
       return productImage(product, true);
+    },
+
+    size(item) {
+      return sizeOf(item.variant);
+    },
+
+    /* The lines under each seller, in the order they were first added. */
+    bySeller(group) {
+      const out = new Map();
+      for (const item of group.items) {
+        const key = item.vendor_id || 0;
+        if (!out.has(key)) {
+          const vendor = this.sellerList.find((v) => v.id === key);
+          out.set(key, {
+            key,
+            name: this.sellerNames.get(key) || this.$shop?.title || "molino",
+            logo: vendor ? vendorImage(vendor, true) : null,
+            items: [],
+          });
+        }
+        out.get(key).items.push(item);
+      }
+      return [...out.values()];
+    },
+
+    freeLeft(group) {
+      return this.free_from ? Math.max(0, this.free_from.amount - group.total) : 0;
+    },
+
+    freePct(group) {
+      return this.free_from ? Math.min(100, Math.round((group.total / this.free_from.amount) * 100)) : 0;
     },
 
     meta(item) {

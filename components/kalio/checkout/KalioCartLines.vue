@@ -21,9 +21,10 @@
         <span class="k-lines__who">
           <router-link v-if="group.route" :to="group.route" class="k-lines__name">{{ group.name }}</router-link>
           <b v-else class="k-lines__name">{{ group.name }}</b>
-          <small>{{ group.units }} {{ group.units === 1 ? "item" : "items" }}</small>
+          <small>· {{ group.units }} {{ group.units === 1 ? "item" : "items" }}</small>
         </span>
-        <u-price :amount="group.subtotal" :currency="currency" class="k-lines__subtotal" />
+        <!-- Tario 1.2.0 (cart A): the seller's shop, not a subtotal. -->
+        <router-link v-if="group.route" :to="group.route" class="k-lines__visit">Visit shop</router-link>
       </header>
 
       <div v-for="item in group.items" :key="item.id" class="k-lines__line">
@@ -32,7 +33,14 @@
         </router-link>
         <div class="k-lines__text">
           <router-link :to="productRoute(item.product_id)" class="k-lines__title">{{ item.product?.title }}</router-link>
-          <small v-if="size(item)">{{ size(item) }}</small>
+          <small class="k-lines__each">
+            <template v-if="size(item)">Size: {{ size(item) }} · </template
+            ><template v-if="item.product?.unit && !/^(each|ea|piece|pc)$/i.test(item.product.unit)">per {{ item.product.unit }} · </template
+            ><u-price :amount="item.price" :currency="item.currency" /> each
+          </small>
+          <button class="k-lines__remove" type="button" @click="step(item, -shown(item))">
+            <v-icon size="16">delete_outline</v-icon>Remove
+          </button>
           <small v-if="item.offer && item.offer_count" class="k-lines__offer">
             <v-icon size="14">redeem</v-icon>
             {{

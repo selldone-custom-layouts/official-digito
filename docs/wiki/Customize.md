@@ -16,6 +16,10 @@ Change the tokens and the whole site follows: buttons, badges, the compare badge
 | --- | --- |
 | Home sections (design A) | `components/tario/TarioHome.vue`, `TarioHero.vue`, `TarioCircles.vue`, `TarioRow.vue`, `TarioCard.vue`, `TarioTiles.vue`, `TarioWays.vue`, `TarioFinds.vue`, `TarioSellers.vue`, `tario-home.ts`; styles in `style/tario-home.scss` |
 | Home photos | `assets/tario/` (eleven files; a missing one becomes a still life of the aisle's packshots) |
+| Aisle, search, Deals, All products (chip bar of filters) | `pages/products/StorefrontPageProducts.vue`, `components/tario/shop/TarioShelfTop.vue`, `TarioFilterBar.vue`, `tario-filters.ts`; styles in `style/tario-pages.scss` |
+| Seller page | `components/tario/shop/TarioSellerTop.vue` |
+| Product page (buy box, Compare sellers, Goes well with, folding sections) | `components/tario/product/TarioProductOverview.vue`, `pages/product/StorefrontPageProduct.vue`, `components/kalio/product/KalioSellerOffers.vue` |
+| About, journal, 404 | `pages/official/about-us/`, `pages/blog/list/`, `pages/errors/404/` |
 | Card foot ("Add to cart" ↔ "− n +") | `components/kalio/KalioCardStep.vue`, `kalio-card-basket.ts`, `kalio-basket.ts` |
 | Header, footer, drawers, sign-in | `components/kalio/shell/`, `style/kalio-shell.scss` |
 | Shop pages (aisle, catalogue, seller) | `pages/products/StorefrontPageProducts.vue`, `KalioShelfHead.vue`, `KalioAisleHeader.vue`, `KalioSellerHero.vue` |

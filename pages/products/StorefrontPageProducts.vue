@@ -66,18 +66,41 @@
       <!-- ▆▆▆▆▆▆▆▆ Seller: hero + shelf ▆▆▆▆▆▆▆▆ -->
       <!-- Replaces Selldone's one-line s-shop-vendor-header, which carries only
            the seller's name and avatar — no commerce state — so nothing is lost. -->
-      <kalio-seller-hero v-if="vendor_id" :vendor-id="vendor_id" />
-      <kalio-seller-shelf v-if="vendor_id" :key="vendor_id" :vendor-id="vendor_id" />
+      <!-- Tario: the seller page A (banner, tabs, aisles, deals). -->
+      <tario-seller-top v-if="vendor_id" :tab="seller_tab" :vendor-id="vendor_id" class="k-wrap" @tab="sellerTab" />
 
-      <!-- ▆▆▆▆▆▆▆▆ Aisle: the sign over a category page ▆▆▆▆▆▆▆▆ -->
-      <kalio-aisle-header
-        v-if="category_name && !vendor_id"
-        :category-name="category_name"
-        :total="catalogue_total"
-      />
-
-      <!-- ▆▆▆▆▆▆▆▆ Catalogue: every product, a search, the deals ▆▆▆▆▆▆▆▆ -->
-      <kalio-catalogue-header v-if="catalogue" :total="catalogue_total" />
+      <!-- ▆▆▆▆▆▆▆▆ Aisle and catalogue: Tario's shop page (design A) ▆▆▆▆▆▆▆▆ -->
+      <!-- A title, the aisle's types as round shortcuts, one row of filter
+           chips over the grid (TarioFilterBar), not a filter column. The
+           listing below does the fetching; the bar hands it every change. -->
+      <div v-if="!show_home" :class="{ '-seller': !!vendor_id }" class="t-shelf k-wrap">
+        <tario-shelf-top
+          v-if="!vendor_id"
+          :aisle="listing_parent"
+          :category-name="category_name"
+          :filter="t_filter"
+          :filters="filters_def"
+          :mode="category_name ? 'aisle' : 'catalogue'"
+          :products="listing_products"
+          :total="catalogue_total"
+          @pick-type="pickType"
+        />
+        <tario-filter-bar
+          :filters="filters_def"
+          :model-value="t_filter"
+          :sort="t_sort"
+          :sort-fallback="category_name || vendor_id ? 'Featured' : 'Best match'"
+          @update:model-value="setFilter"
+          @update:sort="setSort"
+        />
+        <div class="t-resline">
+          <span v-if="catalogue_total !== null"
+            ><b>{{ catalogue_total.toLocaleString() }} {{ catalogue_total === 1 ? "result" : "results" }}</b
+            ><template v-if="on_sale"> · {{ on_sale.toLocaleString() }} on sale</template></span
+          >
+          <span v-if="sold_by" class="t-resline__by">{{ sold_by }}</span>
+        </div>
+      </div>
 
       <!-- ▆▆▆▆▆▆▆▆ Shop page: the home ▆▆▆▆▆▆▆▆ -->
       <!-- Shown on the bare shop page only. Every narrowing action the
@@ -90,17 +113,35 @@
       <!-- ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆ Products Listing ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆ -->
       <s-products-listing
         v-if="!show_home"
+        ref="listing"
         :key="$route.path"
         :class="{ '-catalogue': catalogue }"
         :vendor-id="vendor_id"
-        :has-breadcrumb="!category_name && !vendor_id"
-        has-filter
-        has-sort
+        :has-breadcrumb="false"
+        :has-filter="false"
+        class="t-listing"
         load-more
         route-mode
         update-route
         @fetch-products="updateProductsSeo"
       ></s-products-listing>
+
+      <!-- ▆▆▆▆▆▆▆▆ Under the grid ▆▆▆▆▆▆▆▆ -->
+      <div v-if="!show_home && !vendor_id" class="t-shelf -after k-wrap">
+        <tario-row
+          v-if="catalogue && search_query"
+          :limit="12"
+          lazy
+          sort="bestselling"
+          title="Popular right now"
+        />
+        <section v-if="more_aisles.length" class="t-keep">
+          <h2 class="t-keep__h">Keep shopping</h2>
+          <div class="t-keep__list">
+            <router-link v-for="a in more_aisles" :key="a.id" :to="aisleTo(a)">{{ a.title || a.name }}</router-link>
+          </div>
+        </section>
+      </div>
     </v-card>
 
     <!-- The catalogue's "+" opens Kalio's quick-buy sheet (kalio-listing-quick-buy.ts). -->
@@ -112,10 +153,12 @@
 import SProductsListing from "@selldone/components-vue/storefront/products/listing/SProductsListing.vue";
 import TemplateMixin from "@selldone/components-vue/mixin/template/TemplateMixin.ts";
 import TarioHome from "../../components/tario/TarioHome.vue";
-import KalioAisleHeader from "../../components/kalio/KalioAisleHeader.vue";
-import KalioCatalogueHeader from "../../components/kalio/KalioCatalogueHeader.vue";
-import KalioSellerShelf from "../../components/kalio/KalioSellerShelf.vue";
-import KalioSellerHero from "../../components/kalio/KalioSellerHero.vue";
+import TarioShelfTop from "../../components/tario/shop/TarioShelfTop.vue";
+import TarioFilterBar from "../../components/tario/shop/TarioFilterBar.vue";
+import TarioRow from "../../components/tario/TarioRow.vue";
+import { fromRoute } from "../../components/tario/shop/tario-filters";
+import { aisleRoute, aisles, countProducts, offers, vendors } from "../../components/kalio/kalio-catalog";
+import TarioSellerTop from "../../components/tario/shop/TarioSellerTop.vue";
 import {StorefrontSeo} from "../../helpers/StorefrontSeo";
 import KalioQuickBuy from "../../components/kalio/KalioQuickBuy.vue";
 import { hostQuickBuy } from "../../components/kalio/kalio-listing-quick-buy";
@@ -127,11 +170,11 @@ export default {
   components: {
     SProductsListing,
     TarioHome,
-    KalioAisleHeader,
-    KalioCatalogueHeader,
+    TarioShelfTop,
+    TarioFilterBar,
+    TarioRow,
     KalioQuickBuy,
-    KalioSellerShelf,
-    KalioSellerHero,
+    TarioSellerTop,
   },
   mixins: [TemplateMixin],
 
@@ -146,6 +189,13 @@ export default {
     catalogue_total: null /* The listing's total, for the aisle and catalogue headers. */,
     quick_open: false /* Kalio's quick-buy sheet, for the listing's "+". */,
     quick_pick: null,
+    listing_parent: null /* The aisle's record, as the listing read it. */,
+    listing_products: [],
+    t_filter: null /* The filter the listing has (the bar shows it). */,
+    t_sort: null,
+    on_sale: null,
+    sold_by: null,
+    aisle_list: [],
   }),
   /**
    * ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -162,6 +212,26 @@ export default {
 
     category_name() {
       return this.$route.params?.category_name || null;
+    },
+
+    search_query() {
+      return String(this.$route.query?.search || "").trim();
+    },
+
+    /* Selldone's filter record: the aisle's own, or the shop's on the catalogue. */
+    filters_def() {
+      if (this.category_name) return this.listing_parent?.filters || null;
+      return this.getShop()?.filters || null;
+    },
+
+    seller_tab() {
+      if (this.t_filter?.only_has_discount) return "deals";
+      if (this.t_sort === "newest") return "new";
+      return "shop";
+    },
+
+    more_aisles() {
+      return this.aisle_list.filter((a) => a.name !== this.category_name).slice(0, 12);
     },
 
     /* The shop page asked for the catalogue itself (no aisle, no seller). */
@@ -213,6 +283,16 @@ export default {
       this.seoNavigation = StorefrontSeo.captureNavigation();
       /* A new aisle or seller starts without a count until its listing reads. */
       this.catalogue_total = null;
+      this.listing_parent = null;
+      this.listing_products = [];
+      this.$nextTick(() => this.readRoute());
+    },
+    "$route.query.filter"() {
+      this.t_filter = fromRoute(this.$route.query);
+      this.readOnSale();
+    },
+    "$route.query.search"() {
+      this.readOnSale();
     },
     /* The router reuses this one component for the catalogue root, every
        aisle and every seller, so created() runs only for the first of them:
@@ -248,6 +328,8 @@ export default {
     this.vendor_id = this.vendorIdFromRoute();
 
     this.setPageTitle(); // Set Page Title!
+    this.readRoute();
+    aisles().then((list) => (this.aisle_list = list));
   },
   beforeUnmount() {
     this.releaseQuickBuy?.();
@@ -261,7 +343,73 @@ export default {
     },
     updateProductsSeo(data) {
       this.catalogue_total = typeof data?.total === "number" ? data.total : null;
+      if (data?.parent !== undefined) this.listing_parent = data.parent && data.parent.id ? data.parent : null;
+      this.listing_products = data?.products || [];
       StorefrontSeo.updateProducts(data, this.getShop(), this.seoNavigation);
+    },
+
+    /* ── Tario's filter bar talks to the listing directly ── */
+    readRoute() {
+      this.t_filter = fromRoute(this.$route.query);
+      this.t_sort = this.$route.query?.sort || null;
+      this.readOnSale();
+      this.readSoldBy();
+    },
+    setFilter(filter) {
+      this.t_filter = filter;
+      this.$refs.listing?.setFilter(filter);
+    },
+    setSort(sort) {
+      this.t_sort = sort;
+      if (this.$refs.listing) this.$refs.listing.sort = sort;
+    },
+    pickType(key, value) {
+      if (!key) return;
+      const now = this.t_filter?.selected_spec?.[key] || [];
+      const next = JSON.parse(JSON.stringify(this.t_filter || {}));
+      next.selected_spec = { ...(next.selected_spec || {}), [key]: now.includes(value) ? now.filter((v) => v !== value) : [value] };
+      this.setFilter(next);
+    },
+    sellerTab(tab) {
+      const next = JSON.parse(JSON.stringify(this.t_filter || {}));
+      next.only_has_discount = tab === "deals";
+      this.setFilter(next);
+      if (tab === "new") this.setSort("newest");
+      else if (this.t_sort === "newest") this.setSort("bestselling");
+      this.$nextTick(() => document.querySelector(".t-sall")?.scrollIntoView({ behavior: "smooth", block: "start" }));
+    },
+    aisleTo(aisle) {
+      return aisleRoute(aisle);
+    },
+    /* How many of this aisle (or search, or seller) are on offer. */
+    readOnSale() {
+      this.on_sale = null;
+      if (this.show_home) return;
+      const dir = this.category_name;
+      const key = this.$route.fullPath;
+      /* Counted with whatever else is picked, so "1 result · 1 on sale". */
+      const options = { filter: JSON.stringify({ ...(this.t_filter || {}), only_has_discount: true }) };
+      if (this.vendor_id) options.vendor_id = this.vendor_id;
+      if (this.search_query) options.search = this.search_query;
+      countProducts(dir, options).then((n) => {
+        if (key === this.$route.fullPath) this.on_sale = n;
+      });
+    },
+    /* "Sold by Mason and Alina": the sellers with a product in this aisle. */
+    readSoldBy() {
+      this.sold_by = null;
+      const dir = this.category_name;
+      if (!dir || this.vendor_id) return;
+      Promise.all([offers(), vendors(), aisles()]).then(([{ shelfOf }, list, all]) => {
+        if (dir !== this.category_name) return;
+        const aisle = all.find((a) => a.name === dir);
+        if (!aisle) return;
+        const names = list
+          .filter((v) => (shelfOf.get(v.id) || []).some((p) => p.category_id === aisle.id))
+          .map((v) => v.name);
+        if (!names.length) return;
+        this.sold_by = "Sold by " + (names.length > 2 ? `${names.length} sellers` : names.join(" and "));
+      });
     },
   },
 };

@@ -32,16 +32,26 @@
 <template>
   <div class="k-cart">
     <div class="k-wrap k-cart__wrap">
-      <nav aria-label="Back" class="k-cart__crumbs">
-        <a href="#" @click.prevent="$router.go(-1)"><v-icon size="16">chevron_left</v-icon>Keep shopping</a>
-      </nav>
-
-      <div class="k-cart__head">
-        <h1 class="k-cart__title">Your basket</h1>
-        <span v-if="seller_count > 1" class="k-cart__one">
-          <v-icon size="18">storefront</v-icon>{{ seller_count }} sellers, one cart and one checkout.
+      <!-- Tario 1.2.0 (cart design A): a cart page with a summary beside it. -->
+      <div class="k-cart__head t-co__head">
+        <h1 class="k-cart__title">Cart</h1>
+        <span v-if="basket?.items?.length" class="t-co__count">
+          {{ units }} {{ units === 1 ? "item" : "items" }}<template v-if="seller_count > 1"> · {{ seller_count }} sellers, one checkout</template>
         </span>
         <s-shop-share-order-button v-if="basket?.items?.length" :basket="basket" class="k-cart__share" />
+      </div>
+
+      <!-- How far from free shipping, from the shop's own rule. -->
+      <div v-if="basket?.items?.length && free_from" :class="{ '-done': free_left <= 0 }" class="t-meter">
+        <v-icon aria-hidden="true" size="26">local_shipping</v-icon>
+        <div class="t-meter__t">
+          <template v-if="free_left > 0">
+            Add <b><u-price :amount="free_left" :currency="basket.currency" /></b> more for <b class="-red">free shipping</b>
+          </template>
+          <template v-else><b>Free shipping</b> on this order</template>
+          <div class="t-meter__bar"><i :style="{ width: free_pct + '%' }"></i></div>
+        </div>
+        <span class="t-meter__rule">Free over <u-price :amount="free_from.amount" :currency="free_from.currency" /></span>
       </div>
 
       <nav v-if="filtered_types.length > 1" aria-label="Baskets" class="k-cart__types">
@@ -60,8 +70,6 @@
       <div v-if="basket && basket.items && basket.items.length" class="k-cart__grid">
         <!-- ▆▆▆▆▆▆▆▆ Left: lines, details, often added ▆▆▆▆▆▆▆▆ -->
         <div class="k-cart__main">
-          <!-- Tario: the checkout reads as numbered steps. -->
-          <h2 class="t-step"><span>1</span>Review your items</h2>
           <kalio-cart-lines :basket="basket" />
 
           <s-storefront-coupons-list
@@ -86,25 +94,60 @@
             @update:model-value="selectLottery"
           ></s-storefront-lottery-prizes-list>
 
-          <h2 class="t-step"><span>2</span>Delivery &amp; contact</h2>
-          <div :class="`-n${detail_cards}`" class="k-cart__details">
-            <!-- Delivery method (and when): "When · Truck" read as nonsense
-                 to the owner (6 November 2026); the method is the heading's
-                 subject, the time its chip. -->
-            <section v-if="show_when" class="k-cart__detail">
-              <h3><span class="k-cart__ico"><v-icon size="18">local_shipping</v-icon></span>Delivery method</h3>
-              <p>{{ when_text }}</p>
-              <div class="k-cart__chips">
-                <span v-if="when_chip" class="k-cart__chip -on">{{ when_chip }}</span>
-                <button class="k-cart__chip" type="button" @click="delivery_sheet = true">
-                  {{ when_chip ? "Change" : "Choose" }}
-                </button>
-              </div>
-            </section>
+          <!-- How do you want it: the shop's ways for each package, and when,
+               on the page (Selldone's own options, Kalio's cards). -->
+          <section v-if="show_when" class="t-how">
+            <h2 class="t-co__h">How do you want it?</h2>
+            <s-shop-connect-shipping-options
+              :basket="basket"
+              :start-package-index="0"
+              @change="
+                (connect_shippings) => {
+                  delivery_info.connect_shippings = connect_shippings;
+                  setBasketConfig();
+                }
+              "
+            ></s-shop-connect-shipping-options>
+            <s-order-shipping-vendors-options
+              :basket="basket"
+              :deliveryInfo="delivery_info"
+              :start-package-index="bill?.connect_shipping_options?.length"
+              @set-basket-config="setBasketConfig"
+            ></s-order-shipping-vendors-options>
+            <s-order-shipping-stores-options
+              :basket="basket"
+              :delivery-info="delivery_info"
+              :start-package-index="bill?.connect_shipping_options?.length + bill?.vendor_shipping_options?.length"
+              @set-basket-config="setBasketConfig"
+            ></s-order-shipping-stores-options>
+            <p v-if="extra_shipping_counts" class="k-cart__note">
+              <v-icon size="16">info</v-icon>{{ $t("basket_page.extra_shipping_message") }}
+            </p>
+          </section>
 
+          <!-- Before the address: the shop's ways, to choose once it is in
+               (Selldone prices and lists them from the address). -->
+          <section v-else-if="has_delivery && !isService && shop_ways.length" class="t-how -preview">
+            <h2 class="t-co__h">How do you want it?</h2>
+            <div class="t-ways3">
+              <button v-for="w in shop_ways" :key="w.key" class="t-way3" type="button" @click="openAddress()">
+                <v-icon aria-hidden="true" size="22">{{ w.icon }}</v-icon>
+                <span>
+                  <b>{{ w.word }}</b>
+                  <small>{{ w.line }}</small>
+                  <em v-if="w.free">Free</em>
+                  <em v-else-if="w.freeOver">Free on orders over <u-price :amount="w.freeOver" :currency="w.currency" /></em>
+                  <em v-else class="-later">Price with your address</em>
+                </span>
+              </button>
+            </div>
+            <p class="t-how__hint"><v-icon size="16">place</v-icon>Add your address and choose one, with a day and time.</p>
+          </section>
+
+          <div :class="`-n${has_delivery ? 2 : 1}`" class="k-cart__details">
             <!-- Where -->
             <section v-if="has_delivery" :class="{ '-todo': !is_valid_location }" class="k-cart__detail">
-              <h3><span class="k-cart__ico"><v-icon size="18">place</v-icon></span>Where</h3>
+              <h3><span class="k-cart__ico"><v-icon size="18">place</v-icon></span>Deliver to</h3>
               <template v-if="is_valid_location && receiver_info?.address">
                 <p class="k-cart__addr">
                   <b v-if="receiver_info.name">{{ receiver_info.name }}</b>
@@ -136,7 +179,7 @@
 
             <!-- Who -->
             <section class="k-cart__detail">
-              <h3><span class="k-cart__ico"><v-icon size="18">mail_outline</v-icon></span>Who</h3>
+              <h3><span class="k-cart__ico"><v-icon size="18">mail_outline</v-icon></span>Your receipt goes to</h3>
               <template v-if="user">
                 <div class="k-cart__user">
                   <img :src="getUserAvatar(user.id)" alt="" height="36" width="36" />
@@ -200,7 +243,7 @@
         <aside class="k-cart__side">
           <div :class="{ '-busy': busy_bill || refreshing_price }" class="k-cart__receipt">
             <u-loading-progress v-if="busy_save"></u-loading-progress>
-            <h2 class="t-step -summary"><span>3</span>Order summary <small>· {{ units }} {{ units === 1 ? "item" : "items" }}</small></h2>
+            <h2 class="t-co__sum">Order summary</h2>
             <div class="k-cart__top">
               <p class="k-cart__total">
                 <u-loading-ellipsis v-if="busy_bill" css-mode light></u-loading-ellipsis>
@@ -250,11 +293,19 @@
                 <span v-else-if="shipping_cost === 0">Free</span>
                 <span v-else>Paid on delivery</span>
               </p>
+              <p v-else-if="!isService && has_delivery" class="k-cart__row -later">
+                <span>Delivery</span><span>Added with your address</span>
+              </p>
               <p v-if="bill.tax" class="k-cart__row">
                 <span>{{ $t("global.commons.tax") }}</span><u-price :amount="bill.tax" :currency="basket.currency"></u-price>
               </p>
               <p v-if="bill.tax_shipping" class="k-cart__row">
                 <span>{{ $t("global.commons.shipping_tax") }}</span><u-price :amount="bill.tax_shipping" :currency="basket.currency"></u-price>
+              </p>
+              <p class="k-cart__row t-co__total">
+                <span>Total<small v-if="isSubscription && subscription_period_obj"> / {{ $t(subscription_period_obj.title) }}</small></span>
+                <u-loading-ellipsis v-if="busy_bill" css-mode light></u-loading-ellipsis>
+                <u-price v-else :amount="final_price" :currency="basket.currency"></u-price>
               </p>
             </div>
             <p v-else-if="!busy_bill" class="k-cart__need">
@@ -339,7 +390,7 @@
           </div>
         </aside>
 
-        <kalio-often-added :count="4" class="k-cart__often" />
+        <kalio-often-added :count="6" class="k-cart__often t-often" />
       </div>
 
       <!-- Kalio: an empty basket is a starting point, so it offers the way back
@@ -389,60 +440,6 @@
       </button>
     </div>
 
-    <!-- ▆▆▆▆▆▆▆▆ When: the shipping options, in a sheet ▆▆▆▆▆▆▆▆ -->
-    <v-dialog
-      v-if="basket && !isService"
-      v-model="delivery_sheet"
-      :fullscreen="$vuetify.display.xs"
-      class="k-sheet-dialog"
-      content-class="k-sheet-host"
-      eager
-      max-width="580"
-      scrollable
-      :transition="$vuetify.display.xs ? 'dialog-bottom-transition' : 'dialog-transition'"
-    >
-      <div class="k-sheet">
-        <div class="k-sheet__head">
-          <div>
-            <h2>How should it reach you?</h2>
-            <p>The delivery method, and a day and time if you want one.</p>
-          </div>
-          <button aria-label="Close" class="k-sheet__x" type="button" @click="delivery_sheet = false">
-            <v-icon>close</v-icon>
-          </button>
-        </div>
-        <div class="k-sheet__body">
-          <s-shop-connect-shipping-options
-            :basket="basket"
-            :start-package-index="0"
-            @change="
-              (connect_shippings) => {
-                delivery_info.connect_shippings = connect_shippings;
-                setBasketConfig();
-              }
-            "
-          ></s-shop-connect-shipping-options>
-          <s-order-shipping-vendors-options
-            :basket="basket"
-            :deliveryInfo="delivery_info"
-            :start-package-index="bill?.connect_shipping_options?.length"
-            @set-basket-config="setBasketConfig"
-          ></s-order-shipping-vendors-options>
-          <s-order-shipping-stores-options
-            :basket="basket"
-            :delivery-info="delivery_info"
-            :start-package-index="bill?.connect_shipping_options?.length + bill?.vendor_shipping_options?.length"
-            @set-basket-config="setBasketConfig"
-          ></s-order-shipping-stores-options>
-          <p v-if="extra_shipping_counts" class="k-cart__note">
-            <v-icon size="16">info</v-icon>{{ $t("basket_page.extra_shipping_message") }}
-          </p>
-        </div>
-        <div class="k-sheet__foot">
-          <button class="k-sheet__go" type="button" @click="delivery_sheet = false">Done</button>
-        </div>
-      </div>
-    </v-dialog>
 
     <!-- ▆▆▆▆▆▆▆▆ Where: the address sheet (replaces Selldone's full-screen map) ▆▆▆▆▆▆▆▆ -->
     <kalio-address-sheet
@@ -498,6 +495,7 @@ import { TimeSpans } from "@selldone/core-js/enums/logistic/TimeSpans";
 import KalioCartLines from "../../../components/kalio/checkout/KalioCartLines.vue";
 import KalioOftenAdded from "../../../components/kalio/KalioOftenAdded.vue";
 import KalioAddressSheet from "../../../components/kalio/checkout/KalioAddressSheet.vue";
+import { freeShippingFrom, waysOf } from "../../../components/tario/tario-home";
 
 export default {
   name: "StorefrontPageBasketCart",
@@ -689,7 +687,7 @@ export default {
     },
 
     raw_items_price() {
-      return this.bill.items_price;
+      return this.bill ? this.bill.items_price : 0;
     },
 
     //-------------- Coupon ---------------
@@ -1005,6 +1003,25 @@ export default {
         return place ? `Pickup from ${place}.` : `${name}.`;
       }
       return this.shipping_cost === 0 ? `${name}, free.` : `${name}.`;
+    },
+    shop_ways() {
+      return waysOf(this.$shop).slice(0, 3);
+    },
+    /* Tario: the shop's free-shipping threshold and how far this cart is. */
+    free_from() {
+      return freeShippingFrom(this.$shop);
+    },
+    /* From the bill when it is in; until then from the lines (a cart read
+       on page load comes without a bill, and the meter must not wait). */
+    free_base() {
+      if (this.bill) return Math.max(0, (this.bill.items_price || 0) - (this.bill.items_discount || 0));
+      return (this.basket?.items || []).reduce((sum, item) => sum + (item.price || 0) * (item.count || 0), 0);
+    },
+    free_left() {
+      return this.free_from ? Math.max(0, this.free_from.amount - this.free_base) : 0;
+    },
+    free_pct() {
+      return this.free_from ? Math.min(100, Math.round((this.free_base / this.free_from.amount) * 100)) : 0;
     },
     detail_cards() {
       return (this.show_when ? 1 : 0) + (this.has_delivery ? 1 : 0) + 1;

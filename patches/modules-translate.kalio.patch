@@ -1,5 +1,5 @@
 diff --git a/global/en.ts b/global/en.ts
-index cca6510..aa08d0e 100644
+index cca6510..1e99184 100644
 --- a/global/en.ts
 +++ b/global/en.ts
 @@ -340,7 +340,7 @@ export default {
@@ -16,7 +16,7 @@ index cca6510..aa08d0e 100644
    actions: {
      upload:"Upload",
 -    add_to_cart: "Add to cart",
-+    add_to_cart: "Add to basket", // Kalio: "basket" as everywhere else in the shop
++    add_to_cart: "Add to cart", // Tario: "cart" as everywhere else in the shop
      add_emoji: "Add emoji",
      cancel: "Cancel",
      update: "Update",
@@ -30,7 +30,7 @@ index cca6510..aa08d0e 100644
      physical: {
        popular_selling_with_low_quantity:"🔥 Popular choice! Stocks are running low, grab yours while you can!",
 diff --git a/shop/en.ts b/shop/en.ts
-index 7ef09f4..053b9cf 100644
+index 7ef09f4..7b126c8 100644
 --- a/shop/en.ts
 +++ b/shop/en.ts
 @@ -69,7 +69,7 @@ export default {
@@ -51,7 +51,16 @@ index 7ef09f4..053b9cf 100644
      count_unit: "x",
      remove: "Remove",
 -    add_to_basket: "Add to cart",
-+    add_to_basket: "Add to basket", // Kalio: "basket" as everywhere else in the shop
++    add_to_basket: "Add to cart", // Tario: "cart" as everywhere else in the shop
      buy: "Buy",
      subscribe_now: "Subscribe Now",
      unsubscribe: "Unsubscribe",
+@@ -443,7 +443,7 @@ export default {
+     custom_billing_info: "Different billing address",
+     custom_billing_info_desc:
+       "You can enter your TAX number and set a different address for billing.",
+-    basket_empty: "Basket is empty",
++    basket_empty: "Your cart is empty", // Tario: "cart"
+     extra_shipping_count: "You will receive {count} packages.",
+     select_location_error:
+       "Find the place of receipt of the shipment on the map and click on the indicator in the middle of the map to determine the exact address of the recipient.",

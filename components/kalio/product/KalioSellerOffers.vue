@@ -16,11 +16,14 @@
 <template>
   <section v-if="items_show.length" :aria-labelledby="headingId" class="k-offers">
     <header class="k-offers__head">
+      <!-- Tario 1.2.0 (product page B): a table of the sellers. -->
       <h2 :id="headingId" class="k-offers__title">
-        {{ items_show.length > 1 ? `Sold by ${items_show.length} sellers` : "Sold by" }}
+        {{ items_show.length > 1 ? "Compare sellers" : "Sold by" }}
       </h2>
-      <p v-if="items_show.length > 1" class="k-offers__hint">Choose who your basket line comes from.</p>
     </header>
+    <div v-if="items_show.length > 1" aria-hidden="true" class="k-offers__cols">
+      <span>Seller</span><span>Price</span><span>Choose</span>
+    </div>
 
     <div :aria-labelledby="headingId" class="k-offers__list" role="radiogroup">
       <div

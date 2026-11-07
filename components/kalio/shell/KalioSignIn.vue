@@ -14,58 +14,43 @@
   bar while it is open, as Selldone's did.
 -->
 <template>
+  <!-- Tario 1.2.0 (sign-in design A): one card in the middle of the page
+       the shopper is on (a sheet from the bottom on a phone): the shop's
+       mark, "Sign in or create account", the shop's own ways in, why an
+       account helps, and the terms. -->
   <v-dialog
     v-model="show"
     :fullscreen="false"
     :persistent="busyUser"
     :transition="compact ? 'dialog-bottom-transition' : 'dialog-transition'"
     aria-labelledby="k-signin-title"
-    class="k-signin-overlay"
-    content-class="k-signin"
-    max-width="900"
+    class="k-signin-overlay t-signin-overlay"
+    content-class="k-signin t-signin"
+    max-width="460"
     scrollable
   >
-    <div class="k-signin__card">
-      <!-- ▆▆▆▆▆▆▆▆ The shop ▆▆▆▆▆▆▆▆ -->
-      <aside class="k-signin__brand">
-        <p class="k-signin__mark">{{ shopTitle }}<i aria-hidden="true"></i></p>
-        <p class="k-signin__pitch">Your weekly shop, remembered.</p>
-
-        <ul class="k-signin__perks">
-          <li><v-icon size="20">local_shipping</v-icon>Follow every order to your door</li>
-          <li><v-icon size="20">favorite_border</v-icon>Keep your favourites for next week</li>
-          <li v-if="sellerCount > 1">
-            <v-icon size="20">storefront</v-icon>One cart across {{ sellerCount }} independent sellers
-          </li>
-        </ul>
-
-        <div v-if="rings.length" aria-hidden="true" class="k-signin__rings">
-          <span v-for="aisle in rings" :key="aisle.id" :style="{ '--k-tint': tint(aisle) }">
-            <img :src="aisleImage(aisle, 128)" alt="" height="56" width="56" />
-          </span>
-        </div>
-      </aside>
-
-      <!-- ▆▆▆▆▆▆▆▆ The ways in ▆▆▆▆▆▆▆▆ -->
-      <section class="k-signin__main">
-        <button aria-label="Close" class="k-signin__close" type="button" @click="show = false">
-          <v-icon>close</v-icon>
-        </button>
-
-        <p class="k-eyebrow">Sign in or create an account</p>
-        <h2 id="k-signin-title" class="k-signin__title">Welcome to {{ shopTitle }}</h2>
-        <p class="k-signin__lede">New here? Your account is made as you sign in.</p>
-
-        <s-shop-login v-model:show="show" class="k-signin__methods" />
-
-        <p class="k-signin__legal">
-          By continuing you agree to {{ shopTitle }}’s
-          <router-link :to="{ name: window.$storefront.routes.SHOP_PROFILE_PAGE_TERMS }" @click="show = false">Terms</router-link>
-          and
-          <router-link :to="{ name: window.$storefront.routes.SHOP_PROFILE_PAGE_PRIVACY }" @click="show = false">Privacy policy</router-link>.
-        </p>
-      </section>
-
+    <div class="t-signin__card">
+      <button aria-label="Close" class="t-signin__x" type="button" @click="show = false">
+        <v-icon>close</v-icon>
+      </button>
+      <p class="t-signin__mark"><i aria-hidden="true"></i>{{ shopTitle }}</p>
+      <h2 id="k-signin-title" class="t-signin__title">Sign in or create account</h2>
+      <p class="t-signin__lede">
+        {{ sellerCount > 1 ? `One account for every seller on ${shopTitle}.` : `Your account is made as you sign in.` }}
+      </p>
+      <s-shop-login v-model:show="show" class="k-signin__methods t-signin__methods" />
+      <ul class="t-signin__perks">
+        <li><v-icon size="20">local_shipping</v-icon>Follow every order to your door</li>
+        <li><v-icon size="20">replay</v-icon>Buy your usual again in one tap</li>
+        <li><v-icon size="20">favorite_border</v-icon>Keep favourites for next week</li>
+        <li v-if="sellerCount > 1"><v-icon size="20">storefront</v-icon>One cart across {{ sellerCount }} independent sellers</li>
+      </ul>
+      <p class="t-signin__legal">
+        By continuing you agree to {{ shopTitle }}’s
+        <router-link :to="{ name: window.$storefront.routes.SHOP_PROFILE_PAGE_TERMS }" @click="show = false">Terms</router-link>
+        and
+        <router-link :to="{ name: window.$storefront.routes.SHOP_PROFILE_PAGE_PRIVACY }" @click="show = false">Privacy</router-link>.
+      </p>
       <div v-if="busyUser" class="k-signin__busy">
         <v-progress-circular color="#fff" indeterminate size="36" width="3" />
       </div>

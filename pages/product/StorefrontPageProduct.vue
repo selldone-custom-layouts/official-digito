@@ -53,14 +53,14 @@
           </span>
         </nav>
 
-        <kalio-product-overview v-if="product" can-buy show-cover />
+        <tario-product-overview v-if="product" can-buy show-cover />
         <s-product-overview-loading v-else />
         <u-loading-progress v-if="busy"></u-loading-progress>
       </div>
     </div>
 
     <template v-if="product">
-      <!-- ▁▁▁▁▁▁ 🞇 Cross selling 🞇 ▁▁▁▁▁▁ -->
+      <!-- ▁▁▁▁▁▁ 🞇 Cross selling (the merchant's own pairs) 🞇 ▁▁▁▁▁▁ -->
       <div :style="{ order: getOrder('cross') }">
         <s-product-cross-sells class="s--product-section k-pdp-block"></s-product-cross-sells>
       </div>
@@ -68,77 +68,76 @@
       <div :style="{ order: getOrder('offer') }">
         <s-product-offers class="s--product-section k-pdp-block"></s-product-offers>
       </div>
-      <!-- ▁▁▁▁▁▁ 🞇 Spec 🞇 ▁▁▁▁▁▁ -->
+
+      <!-- ▁▁▁▁▁▁ 🞇 Tario (product page B): one stack of folding sections 🞇 ▁▁▁▁▁▁ -->
       <div :style="{ order: getOrder('spec') }">
-        <s-product-spec class="k-pdp-block k-pdp-spec"></s-product-spec>
-      </div>
-      <!-- ▁▁▁▁▁▁ 🞇 Includes in the product 🞇 ▁▁▁▁▁▁ -->
-      <div :style="{ order: getOrder('includes') }">
-        <s-product-includes class="k-pdp-block"></s-product-includes>
-      </div>
-      <!-- ▁▁▁▁▁▁ 🞇 Highlights (the product's pros and cons) 🞇 ▁▁▁▁▁▁ -->
-      <div v-if="has_pros_cons" :style="{ order: getOrder('pros') }">
-        <section aria-labelledby="k-highlights" class="k-pdp-block k-highlights">
-          <h2 id="k-highlights" class="k-pdp-block__title">Highlights</h2>
-          <div class="k-highlights__cols">
-            <ul v-if="pros_list.length" class="k-highlights__list -pros">
-              <li v-for="item in pros_list" :key="'p' + item.key">
-                <v-icon aria-hidden="true" size="20">check_circle</v-icon>
-                <span><b>{{ item.key }}</b> {{ item.value }}</span>
+        <section aria-label="About this item" class="t-folds k-wrap">
+          <details v-if="highlight_rows.length" class="t-fold -phone" open>
+            <summary>Highlights<v-icon aria-hidden="true">expand_more</v-icon></summary>
+            <ul class="t-hl__list">
+              <li v-for="h in highlight_rows" :key="h.key">
+                <v-icon aria-hidden="true" size="20">check_circle</v-icon><span><b>{{ h.key }}:</b> {{ h.value }}</span>
               </li>
             </ul>
-            <ul v-if="cons_list.length" class="k-highlights__list -cons">
+          </details>
+          <details v-if="has_spec" class="t-fold" open>
+            <summary>Specifications<v-icon aria-hidden="true">expand_more</v-icon></summary>
+            <s-product-spec class="k-pdp-spec t-fold__spec"></s-product-spec>
+          </details>
+          <details v-if="article" class="t-fold">
+            <summary>About this product<v-icon aria-hidden="true">expand_more</v-icon></summary>
+            <s-product-article hide-title></s-product-article>
+          </details>
+          <details v-if="has_pros_cons && cons_list.length" class="t-fold">
+            <summary>Good to know<v-icon aria-hidden="true">expand_more</v-icon></summary>
+            <ul class="k-highlights__list -cons">
               <li v-for="item in cons_list" :key="'c' + item.key">
                 <v-icon aria-hidden="true" size="20">remove_circle_outline</v-icon>
                 <span><b>{{ item.key }}</b> {{ item.value }}</span>
               </li>
             </ul>
-          </div>
+          </details>
+          <details class="t-fold">
+            <summary>Shipping &amp; delivery<v-icon aria-hidden="true">expand_more</v-icon></summary>
+            <ul v-if="ways.length" class="t-fold__ways">
+              <li v-for="w in ways" :key="w.key">
+                <v-icon aria-hidden="true">{{ w.icon }}</v-icon>
+                <span
+                  ><b>{{ w.word }}</b> — {{ w.line }}.
+                  <template v-if="w.free">Free.</template>
+                  <template v-else-if="w.freeOver">Free on orders over <u-price :amount="w.freeOver" :currency="w.currency" />.</template>
+                </span>
+              </li>
+            </ul>
+            <s-product-shipping class="k-pdp-block"></s-product-shipping>
+            <s-product-warranty class="k-pdp-block"></s-product-warranty>
+            <s-product-guide class="k-pdp-block"></s-product-guide>
+          </details>
+          <details id="k-reviews" class="t-fold" open>
+            <summary>Ratings &amp; reviews<v-icon aria-hidden="true">expand_more</v-icon></summary>
+            <kalio-reviews></kalio-reviews>
+          </details>
         </section>
       </div>
-      <!-- ▁▁▁▁▁▁ 🞇 About this product (article) 🞇 ▁▁▁▁▁▁ -->
-      <div :style="{ order: getOrder('review') }">
-        <section aria-labelledby="k-about" class="k-pdp-block k-about">
-          <h2 v-if="article" id="k-about" class="k-pdp-block__title">About this product</h2>
-          <s-product-article hide-title></s-product-article>
-        </section>
+
+      <!-- ▁▁▁▁▁▁ 🞇 Includes in the product 🞇 ▁▁▁▁▁▁ -->
+      <div :style="{ order: getOrder('includes') }">
+        <s-product-includes class="k-pdp-block"></s-product-includes>
       </div>
-      <!-- ▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅ TAB > Files List ▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅ -->
       <div :style="{ order: getOrder('files') }">
         <s-product-files-list class="k-pdp-block"></s-product-files-list>
       </div>
-      <!-- ▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅ TAB > 🦄 Membership Contents ▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅ -->
       <div :style="{ order: getOrder('contents') }">
         <s-product-subscription-membership class="k-pdp-block"></s-product-subscription-membership>
-      </div>
-      <!-- ▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅ TAB > Shipping ▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅ -->
-      <div :style="{ order: getOrder('shipping') }">
-        <s-product-shipping class="k-pdp-block"></s-product-shipping>
-      </div>
-      <!-- ▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅ TAB > Warranty ▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅ -->
-      <div :style="{ order: getOrder('warranty') }">
-        <s-product-warranty class="k-pdp-block"></s-product-warranty>
-      </div>
-      <!-- ▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅ TAB > Guide ▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅ -->
-      <div :style="{ order: getOrder('guide') }">
-        <s-product-guide class="k-pdp-block"></s-product-guide>
       </div>
       <!-- █████████████████████ Internal Page █████████████████████ -->
       <div :style="{ order: getOrder('page') }">
         <s-product-landing></s-product-landing>
       </div>
-      <!-- ▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅ Reviews ▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅ -->
-      <div :style="{ order: getOrder('comments') }">
-        <section aria-labelledby="k-reviews" class="k-pdp-block k-reviews">
-          <h2 id="k-reviews" class="k-pdp-block__title">Reviews</h2>
-          <!-- Design A (7 November 2026): a summary column beside the
-               reviews. A guest's sign-in prompt is in the summary. -->
-          <kalio-reviews></kalio-reviews>
-        </section>
-      </div>
-      <!-- ⬬⬬⬬⬬⬬⬬⬬⬬⬬⬬⬬⬬ More from this aisle (related products) ⬬⬬⬬⬬⬬⬬⬬⬬⬬⬬⬬⬬ -->
+
+      <!-- ⬬⬬⬬⬬ More from this aisle, as Tario cards ⬬⬬⬬⬬ -->
       <div :style="{ order: getOrder('related-products') }">
-        <kalio-rail
+        <tario-row
           v-if="product.category"
           :key="'aisle-' + product.category.id"
           :dir="product.category.name"
@@ -147,13 +146,10 @@
             name: window.$storefront.routes.SHOP_CATEGORY_PAGE,
             params: { category_name: product.category.name },
           }"
-          :title="'More from ' + (product.category.title || product.category.name)"
+          :title="'More in ' + (product.category.title || product.category.name)"
+          lazy
           sort="bestselling"
         />
-      </div>
-      <!-- ⬬⬬⬬⬬⬬⬬⬬⬬⬬⬬⬬⬬ Every aisle (related categories) ⬬⬬⬬⬬⬬⬬⬬⬬⬬⬬⬬⬬ -->
-      <div :style="{ order: getOrder('related-categories') }">
-        <kalio-aisle-index class="k-pdp-aisles" />
       </div>
     </template>
   </div>
@@ -162,10 +158,10 @@
 <script lang="ts">
 import NotificationService from "@selldone/components-vue/plugins/notification/NotificationService.ts";
 
-import KalioProductOverview from "../../components/kalio/product/KalioProductOverview.vue";
+import TarioProductOverview from "../../components/tario/product/TarioProductOverview.vue";
+import TarioRow from "../../components/tario/TarioRow.vue";
+import { waysOf } from "../../components/tario/tario-home";
 import { EventBus } from "@selldone/components-vue/utils/events/EventBus.ts";
-import KalioRail from "../../components/kalio/KalioRail.vue";
-import KalioAisleIndex from "../../components/kalio/KalioAisleIndex.vue";
 import SProductOverviewLoading from "@selldone/components-vue/storefront/product/overview/loading/SProductOverviewLoading.vue";
 
 import { GtagEcommerce } from "@selldone/components-vue/plugins/gtag/GtagEcommerce";
@@ -214,9 +210,8 @@ export default {
     SProductIncludes,
 
     SProductOverviewLoading,
-    KalioProductOverview,
-    KalioRail,
-    KalioAisleIndex,
+    TarioProductOverview,
+    TarioRow,
 
   },
 
@@ -280,6 +275,35 @@ export default {
     },
     cons_list() {
       return this.toPairs(this.product?.cons);
+    },
+    ways() {
+      return waysOf(this.$shop);
+    },
+    has_spec() {
+      const spec = this.product?.spec;
+      return !!spec && typeof spec === "object" && Object.keys(spec).some((k) => k !== "spec_order" && spec[k] !== "group");
+    },
+    /* Highlights (the pros, else the spec's first group) for the phone,
+       where the picture column's box is not shown. */
+    highlight_rows() {
+      if (this.pros_list.length) return this.pros_list.slice(0, 6);
+      const spec = this.product?.spec;
+      if (!spec || typeof spec !== "object") return [];
+      const order = Array.isArray(spec.spec_order) && spec.spec_order.length ? spec.spec_order : Object.keys(spec);
+      const out = [];
+      let groups = 0;
+      for (const key of order) {
+        if (key === "spec_order") continue;
+        const value = spec[key];
+        if (value === "group") {
+          if (++groups > 1) break;
+          continue;
+        }
+        if (value === null || value === undefined || value === "") continue;
+        out.push({ key, value: Array.isArray(value) ? value.join(", ") : String(value) });
+        if (out.length >= 6) break;
+      }
+      return out;
     },
     has_pros_cons() {
       return (

@@ -124,6 +124,8 @@
         </router-link>
       </aside>
     </div>
+    <!-- Tario 1.2.0 (order page A): a row to start the next order. -->
+    <tario-row :limit="12" lazy sort="bestselling" title="Forgot something? It can join your next order" class="t-order-more" />
   </div>
 </template>
 
@@ -134,6 +136,7 @@ import SShopCustomerOrderWithdraw from "@selldone/components-vue/storefront/orde
 import KalioOrderDelivery from "../../../../../components/kalio/order/KalioOrderDelivery.vue";
 import KalioOrderChat from "../../../../../components/kalio/order/KalioOrderChat.vue";
 import KalioOrderReceipt from "../../../../../components/kalio/order/KalioOrderReceipt.vue";
+import TarioRow from "../../../../../components/tario/TarioRow.vue";
 
 import SShopShareOrderButton from "@selldone/components-vue/storefront/order/share-order/SShopShareOrderButton.vue";
 import { ProductType } from "@selldone/core-js/enums/product/ProductType";
@@ -151,6 +154,7 @@ function sizeOf(variant) {
 export default {
   name: "StorefrontPageBasketOrderPhysicalDashboard",
   components: {
+    TarioRow,
     SBasketVendorOrders: SBasketVendorOrders,
     SShopShareOrderButton,
     SShopRowCustomerPendingPayment,

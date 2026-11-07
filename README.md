@@ -34,7 +34,7 @@
 - near-black headings in a heavy sans;
 - a big-box home: a hero that turns, round categories, rows of cards with a red **Add to cart**, promo tiles and lifestyle photos;
 - white cards on light-grey wells;
-- a checkout laid out as numbered steps.
+- aisle and search pages with a chip bar of filters, a product page with a framed buy box, and a cart page with a free-shipping meter.
 
 It runs on **[tario.selldone.shop](https://tario.selldone.shop)**, a second address of the same Selldone shop, molino. The shop's main address keeps its own Layout, [Molino Market Hall](https://github.com/selldone-custom-layouts/official-molino). Selldone lets each domain of a shop carry its own Layout.
 
@@ -54,15 +54,17 @@ Selldone's own basket, checkout, payments, vendor offers and orders keep working
 
   Eleven lifestyle photos ship in [`assets/tario/`](assets/tario/); a missing one is replaced by the aisle's own packshots. Empty sections fold away.
 - **Cards:** the price first and large (red on offer, "reg $x" and "Sale" beside it), the name, "★★★★☆ 4.2 (19)" once rated, who sells it, and a square red **Add to cart** that turns into "− 1 in cart +" in place; products with sizes say "Choose options".
+- **Aisle, search, Deals and All products:** the title, the aisle's types as round shortcuts (Milk, Eggs, Butter…), and one row of filter chips over a four-across grid: **Filter & sort** opens every filter in a panel (a sheet on a phone), Deals switches the offers on, and Price, Size, Type and the aisle's other filters each open a small menu. The filters are the aisle's own Selldone filters. A search also shows the aisles its results sit in.
 - **Product page:**
-  - a gallery, details and a sticky buy box with every seller's offer;
-  - the struck price and percentage follow the chosen seller;
-  - reviews in a summary column beside the comments.
-- **Checkout as steps:**
-  - **1 Review your items**, by seller, with steppers;
-  - **2 Delivery & contact**: delivery method, a map-first address sheet that suggests while typing and works in two steps on phones, and the email;
-  - **3 Order summary**: every line of Selldone's bill and a red button that leads to whatever is missing before it pays.
-- **Orders and account:** the receipt, delivery card, the trip and chat, and the buyer account.
+  - pictures with thumbnails under them and the product's highlights;
+  - a framed buy box: **Pickup | Delivery | Shipping** from the shop's own delivery methods, the price with the saving, the sizes, a **Compare sellers** table, and Add to cart;
+  - "Goes well with": the product and two partners from neighbouring aisles, added with one button;
+  - folding Specifications, Shipping & delivery and Ratings & reviews.
+- **Cart page:** "Cart · 4 items · 2 sellers, one checkout", a free-shipping meter from the shop's own rule, a card per seller with Visit shop and Remove, "How do you want it?" tiles, Deliver to (a map-first address sheet) and Your receipt goes to, and an order summary whose red button leads to whatever is still missing.
+- **Cart drawer:** the meter, the lines under each seller, three products often added, and View cart / Check out.
+- **Seller page:** a banner with the seller's mark and live numbers, tabs (Shop, Deals, New, About), the seller's aisles, their deals and every product with the same chip bar.
+- **Sign-in, About, journal, 404:** a sign-in card with the shop's own ways in; About with a photo, the shop's numbers on a red band and its sellers; a journal with a featured story and a grid; a 404 with a search and the aisles.
+- **Orders and account:** the order page with a package per seller, chat and the receipt, and the buyer account with its side menu.
 - **Everywhere:** no "Added to cart" pop-ups and no phone bottom bar.
 
 ## Use it on your shop

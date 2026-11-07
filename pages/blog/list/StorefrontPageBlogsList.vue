@@ -29,113 +29,81 @@
         </template>
       </nav>
 
-      <section class="k-journal__hero">
+      <!-- Tario 1.2.0 (journal design A): a featured story, the rest in a
+           grid, and the season's deals under them. -->
+      <header class="t-jhead">
         <div>
-          <p class="k-journal__eyebrow">{{ filtered ? "Market journal" : `The ${shopTitle} journal` }}</p>
-          <h1>{{ heading }}</h1>
-          <p>{{ lede }}</p>
+          <p class="t-jhead__eyebrow">{{ filtered ? "Journal" : "Stories, tips and seasonal picks" }}</p>
+          <h1>{{ filtered ? heading : `The ${shopTitle} journal` }}</h1>
         </div>
-        <p v-if="total" class="k-journal__count">
-          <b>{{ total }}</b>{{ total === 1 ? "note" : "notes" }}{{ filtered ? "" : " so far" }}
-        </p>
-      </section>
-
+        <nav aria-label="Topics" class="t-jhead__chips">
+          <router-link :class="{ '-on': !current_category }" :to="homeRoute" class="t-chip">All</router-link>
+          <router-link
+            v-for="category in categories"
+            :key="category.id"
+            :class="{ '-on': String(category.id) === String(current_category) }"
+            :to="journalRoute({ category: category.id })"
+            class="t-chip"
+          >
+            {{ category.title || category.name }}
+          </router-link>
+        </nav>
+      </header>
       <kalio-sample-note v-if="demo" class="k-journal__note">
         These notes came with the shop's demo content to show the page. They are not real {{ shopTitle }} articles.
       </kalio-sample-note>
 
-      <div class="k-journal__cols">
-        <div class="k-journal__main">
-          <nav aria-label="Topics" class="k-journal__tabs">
-            <router-link :class="{ '-on': !current_category }" :to="homeRoute">Latest</router-link>
-            <router-link
-              v-for="category in categories"
-              :key="category.id"
-              :class="{ '-on': String(category.id) === String(current_category) }"
-              :to="journalRoute({ category: category.id })"
-            >
-              {{ category.title || category.name }}
+      <template v-if="articles.length">
+        <section v-if="page === 1" :class="{ '-busy': busy }" class="t-feat">
+          <router-link :to="postRoute(articles[0])" class="t-feat__im">
+            <img v-if="articles[0].image" :src="articles[0].image" alt="" />
+            <v-icon v-else size="40">article</v-icon>
+          </router-link>
+          <div>
+            <span class="t-jmeta">Featured · {{ dateParts(articles[0].created_at).full }}</span>
+            <h2><router-link :to="postRoute(articles[0])">{{ articles[0].title }}</router-link></h2>
+            <p v-if="articles[0].description">{{ articles[0].description }}</p>
+            <router-link :to="postRoute(articles[0])" class="t-btn -red">
+              Read the article<v-icon size="18">arrow_forward</v-icon>
             </router-link>
-          </nav>
-
-          <ol v-if="articles.length" :class="{ '-busy': busy }" class="k-journal__list">
-            <li v-for="article in articles" :key="article.id">
-              <router-link :to="postRoute(article)" class="k-jentry">
-                <span class="k-jentry__date">
-                  <b>{{ dateParts(article.created_at).day }}</b>
-                  <span>{{ dateParts(article.created_at).mon }}</span>
-                </span>
-                <span class="k-jentry__text">
-                  <span v-if="topicOf(article)" class="k-topic">{{ topicOf(article) }}</span>
-                  <span class="k-jentry__title">{{ article.title }}</span>
-                  <span v-if="article.description" class="k-jentry__lede">{{ article.description }}</span>
-                  <span class="k-jentry__meta">
-                    <span v-if="article.user?.name" class="k-who">
-                      <i>{{ initials(article.user.name) }}</i>{{ article.user.name }}
-                    </span>
-                    <span>{{ dateParts(article.created_at).full }}</span>
-                  </span>
-                </span>
-                <span class="k-jentry__pic">
-                  <img v-if="article.image" :src="article.image" alt="" loading="lazy" />
-                  <v-icon v-else size="32">article</v-icon>
-                </span>
-              </router-link>
-            </li>
-          </ol>
-
-          <div v-else-if="busy" aria-hidden="true" class="k-journal__list -skeleton">
-            <div v-for="n in 3" :key="n" class="k-jentry"></div>
           </div>
-
-          <div v-else class="k-board__empty k-journal__empty">
-            <v-icon size="30">menu_book</v-icon>
-            <h2>{{ filtered ? "No notes here yet" : "The journal is empty for now" }}</h2>
-            <p>{{ filtered ? "Nothing matches this yet. The latest notes are one tap away." : `${shopTitle} has not written any notes yet.` }}</p>
-            <router-link v-if="filtered" :to="homeRoute" class="k-btn k-btn--line">All notes</router-link>
+        </section>
+        <section v-if="grid_articles.length" class="t-sec">
+          <header class="t-sec__head"><h2 class="t-sec__title">{{ page === 1 ? "Latest" : `Page ${page}` }}</h2></header>
+          <div :class="{ '-busy': busy }" class="t-posts">
+            <router-link v-for="article in grid_articles" :key="article.id" :to="postRoute(article)" class="t-post">
+              <span class="t-post__im">
+                <img v-if="article.image" :src="article.image" alt="" loading="lazy" />
+                <v-icon v-else size="32">article</v-icon>
+              </span>
+              <span v-if="topicOf(article)" class="k-topic">{{ topicOf(article) }}</span>
+              <h3>{{ article.title }}</h3>
+              <p v-if="article.description">{{ article.description }}</p>
+              <span class="t-jmeta">{{ dateParts(article.created_at).full }}</span>
+            </router-link>
           </div>
-
-          <nav v-if="pageCount > 1" aria-label="Pages" class="k-journal__pages">
-            <router-link v-if="page > 1" :to="pageRoute(page - 1)" class="k-btn k-btn--line">
-              <v-icon class="k-flip" size="20">chevron_left</v-icon>Newer
-            </router-link>
-            <span>Page {{ page }} of {{ pageCount }}</span>
-            <router-link v-if="page < pageCount" :to="pageRoute(page + 1)" class="k-btn k-btn--line">
-              Older<v-icon class="k-flip" size="20">chevron_right</v-icon>
-            </router-link>
-          </nav>
-        </div>
-
-        <aside class="k-journal__side">
-          <section v-if="popular.length" class="k-jbox">
-            <h2>Most read</h2>
-            <ol class="k-jbox__ranks">
-              <li v-for="article in popular.slice(0, 4)" :key="article.id">
-                <router-link :to="postRoute(article)">{{ article.title }}</router-link>
-              </li>
-            </ol>
-          </section>
-
-          <section v-if="offers.length" class="k-jbox">
-            <h2>On offer this week</h2>
-            <div class="k-jbox__grid">
-              <kalio-mini-product v-for="product in offers" :key="product.id" :product="product" @sheet="openSheet" />
-            </div>
-            <router-link :to="dealsRoute" class="k-more">
-              Every deal<v-icon class="k-flip" size="20">chevron_right</v-icon>
-            </router-link>
-          </section>
-
-          <section class="k-jbox -ask">
-            <h2>Got a question?</h2>
-            <p>Ask the sellers anything about a product before you order.</p>
-            <router-link :to="{ name: window.$storefront.routes.SHOP_CONTACT_US }" class="k-btn k-btn--line">
-              Contact the shop
-            </router-link>
-          </section>
-        </aside>
+        </section>
+      </template>
+      <div v-else-if="busy" aria-hidden="true" class="k-journal__list -skeleton">
+        <div v-for="n in 3" :key="n" class="k-jentry"></div>
       </div>
+      <div v-else class="k-board__empty k-journal__empty">
+        <v-icon size="30">menu_book</v-icon>
+        <h2>{{ filtered ? "No notes here yet" : "The journal is empty for now" }}</h2>
+        <p>{{ filtered ? "Nothing matches this yet. The latest notes are one tap away." : `${shopTitle} has not written any notes yet.` }}</p>
+        <router-link v-if="filtered" :to="homeRoute" class="k-btn k-btn--line">All notes</router-link>
+      </div>
+      <nav v-if="pageCount > 1" aria-label="Pages" class="k-journal__pages">
+        <router-link v-if="page > 1" :to="pageRoute(page - 1)" class="k-btn k-btn--line">
+          <v-icon class="k-flip" size="20">chevron_left</v-icon>Newer
+        </router-link>
+        <span>Page {{ page }} of {{ pageCount }}</span>
+        <router-link v-if="page < pageCount" :to="pageRoute(page + 1)" class="k-btn k-btn--line">
+          Older<v-icon class="k-flip" size="20">chevron_right</v-icon>
+        </router-link>
+      </nav>
     </div>
+    <tario-row :filter="{ only_has_discount: true }" :limit="12" :more-to="dealsRoute" lazy more-label="All deals" title="Shop the season" />
 
     <kalio-quick-buy v-model="sheet" :product="picked" />
   </div>
@@ -145,6 +113,7 @@
 import KalioSampleNote from "@app-storefront/components/kalio/pages/KalioSampleNote.vue";
 import KalioMiniProduct from "@app-storefront/components/kalio/pages/KalioMiniProduct.vue";
 import KalioQuickBuy from "@app-storefront/components/kalio/KalioQuickBuy.vue";
+import TarioRow from "@app-storefront/components/tario/TarioRow.vue";
 import { dealsRoute } from "@app-storefront/components/kalio/kalio-catalog";
 import {
   dateParts,
@@ -161,7 +130,7 @@ const PER_PAGE = 8;
 
 export default {
   name: "StorefrontPageBlogsList",
-  components: { KalioSampleNote, KalioMiniProduct, KalioQuickBuy },
+  components: { KalioSampleNote, KalioMiniProduct, KalioQuickBuy, TarioRow },
   inject: ["$shop"],
 
   data: () => ({
@@ -221,6 +190,10 @@ export default {
     },
     homeRoute() {
       return journalRoute();
+    },
+    /* The featured story leads page one; the grid has the rest. */
+    grid_articles() {
+      return this.page === 1 ? this.articles.slice(1) : this.articles;
     },
     dealsRoute() {
       return dealsRoute();
