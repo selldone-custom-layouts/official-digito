@@ -1924,11 +1924,16 @@
   font-family: var(--k-body);
   font-size: 15px;
   font-weight: 700;
+  text-decoration: none !important;
+  /* Hover changes the colour only: no underline under the word and the
+     icon, and not Selldone's widget-hover lift with its 50px shadow
+     easing in over 0.65s (the owner, 8 November 2026). */
+  transition: background-color 160ms ease;
 
   &:hover {
     background-color: var(--k-green) !important;
-    text-decoration: underline;
-    text-underline-offset: 3px;
+    box-shadow: 0 14px 28px -12px rgba(14, 63, 46, 0.7) !important;
+    transition: background-color 160ms ease; /* not widget-hover's 0.5s */
   }
 
   &:focus-visible {

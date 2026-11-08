@@ -1536,7 +1536,15 @@ $t-tablet: 1100px;
     }
   }
 
+  /* The radio is hidden here, so the card has three parts, not four: the
+     icon, then the name with the price under it. With the four columns of
+     kalio-checkout the icon fell into the radio's 22px over the name, and
+     the name into the icon's 40px, a word a line (the owner's screenshot,
+     8 November 2026). */
   .k-ship__way {
+    grid-template-columns: 40px minmax(0, 1fr) !important;
+    column-gap: 12px !important;
+    row-gap: 4px !important;
     align-items: flex-start !important;
     padding: 14px !important;
     border: 1px solid var(--k-line-strong) !important;
@@ -1555,7 +1563,9 @@ $t-tablet: 1100px;
   }
 
   .k-ship__free {
+    grid-column: 2;
     color: #2e7d32 !important;
+    white-space: normal !important;
   }
 
   /* When: a card of its own under the ways. */

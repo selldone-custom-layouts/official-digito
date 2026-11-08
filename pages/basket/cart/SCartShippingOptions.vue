@@ -61,11 +61,8 @@
           <span v-else aria-hidden="true" class="k-ship__ico -pickup"><v-icon size="20">local_shipping</v-icon></span>
           <span class="k-ship__name">
             <b>{{ item.title ? item.title : getShopTransportationObject(item.type) ? $t(getShopTransportationObject(item.type).name) : item.type }}</b>
-            <small>
-              <template v-if="item.message">{{ item.message }}</template>
-              <template v-if="item.cod && cod_payment_exists"> · Pay on delivery</template>
-              <template v-if="item.sod"> · Pay at the door</template>
-            </small>
+            <!-- The parts joined with " · ", so no line starts with a dot. -->
+            <small>{{ [item.message, item.cod && cod_payment_exists ? "Pay on delivery" : "", item.sod ? "Pay at the door" : ""].filter(Boolean).join(" · ") }}</small>
           </span>
           <span v-if="item.free_shipping" class="k-ship__free">
             Free<template v-if="item.free_shipping_limit"> over <u-price :amount="item.free_shipping_limit" :currency="item.currency"></u-price></template>
