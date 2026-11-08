@@ -12,134 +12,21 @@
   - Tread carefully, for you're treading on dreams.
   -->
 
+<!--
+  The compare page is KalioCompare (8 November 2026) — the picks pinned
+  side by side, the details grouped with the differences marked — in place
+  of Selldone's SComparisonList table. The address keeps Selldone's ?list=
+  format, so its old links still open here.
+-->
 <template>
-  <div class="px-1 mb-16">
-    <div
-      class="py-16"
-      style="min-height: 800px; background-color: white; border-radius: 18px"
-    >
-      <s-comparison-list v-if="!busy" :products="productsList" />
-    </div>
-  </div>
+  <kalio-compare />
 </template>
 
 <script lang="ts">
-import NotificationService from "@selldone/components-vue/plugins/notification/NotificationService.ts";
-
-import SComparisonList from "@selldone/components-vue/storefront/comparison/list/SComparisonList.vue";
+import KalioCompare from "../../components/kalio/compare/KalioCompare.vue";
 
 export default {
   name: "StorefrontPageComparison",
-  components: { SComparisonList },
-
-  inject: ["$shop"],
-
-  /**
-   * ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-   *  🔷 Data
-   * ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-   */
-
-  data: () => ({
-    busy: false,
-    list: null,
-    products: [],
-  }),
-  /**
-   * ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-   *  🔷 Computed
-   * ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-   */
-  computed: {
-    productsList() {
-      if (!this.list || !this.products || !this.products.length) return [];
-
-      let out = [];
-      this.list.forEach((item) => {
-        let product = this.FindItemByID(this.products, item.p);
-        if (!product) return;
-
-        let variants = product.product_variants;
-        let product_clone = Object.assign({}, product); // Clone product to place as item.
-
-        if (item.v) {
-          let variant = this.FindItemByID(variants, item.v);
-          if (!variant) return;
-          product_clone.variant = variant;
-          product_clone.key = product.id + "-" + variant.id;
-        } else {
-          product_clone.key = product.id;
-        }
-        out.push(product_clone);
-      });
-
-      return out;
-    },
-  },
-  /**
-   * ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-   *  🔷 Component Lifecycle
-   * ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-   */
-  created() {
-    if (this.$route.query.list) {
-      let res = this.$route.query.list.split("_");
-      let out = "[";
-
-      for (let i = 0, len = res.length; i < len; i++) {
-        let item = res[i];
-        if (!item) continue;
-        item = item.replace(/v/g, ',"v":');
-        item = item.replace(/p/g, '"p":');
-
-        out += "{" + item + "}";
-        if (i < len - 1) out += ",";
-      }
-
-      out += "]";
-      console.log("out: " + out);
-
-      this.list = JSON.parse(out);
-
-      this.setPageTitle("Comparison items"); // Set Page Title!
-
-      this.fetchProducts(this.list);
-    }
-  },
-  /**
-   * ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-   *  🔷 Methods Section
-   * ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-   */
-  methods: {
-    fetchProducts(list) {
-      let product_ids = [];
-
-      list.forEach((item) => {
-        product_ids.push(item.p);
-      });
-
-      this.busy = true;
-
-      axios
-        .get(window.XAPI.GET_PRODUCTS_LIST(this.$shop.name), {
-          params: {
-            list: product_ids,
-          },
-        })
-        .then(({ data }) => {
-          if (!data.error) {
-            this.products = data.products;
-          } else {
-            NotificationService.showErrorAlert(null, data.error_msg);
-          }
-        })
-        .finally(() => {
-          this.busy = false;
-        });
-    },
-  },
+  components: { KalioCompare },
 };
 </script>
-
-<style scoped></style>

@@ -88,7 +88,9 @@
       <s-storefront-master-payment-dialog />
 
       <!-- ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆ Products Comparison ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆ -->
-      <s-comparison-button v-if="has_comparison" />
+      <!-- The pill opens the Layout's compare page (KalioCompare), not
+           Selldone's full-screen table (8 November 2026). -->
+      <kalio-compare-button v-if="has_comparison" />
 
       <!-- ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆ Need Login ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆ -->
       <!-- Kalio's sign-in sheet in place of SStorefrontNeedLoginDialog:
@@ -191,11 +193,8 @@ export default {
         ),
     ),
 
-    SComparisonButton: defineAsyncComponent(
-      () =>
-        import(
-          "@selldone/components-vue/storefront/comparison/button/SComparisonButton.vue"
-        ),
+    KalioCompareButton: defineAsyncComponent(
+      () => import("./components/kalio/compare/KalioCompareButton.vue"),
     ),
 
     SDebugger: defineAsyncComponent(
