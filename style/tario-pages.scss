@@ -966,6 +966,14 @@ $t-tablet: 1100px;
   }
 }
 
+/* "Seller | Price | Choose" heads the sellers only on the product page,
+   whose rows are laid out to match. The quick-buy sheet lists the same
+   sellers as cards (radio first), and there the three words ran together
+   as "SellerPriceChoose" (found in Valero's buyer test, 8 November 2026). */
+.k-offers__cols {
+  display: none;
+}
+
 /* The sellers side by side: Seller | Price | Choose. */
 .t-buybox .k-offers {
   margin-top: 20px;
