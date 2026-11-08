@@ -2033,23 +2033,14 @@ button.k-compare-fab.s--storefront-products-comparison-circle-progress {
    see too (7 November 2026). Colour still changes; each state now also
    changes shape or weight:
    - keyboard focus: a dark ring around anything that can be pressed;
-   - hover on a filled button: its words are underlined;
+   - hover on a filled button: its colour deepens (no underline: the owner,
+     8 November 2026);
    - a chosen size or option: a thicker ring, bold words and a tick. */
 :where(a, button, summary, [role="button"], [role="radio"], [role="tab"], .v-btn):focus-visible {
   outline: 3px solid var(--k-ink) !important;
   outline-offset: 2px !important;
 }
 
-.k-btn--solid:hover,
-.k-card-add:not(.-none):hover,
-.k-cart__go:hover,
-.k-bdrawer__go:hover,
-.s--shop-buy-button:hover,
-.k-sheet__go:hover {
-  text-decoration: underline !important;
-  text-decoration-thickness: 2px !important;
-  text-underline-offset: 3px !important;
-}
 
 .s-product-variants__options .var-sel.selected {
   position: relative;
@@ -2155,4 +2146,25 @@ button.k-compare-fab.s--storefront-products-comparison-circle-progress {
       font-weight: 800 !important;
     }
   }
+}
+
+/* ▆▆▆▆▆▆▆▆ No line under words or icons ▆▆▆▆▆▆▆▆
+
+   The owner, 8 November 2026, after a line showed under the product page's
+   "Compare" and its box icon: "never put these lines under text or icons".
+   Links, buttons, menus, tabs and chips say they can be pressed by their
+   colour, shape and the pointer, never by an underline: not at rest, not
+   on hover, focus or press. The rule is set on the pressable thing itself
+   (a line drawn by a parent runs under every word inside it) and on the
+   pieces Vuetify and Selldone put inside a button; it never touches a
+   struck-through old price. Links inside an article's own text (.k-prose,
+   the shop's writing) keep theirs, so they stand out from the words. */
+:where(a, button, summary, label, [role="button"], [role="link"], [role="tab"], .v-btn, .v-tab, .v-chip, .v-list-item),
+:where(a, button, [role="button"], .v-btn, .v-tab, .v-chip, .v-list-item) :where(.v-icon, i, .v-btn__content, .v-list-item-title, .single-line) {
+  text-decoration: none !important;
+}
+
+.k-prose a {
+  text-decoration: underline !important;
+  text-underline-offset: 3px;
 }

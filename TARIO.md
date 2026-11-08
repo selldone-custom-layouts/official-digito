@@ -91,6 +91,7 @@ The owner chose from two mockups per page (`kalio-design/tario-options/index.htm
 
 ## Releases
 
+- **1.2.7 (8 November 2026):** no line under words or icons anywhere (the owner, after a line showed under "Compare" and its box icon: "never put these lines under text or icons"). Links, buttons, menus, tabs and chips carry no underline at rest, on hover, focus or press; the line under a product card's "Compare" came from the card being a link, whose hover underline reached every word inside it. The hover underline on filled buttons (a tester's colour-blind request of 7 November) is gone too; those buttons deepen in colour. Only links inside an article's own text keep their line, and struck-through old prices are untouched.
 - **1.0.0 (7 November 2026):** the first Tario. It was checked on the dev server with:
   - `cardcheck.cjs` on phone, tablet and computer (everything passed except the old test's expectation that Compare is green);
   - `reviewscheck.cjs` on phone, tablet and computer;
