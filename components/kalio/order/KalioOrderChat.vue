@@ -15,8 +15,9 @@
   <section class="k-ocard k-chat">
     <header class="k-ocard__head">
       <span aria-hidden="true" class="k-ocard__ico -shop">
-        <img v-if="$shop.icon" :src="getShopImagePath($shop.icon, 64)" alt="" height="40" width="40" />
-        <v-icon v-else size="22">forum</v-icon>
+        <!-- The Layout's mark, as in the header: the shop record's own icon
+             is still the old "KA" (the owner's buyer test, 8 November 2026). -->
+        <img :src="brandMark" alt="" height="40" width="40" />
       </span>
       <div class="k-ocard__titles">
         <h2>Messages</h2>
@@ -91,6 +92,7 @@
 
 <script lang="ts">
 import NotificationService from "@selldone/components-vue/plugins/notification/NotificationService.ts";
+import { BRAND } from "../kalio-brand";
 
 const STARTERS = ["When will it arrive?", "Can I change something?", "Please leave it at the door"];
 
@@ -108,6 +110,7 @@ export default {
 
   data() {
     return {
+      brandMark: BRAND.mark,
       draft: "",
       busy: false,
       confirming: null,
@@ -165,7 +168,7 @@ export default {
   methods: {
     avatar(message) {
       if (message.user_id) return this.getUserAvatar(message.user_id);
-      return this.getShopImagePath(this.$shop.icon, 64);
+      return this.brandMark;
     },
     time(at) {
       return new Date(at).toLocaleTimeString(this.$i18n?.locale || "en", { hour: "numeric", minute: "2-digit" });

@@ -1421,8 +1421,15 @@ export default {
         "Can COD: ",
         this.deliverySupportCOD,
       );
+      /* Kalio (8 November 2026): a guest's order is bound to the device's
+         guest code at the moment of buying, and Selldone's payment window
+         saves that code for the order (so the order page opens it after the
+         code rotates). It saves basket.code, which Selldone no longer sends
+         with a guest's cart: nothing was saved, and a guest who had just
+         ordered read "We can't open this order" (the owner's buyer test).
+         Pass the device's guest code when the cart has none. */
       this.ShowPaymentDialogBasket(
-        this.basket.code /*🥶 Guest*/,
+        this.basket.code || (!this.USER() ? StorefrontLocalStorages.GetShopGuestCode() : undefined) /*🥶 Guest*/,
         this.basket,
         this.type,
         this.bill,
