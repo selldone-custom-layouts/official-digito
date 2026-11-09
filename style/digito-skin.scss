@@ -18,6 +18,14 @@
   --dg-yellow: #ffd91a;
   --dg-yellow-l: #fff6c2;
   --dg-red: #c4122f;
+  --dg-red-solid: #c4122f; /* badges with white words: the same in light and dark */
+  --dg-link: #0a4bd8; /* links and accent words (the theme switcher sets it per palette and mode) */
+  --dg-link-d: #0838a8;
+  --dg-raise: #f6f7f9;
+  --dg-head: #0a4bd8; /* the header band: the palette's light primary in both modes */
+  --dg-pop: #ffd91a; /* the accent word on the header colour (per palette) */
+  --dg-ink-bg: #0f1729; /* ink used as a fill (chosen chips, ticks); the palette colour when dark */
+  --dg-navy-ink: #071634; /* navy icons on a card; light grey when dark */
   --dg-green: #0f7b3e;
   --dg-page: #f0f2f5;
   --dg-card: #ffffff;
@@ -121,7 +129,7 @@ html.dg-locked {
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  color: var(--dg-blue) !important;
+  color: var(--dg-link) !important;
   font-weight: 700;
   font-size: 14px;
   white-space: nowrap;
@@ -131,7 +139,7 @@ html.dg-locked {
   cursor: pointer;
 
   &:hover {
-    color: var(--dg-blue-d) !important;
+    color: var(--dg-link-d) !important;
   }
 }
 
@@ -139,12 +147,12 @@ html.dg-locked {
   background: none;
   border: 0;
   padding: 0;
-  color: var(--dg-blue);
+  color: var(--dg-link);
   font: 700 13.5px var(--dg-font);
   cursor: pointer;
 
   &:hover {
-    color: var(--dg-blue-d);
+    color: var(--dg-link-d);
   }
 }
 
@@ -193,7 +201,7 @@ html.dg-locked {
 
   &.-line {
     background: transparent !important;
-    color: var(--dg-blue) !important;
+    color: var(--dg-link) !important;
     box-shadow: inset 0 0 0 1.5px var(--dg-blue) !important;
 
     &:hover {
@@ -226,7 +234,7 @@ html.dg-locked {
 
 .k-more:hover {
   text-decoration: none !important;
-  color: var(--dg-blue-d) !important;
+  color: var(--dg-link-d) !important;
 }
 
 /* ── Chips ── */
@@ -260,7 +268,7 @@ html.dg-locked {
 
   &:hover {
     background: var(--dg-blue-l);
-    color: var(--dg-blue) !important;
+    color: var(--dg-link) !important;
   }
 
   &.-on {
@@ -332,7 +340,7 @@ html.dg-locked {
   position: absolute;
   inset-inline-start: 8px;
   top: 8px;
-  background: var(--dg-red);
+  background: var(--dg-red-solid);
   color: #fff;
   font-size: 11px;
   font-weight: 800;
@@ -428,7 +436,7 @@ html.dg-locked {
   color: var(--dg-ink) !important;
 
   &:hover {
-    color: var(--dg-blue) !important;
+    color: var(--dg-link) !important;
   }
 }
 
@@ -463,7 +471,7 @@ html.dg-locked {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  background: var(--dg-red);
+  background: var(--dg-red-solid);
   color: #fff;
   font-size: 12px;
   font-weight: 800;
@@ -628,7 +636,7 @@ html.dg-locked {
 
   &.-on,
   &:hover {
-    color: var(--dg-blue);
+    color: var(--dg-link);
   }
 
   input:focus-visible + i {
@@ -651,7 +659,7 @@ html.dg-locked {
 
   &:hover,
   &.-on {
-    color: var(--dg-blue);
+    color: var(--dg-link);
   }
 
   &.-on .dg-ms {
@@ -699,7 +707,7 @@ html.dg-locked {
   z-index: 2;
 
   &:hover {
-    color: var(--dg-blue);
+    color: var(--dg-link);
   }
 
   &.-l {
@@ -951,7 +959,7 @@ html.dg-locked {
     }
 
     &:hover {
-      color: var(--dg-blue);
+      color: var(--dg-link);
     }
   }
 
@@ -1052,7 +1060,7 @@ html.dg-locked {
   }
 
   &:hover b {
-    color: var(--dg-blue);
+    color: var(--dg-link);
   }
 
   &.-all {
@@ -1062,7 +1070,7 @@ html.dg-locked {
     }
 
     b {
-      color: var(--dg-blue);
+      color: var(--dg-link);
     }
 
     &:hover .dg-cat__ring {
@@ -1070,7 +1078,7 @@ html.dg-locked {
     }
 
     &:hover b {
-      color: var(--dg-blue-d);
+      color: var(--dg-link-d);
     }
   }
 }
@@ -1093,7 +1101,7 @@ html.dg-locked {
   }
 
   &__band {
-    background: var(--dg-blue);
+    background: var(--dg-head);
     color: #fff;
     padding: 16px 18px 14px;
     display: flex;
@@ -1104,7 +1112,7 @@ html.dg-locked {
       font-weight: 800;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--dg-yellow);
+      color: var(--dg-pop); /* yellow, or a pale yellow where yellow reads under 4.5:1 on the palette */
     }
 
     strong {
@@ -1132,6 +1140,7 @@ html.dg-locked {
   &__img {
     aspect-ratio: 1.3;
     margin: 0 -18px;
+    background: var(--k-well); /* a white packshot keeps a white tile in dark mode */
 
     img {
       width: 100%;
@@ -1153,7 +1162,7 @@ html.dg-locked {
   }
 
   &__t:hover &__name {
-    color: var(--dg-blue);
+    color: var(--dg-link);
   }
 
   &__t:hover .dg-btn {
@@ -1247,7 +1256,7 @@ html.dg-locked {
   margin-top: 16px;
 
   > .dg-ms {
-    color: var(--dg-blue);
+    color: var(--dg-link);
   }
 
   p {
@@ -1402,7 +1411,7 @@ html.dg-locked {
     box-shadow: inset 0 0 0 1.5px var(--dg-blue);
 
     b {
-      color: var(--dg-blue);
+      color: var(--dg-link);
     }
   }
 }
@@ -1449,7 +1458,7 @@ html.dg-locked {
   }
 
   &:hover h3 {
-    color: var(--dg-blue);
+    color: var(--dg-link);
   }
 
   p {
@@ -1496,7 +1505,7 @@ html.dg-locked {
 .dg-header {
   position: relative;
   z-index: 20;
-  background: var(--dg-blue) !important;
+  background: var(--dg-head) !important;
   color: #fff;
   border: 0 !important;
   box-shadow: none !important;
@@ -1717,11 +1726,11 @@ html.dg-locked {
 
   &.-shop {
     background: #fff;
-    color: var(--dg-blue) !important;
+    color: var(--dg-link) !important;
 
     &:hover {
       background: #fff;
-      color: var(--dg-blue-d) !important;
+      color: var(--dg-link-d) !important;
     }
 
     &.-on {
@@ -1770,11 +1779,11 @@ html.dg-locked {
     &.-on,
     &:hover {
       background: #fff;
-      color: var(--dg-blue) !important;
+      color: var(--dg-link) !important;
       box-shadow: 0 0 0 1px var(--dg-line);
 
       > .dg-ms {
-        color: var(--dg-blue);
+        color: var(--dg-link);
       }
     }
   }
@@ -1820,10 +1829,10 @@ html.dg-locked {
     padding: 10px 8px 4px;
     font-weight: 700;
     font-size: 14px;
-    color: var(--dg-blue) !important;
+    color: var(--dg-link) !important;
 
     &:hover {
-      color: var(--dg-blue-d) !important;
+      color: var(--dg-link-d) !important;
     }
   }
 
@@ -1869,7 +1878,7 @@ html.dg-locked {
     min-width: 0;
 
     &:hover .dg-mega__pt {
-      color: var(--dg-blue);
+      color: var(--dg-link);
     }
   }
 
@@ -1912,7 +1921,7 @@ html.dg-locked {
 
     em {
       font-style: normal;
-      background: var(--dg-red);
+      background: var(--dg-red-solid);
       color: #fff;
       font-size: 11px;
       font-weight: 800;
@@ -1992,7 +2001,7 @@ html.dg-locked {
 
     &:hover {
       background: var(--dg-blue-l);
-      color: var(--dg-blue) !important;
+      color: var(--dg-link) !important;
     }
   }
 }
@@ -2002,7 +2011,7 @@ html.dg-locked {
   font-family: var(--dg-font);
 
   .k-drawer__head {
-    background: var(--dg-blue);
+    background: var(--dg-head);
     color: #fff;
     border: 0 !important;
 
@@ -2027,7 +2036,7 @@ html.dg-locked {
     color: var(--dg-ink) !important;
 
     &:hover {
-      color: var(--dg-blue) !important;
+      color: var(--dg-link) !important;
       background: var(--dg-blue-l) !important;
     }
   }
@@ -2043,7 +2052,7 @@ html.dg-locked {
 
     &.-icon {
       background: var(--dg-blue-l) !important;
-      color: var(--dg-blue);
+      color: var(--dg-link);
     }
   }
 }
@@ -2188,7 +2197,7 @@ html.dg-locked {
     overflow: hidden;
 
     &:hover {
-      color: var(--dg-blue) !important;
+      color: var(--dg-link) !important;
     }
   }
 
@@ -2258,7 +2267,7 @@ html.dg-locked {
     background: none;
     display: grid;
     place-items: center;
-    color: var(--dg-blue);
+    color: var(--dg-link);
     cursor: pointer;
     border-radius: 8px;
 
@@ -2310,18 +2319,18 @@ html.dg-locked {
       gap: 8px;
       font-weight: 700;
       font-size: 13.5px;
-      color: var(--dg-blue) !important;
+      color: var(--dg-link) !important;
       text-align: center;
 
       .dg-ms {
-        color: var(--dg-navy);
+        color: var(--dg-navy-ink);
       }
 
       &:hover {
-        color: var(--dg-blue-d) !important;
+        color: var(--dg-link-d) !important;
 
         .dg-ms {
-          color: var(--dg-blue);
+          color: var(--dg-link);
         }
       }
     }
@@ -2354,7 +2363,7 @@ html.dg-locked {
     text-align: start;
 
     &:hover {
-      color: var(--dg-blue) !important;
+      color: var(--dg-link) !important;
     }
   }
 
@@ -2419,6 +2428,14 @@ html.dg-locked {
     margin-top: 12px;
   }
 
+  /* The Theme row (components/theme-switcher): palettes and Light / Dark. */
+  &__theme {
+    max-width: var(--dg-max);
+    margin: 0 auto;
+    padding: 14px var(--dg-pad);
+    border-top: 1px solid var(--dg-line);
+  }
+
   &__legal {
     max-width: var(--dg-max);
     margin: 0 auto;
@@ -2435,7 +2452,7 @@ html.dg-locked {
       color: var(--dg-muted) !important;
 
       &:hover {
-        color: var(--dg-blue) !important;
+        color: var(--dg-link) !important;
       }
     }
   }
@@ -2465,7 +2482,7 @@ html.dg-locked {
     color: var(--dg-muted) !important;
 
     &:hover {
-      color: var(--dg-blue) !important;
+      color: var(--dg-link) !important;
     }
   }
 
@@ -2859,7 +2876,7 @@ html.dg-locked {
   }
 
   &:hover span {
-    color: var(--dg-blue);
+    color: var(--dg-link);
   }
 }
 

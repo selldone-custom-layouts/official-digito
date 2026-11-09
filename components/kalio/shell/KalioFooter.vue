@@ -5,7 +5,8 @@
   (the shop's categories and All products), Orders, the shop (the
   merchant's own footer menu as set in Selldone, or the standard pages),
   Policies — beside a newsletter card (Selldone's own subscribe call) with
-  the shop's social links; then a legal row with the copyright, Terms,
+  the shop's social links; then the Theme row (colour palettes and Light /
+  Dark, the owner's rule of 9 November 2026); then a legal row with the copyright, Terms,
   Privacy, the cookie settings and a small "made with selldone".
 
   Everything is read live. A shop with custom footer code keeps Selldone's
@@ -69,6 +70,10 @@
       </div>
     </div>
 
+    <div class="dg-footer__theme">
+      <theme-switcher-row />
+    </div>
+
     <div class="dg-footer__legal">
       <span class="dg-footer__copy">© {{ year }} {{ shopTitle }}. Prices and offers can change.</span>
       <router-link :to="termsRoute">Terms</router-link>
@@ -87,11 +92,12 @@ import SFooterSectionGdpr from "@selldone/components-vue/storefront/footer/secti
 import SFooterSectionSelldone from "@selldone/components-vue/storefront/footer/section/selldone/SFooterSectionSelldone.vue";
 import { EventBus } from "@selldone/components-vue/utils/events/EventBus.ts";
 import DigitoIcon from "../../digito/DigitoIcon.vue";
+import ThemeSwitcherRow from "../../theme-switcher/ThemeSwitcherRow.vue";
 import { aisleRoute, aisles, catalogueRoute, dealsRoute } from "../kalio-catalog";
 
 export default {
   name: "KalioFooter",
-  components: { SStorefrontSocialButtons, SLanguageSelector, UCurrencySelector, SFooterSectionGdpr, SFooterSectionSelldone, DigitoIcon },
+  components: { SStorefrontSocialButtons, SLanguageSelector, UCurrencySelector, SFooterSectionGdpr, SFooterSectionSelldone, DigitoIcon, ThemeSwitcherRow },
   inject: ["$shop"],
 
   data() {

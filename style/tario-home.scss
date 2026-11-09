@@ -242,7 +242,7 @@ $t-tablet: 1100px;
   &__mark {
     display: grid;
     place-items: center;
-    color: var(--k-green);
+    color: var(--dg-link);
     font-weight: 800;
   }
 }
@@ -298,7 +298,7 @@ $t-tablet: 1100px;
   &__more {
     display: inline-flex;
     align-items: center;
-    color: var(--k-green) !important;
+    color: var(--dg-link) !important;
     font-size: 15px;
     font-weight: 700;
     text-decoration: none;
@@ -505,7 +505,7 @@ $t-tablet: 1100px;
 
     .t-btn.-main {
       background: #fff;
-      color: var(--k-green) !important;
+      color: var(--dg-link) !important;
 
       &:hover {
         background: #fff1f1;
@@ -532,7 +532,7 @@ $t-tablet: 1100px;
     color: var(--k-ink);
 
     .t-hero__eyebrow {
-      color: var(--k-green);
+      color: var(--dg-link);
     }
 
     .t-hero__lede {
@@ -890,7 +890,7 @@ a:hover > .t-photo .t-photo__pack.-p1 {
   }
 
   &.-sale &__now {
-    color: var(--k-green) !important;
+    color: var(--dg-link) !important;
   }
 
   &__was {
@@ -906,7 +906,7 @@ a:hover > .t-photo .t-photo__pack.-p1 {
   }
 
   &__sale {
-    color: var(--k-green);
+    color: var(--dg-link);
     font-size: 12.5px;
     font-style: normal;
     font-weight: 700;
@@ -987,7 +987,7 @@ a:hover > .t-photo .t-photo__pack.-p1 {
   background: #fff !important;
 
   button {
-    color: var(--k-green) !important;
+    color: var(--dg-link) !important;
 
     &:hover:not(:disabled) {
       background: var(--k-green-soft) !important;
@@ -1226,7 +1226,7 @@ a:hover > .t-photo .t-photo__pack.-p1 {
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 
     .v-icon {
-      color: var(--k-green);
+      color: var(--dg-link);
     }
   }
 
@@ -1246,13 +1246,13 @@ a:hover > .t-photo .t-photo__pack.-p1 {
   em {
     display: block;
     margin-top: 2px;
-    color: var(--k-green);
+    color: var(--dg-link);
     font-size: 13.5px;
     font-style: normal;
     font-weight: 700;
 
     .u--price {
-      color: var(--k-green) !important;
+      color: var(--dg-link) !important;
       font-size: inherit !important;
       font-weight: inherit !important;
     }
@@ -1301,7 +1301,7 @@ a:hover > .t-photo .t-photo__pack.-p1 {
     height: 56px;
     border-radius: 50%;
     background: var(--k-wash);
-    color: var(--k-green);
+    color: var(--dg-link);
     font-size: 22px;
     font-weight: 800;
 
@@ -1332,7 +1332,7 @@ a:hover > .t-photo .t-photo__pack.-p1 {
     }
 
     u {
-      color: var(--k-green);
+      color: var(--dg-link);
       font-size: 14px;
       font-weight: 700;
       text-underline-offset: 3px;
@@ -1389,7 +1389,7 @@ a:hover > .t-photo .t-photo__pack.-p1 {
 .k-footer__mark {
   align-items: center !important;
   gap: 8px !important;
-  color: var(--k-green) !important;
+  color: var(--dg-link) !important;
   font-weight: 800 !important;
   letter-spacing: -0.05em !important;
 
@@ -1440,7 +1440,7 @@ a:hover > .t-photo .t-photo__pack.-p1 {
   }
 
   .-more {
-    color: var(--k-green) !important;
+    color: var(--dg-link) !important;
   }
 }
 

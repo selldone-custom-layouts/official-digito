@@ -37,6 +37,8 @@ import {createComponents} from "@selldone/components-vue/components";
 import "@fortawesome/fontawesome-free/css/all.css"; // Ensure your project is capable of handling css files
 import "@selldone/components-vue/style/fonts/material-design-fonts/material-design-icons.scss"; // Ensure your project is capable of handling css files
 import "@selldone/components-vue/style/fonts/lang/fa/lang-fa-iransans.css";
+import { bootThemeSwitcher } from "./components/theme-switcher/theme-switcher";
+import { DIGITO_THEME } from "./components/digito/digito-theme";
 import "./components/kalio/kalio-fonts"; // Kalio typefaces, loaded by the app so they reach production
 import { PageHyper } from "@selldone/page-builder/PageHyperService.ts";
 import {SetupPageBuilder} from "@selldone/page-builder/page-builder.ts";
@@ -44,6 +46,9 @@ import {SetupService} from "@selldone/core-js/server";
 import {Shop} from "@selldone/core-js/models";
 
 const vuetify = VuetifyInstance(i18n);
+// The shopper's palette and Light / Dark (the footer's Theme row), painted
+// before the first paint so the default never flashes.
+bootThemeSwitcher(DIGITO_THEME, vuetify);
 
 //█████████████████████████████████████████████████████████████
 //―――――――――――――― Global Types ―――――――――――――――

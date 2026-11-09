@@ -49,7 +49,7 @@
   --c-ok: #16a34a;
   --c-diff-bg: var(--k-green-soft);
   --c-diff-ink: var(--k-ink);
-  --c-off-bg: var(--k-coral);
+  --c-off-bg: var(--dg-red-solid);
   --c-off-ink: #fff;
   --c-r-lg: 24px;
   --c-r: 14px;
@@ -123,7 +123,7 @@
 
     &.-soft {
       background: var(--c-soft);
-      color: var(--c-accent-deep) !important;
+      color: var(--dg-link) !important;
 
       &:hover {
         background: var(--c-line);
@@ -138,7 +138,7 @@
   &__eyebrow {
     display: block;
     margin-bottom: 6px;
-    color: var(--c-accent);
+    color: var(--dg-link);
     font-size: 12.5px;
     font-weight: 700;
     letter-spacing: 0.12em;
@@ -159,7 +159,7 @@
     font-weight: 600;
 
     .v-progress-circular {
-      color: var(--c-accent);
+      color: var(--dg-link);
     }
   }
 
@@ -441,7 +441,7 @@
     -webkit-box-orient: vertical;
 
     &:hover {
-      color: var(--c-accent) !important;
+      color: var(--dg-link) !important;
     }
   }
 
@@ -527,7 +527,7 @@
     background: var(--c-soft);
 
     .v-icon {
-      color: var(--c-accent) !important;
+      color: var(--dg-link) !important;
     }
   }
 
@@ -643,7 +643,7 @@
     font-weight: 600;
 
     a {
-      color: var(--c-accent) !important;
+      color: var(--dg-link) !important;
     }
   }
 
@@ -872,7 +872,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    color: var(--c-accent, var(--k-green));
+    color: var(--dg-link);
     font-family: var(--c-head, var(--k-display));
     font-size: 16px;
     font-weight: 700;
@@ -965,7 +965,7 @@
       }
 
       > .v-icon {
-        color: var(--c-accent, var(--k-green)) !important;
+        color: var(--dg-link) !important;
       }
     }
   }
@@ -1016,7 +1016,7 @@
       padding: 0;
       border: 0;
       border-radius: var(--c-r, 12px);
-      background: var(--c-well, var(--k-well));
+      background: var(--c-well, var(--k-plain));
       box-shadow: 0 0 0 1px var(--c-line, var(--k-line));
       overflow: hidden;
       cursor: pointer;

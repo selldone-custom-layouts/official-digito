@@ -58,6 +58,9 @@
   /* The shop pages' one ground for every packshot (design A, 3 November
      2026): the aisle is named in type, not painted on its products. */
   --k-well: #ffffff;
+  /* White boxes that hold no photo (receipts, empty states, map buttons): the
+     theme switcher darkens these; --k-well and --k-tint stay white for packshots. */
+  --k-plain: #ffffff;
   --k-line-soft: #eceff3;
 
   /* Ratings (design A, 7 November 2026): amber stars on a warm grey. */
@@ -85,8 +88,9 @@
    purple (112, 85, 126), so they showed purple buttons beside Kalio's green
    ones. Kalio's green and deep green take those places (5 November 2026). */
 :root,
-.v-theme--light {
-  --v-theme-primary: 10, 75, 216 !important;
+.v-theme--light,
+.v-theme--dark {
+  --v-theme-primary: var(--dg-primary-rgb, 10, 75, 216) !important;
   --v-theme-on-primary: 255, 255, 255 !important;
   --v-theme-secondary: 7, 22, 52 !important;
   --v-theme-on-secondary: 255, 255, 255 !important;
@@ -177,7 +181,7 @@ s:has(> .u--price) {
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--k-green);
+  color: var(--dg-link);
   margin: 0 0 8px;
 }
 
@@ -227,14 +231,14 @@ s:has(> .u--price) {
 
   &:hover {
     border-color: var(--k-green);
-    color: var(--k-green) !important;
+    color: var(--dg-link) !important;
   }
 }
 
 /* On the deep-green board: a white button and an outlined one. */
 .k-btn--light {
   background: #fff;
-  color: var(--k-green-deep) !important;
+  color: var(--dg-link) !important;
 
   &:hover {
     background: #fdf1f1;
@@ -261,7 +265,7 @@ s:has(> .u--price) {
   font-family: var(--k-body);
   font-size: 15px;
   font-weight: 600;
-  color: var(--k-green) !important;
+  color: var(--dg-link) !important;
   text-decoration: none;
 
   &:hover {
@@ -285,7 +289,7 @@ s:has(> .u--price) {
 
   &:hover {
     border-color: var(--k-green);
-    color: var(--k-green);
+    color: var(--dg-link);
   }
 
   &:disabled {

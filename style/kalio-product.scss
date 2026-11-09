@@ -28,7 +28,7 @@
   text-align: start;
 
   a {
-    color: var(--k-green) !important;
+    color: var(--dg-link) !important;
     text-decoration: none;
     font-weight: 500;
 
@@ -126,7 +126,7 @@
   }
 
   &__aisle {
-    color: var(--k-green) !important;
+    color: var(--dg-link) !important;
   }
 
   &__brand {
@@ -172,10 +172,10 @@
   }
 
   &__rating-link {
-    color: var(--k-green);
+    color: var(--dg-link);
     font-weight: 600;
     text-decoration: none;
-    border-bottom: 1px solid rgba(10, 75, 216, 0.3);
+    border-bottom: 1px solid rgba(var(--dg-primary-rgb, 10, 75, 216), 0.3);
 
     &:hover {
       border-bottom-color: var(--k-green);
@@ -238,7 +238,7 @@
 
       .discount-percent {
         padding: 5px 10px !important;
-        background: var(--k-coral) !important;
+        background: var(--dg-red-solid) !important;
         color: #fff !important;
         font-size: 13px !important;
       }
@@ -729,7 +729,7 @@
     width: max-content;
     font-size: 13px;
     font-weight: 500;
-    color: var(--k-green) !important;
+    color: var(--dg-link) !important;
     text-decoration: none;
 
     &:hover {
@@ -909,7 +909,7 @@
     .v-icon {
       flex: 0 0 auto;
       margin-top: 1px;
-      color: var(--k-green);
+      color: var(--dg-link);
     }
 
     &.-cons {
@@ -1034,7 +1034,7 @@
       font-weight: 600;
       line-height: 1;
       letter-spacing: -0.03em;
-      color: var(--k-green-deep);
+      color: var(--dg-link);
     }
 
     span {
@@ -1211,11 +1211,11 @@
       gap: 8px;
       padding: 14px 18px !important;
       font-weight: 600;
-      color: var(--k-green-deep);
+      color: var(--dg-link);
       cursor: pointer;
 
       .v-icon {
-        color: var(--k-green);
+        color: var(--dg-link);
       }
     }
 
@@ -1306,7 +1306,7 @@
       margin: 0 !important;
       padding: 0 !important;
       background: none !important;
-      color: var(--k-green) !important;
+      color: var(--dg-link) !important;
       font-size: 12.5px !important;
       font-weight: 600;
 
@@ -1372,7 +1372,7 @@
 
       > b {
         font-size: 13px;
-        color: var(--k-green-deep);
+        color: var(--dg-link);
       }
 
       .v-avatar {
@@ -1382,7 +1382,7 @@
       }
 
       .v-icon {
-        color: var(--k-green) !important;
+        color: var(--dg-link) !important;
       }
 
       p.typo-body {
@@ -1399,7 +1399,7 @@
 .s--product-spec.u--product-spec-table {
   border: 1px solid var(--k-line);
   border-radius: var(--k-radius);
-  background: var(--k-well) !important;
+  background: var(--k-plain) !important;
   overflow: hidden;
 }
 
@@ -1431,7 +1431,7 @@
     transition: background-color 140ms ease;
 
     &:hover {
-      background: var(--k-well);
+      background: var(--k-plain);
 
       .k-aisle-index__go {
         opacity: 1;
@@ -1441,7 +1441,7 @@
 
     &.-skeleton .k-aisle-index__well,
     &.-skeleton .k-aisle-index__bar {
-      background: var(--k-well);
+      background: var(--k-plain);
     }
   }
 
@@ -1618,7 +1618,7 @@
       place-items: center;
       height: 100%;
       border-radius: var(--k-pill);
-      color: var(--k-green-deep) !important;
+      color: var(--dg-link) !important;
       cursor: pointer;
       transition: background-color 140ms ease;
 
