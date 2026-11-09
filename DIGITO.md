@@ -53,6 +53,41 @@ Digini sells everything itself. There is no "Sold by", no seller choice on the p
 
 ## Releases
 
+- **1.0.13 (9 November 2026, deploy 441, release `01M70G0RED79GH3C3VDP3F1W9B`, pinned on domain 1239): Custom colour, the merchant's theme settings, a showcase-only switcher, and empty states with gaps.**
+  - **Custom colour** (the owner chose a free picker over a longer list of tested colours). The Theme panel has a sixth item, "Custom colour": a colour wheel that opens the browser's own colour picker.
+    - The pick is applied while dragging (every 60ms at most), saved as `{palette: "custom", custom: "#rrggbb"}` and painted before the first paint. A tested palette leaves Custom.
+    - The swatch shows the colour actually used, with "Adjusted for readability" when it had to change.
+    - Five tested palettes plus Custom fill three full rows of two.
+    - `paletteFromColor()` (`components/theme-switcher/theme-color.ts`) keeps the pick's hue and chroma (OKLCH) and moves only the lightness: white words at 6.5:1 on the header and buttons (light), 4.6:1 on dark-mode buttons that stay 3:1 against the dark card, and links at 7:1 on the dark surfaces.
+    - `node components/theme-switcher/theme-color.test.mjs` checks the ten extreme picks, 2000 seeded picks and every grey: all pass.
+  - **The merchant's theme settings** (the owner: a merchant should be able to tell their AI "use the yellow theme" when importing). The one file is `components/digito/digito-theme.settings.ts`:
+    - `palette`, or `brandColor` (any colour);
+    - `mode` (light or dark);
+    - `themeSwitcher` (showcase, on or off);
+    - `textOnBrand` ("auto" keeps a light brand such as yellow, with dark words on its buttons and header).
+
+    The settings are Digito's default on any shop, painted before the first paint. For "auto", every word on the brand colour (about 100 rules, the header's pills and the wordmark among them) now comes from `--dg-on-brand`. `AGENTS.md` has a "Theme" section with the allowed values and worked examples. The README has a paragraph, and the wiki has a page, Theme and colours.
+  - **The visitor switcher only on showcase shops** (the owner: a merchant who imports the Layout must not see it). `themeSwitcher: "showcase"` shows it only on Digini (15549) and Molino (15645).
+    - The shop is told at boot by `window.shop.id` (written inline by Selldone's page), else by `<meta name="shop-name">`. Neither waits for `/info`.
+    - Elsewhere it does nothing: no button, a stored choice is ignored, nothing follows `prefers-color-scheme`, and Vuetify and the tokens stay at the settings (at the stock default nothing at all is written).
+    - Vuetify's light error red (`#c4122f`) moved out of the switcher into `storefront.ts`, so it stays when the switcher is hidden.
+  - **Empty states with gaps** (the owner: "these three lines are glued together"). The FAQ's empty card now has:
+    - the icon in a 56px tinted circle, 14px, the heading, 8px, the sentence (line height 1.55, at most 520px), 20px, the button;
+    - 36px of padding.
+
+    The 404's eyebrow sits 8px above its heading (was 4px). The cart, search, compare and 404 empty blocks were measured too; they already had gaps of 8px or more. The account, orders and blog empty states share `.k-board__empty`, a grid with 12px gaps; a guest cannot open them to measure.
+  - **Checked on dev:**
+    - **Custom picks** (`#ffff00 #00ffff #ff00ff #7fff00` in both modes, `#ffffff` light): the contrast audit and the cart audit printed 0. The rest were run live, below.
+    - **Settings:**
+      - Run on a stub shop that does not show the switcher: gold `#F5C400` with "auto" in light and dark, then violet in dark.
+      - The contrast audit (7 pages), the cart audit, the header check and the ring sweep all printed 0.
+      - The showcase header check printed 0 with each as the default.
+    - **Hidden mode:** a planted dark `#ff00ff` was ignored at 390 and 1440, and the header actions kept even gaps.
+    - **Empty states:** no touching pieces at 390 and 1440, in light and dark.
+  - **Checked live:**
+    - the saved block names 1.0.13;
+    - the custom flow for `#ffff00` light and `#000000` dark at 1440 and 390: picked, saved, painted about 0.1s before the header on a reload, and left for Violet;
+    - on an emulated Pixel 7, a tap lands on the native colour input as a trusted click. The picker dialog itself cannot be seen headless, and iOS was not tested.
 - **1.0.12 (9 November 2026, deploy 440, release `01M70ASJSX9NTABDCDZ5EDADZV`, pinned on domain 1239): the theme switcher moves to the header.** The owner, after seeing Besti 1.0.10: "put it at the top of the header".
   - **Placement.** A "Theme" action at the top right, styled like Account (palette icon, "Theme" over Light or Dark), after Account and just before the cart. White words on the header in every palette and mode. On a phone it is the icon only, next to the account icon, and the header row neither wraps nor moves the logo.
   - **The panel.** A click opens a small panel under it: the five palettes (swatch and name; the chosen swatch has a ring inside it) and Light / Dark.
