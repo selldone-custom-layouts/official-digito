@@ -53,6 +53,8 @@ Digini sells everything itself. There is no "Sold by", no seller choice on the p
 
 ## Releases
 
+- **Live check (9 November 2026, 08:22, after Selldone's outage):** https://digito.selldone.shop/ answers 200 and its `window.sdShopLayout` "saved" block names `digito-electronics` 1.0.4 (release `01M6YZGYD7CDREJTJ8HK2MANFT`); home, a category, a product (opened in-app) and the deals checked at 390 px: no sideways scroll, no errors. The live shop record has no checkout option (guests must sign in) and no payment method for the storefront (`gateways` empty), so no guest test order could be placed. README screenshots retaken from the live shop (the filled cart is the drawer with a stand-in cart put in the app's store; nothing was sent).
+
 - **1.0.4 (9 November 2026, deploy 425, release `01M6YZGYD7CDREJTJ8HK2MANFT`, pinned on domain 1239):** the product page fills its column from the first paint (Selldone's product wrapper is a flex row that sized itself to the gallery's pictures while they loaded, so a product opened from another page could show at two thirds of the width) and uses the same 1440px column as every other page. README screenshots from the development server (the live shop answered 500 at the time); `docs/screenshots` no longer holds Tario's.
 
 - **1.0.3 (9 November 2026, deploy 424, release `01M6YZ77YEX5JMZ7BYRAQTCS44`):** the cents are written at full size in Selldone's own prices too (its rule is scoped and `!important`, so 1.0.1's selector lost: the cart and drawer still showed "$714.50" with small cents); the footer's five service links stand on one row on a tablet (three and two left a hole).

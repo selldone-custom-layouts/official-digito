@@ -946,9 +946,10 @@ html.dg-locked {
 
   &__head {
     display: flex;
+    flex-wrap: wrap; /* the clock pill drops under the title when the column is too narrow for both */
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
+    gap: 6px 10px;
     margin-bottom: 4px;
 
     h2 {
