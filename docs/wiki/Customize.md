@@ -30,7 +30,7 @@ The design lives in Digito's own components and style sheets, over the component
 | About, Contact, 404, blog | `pages/official/`, `pages/errors/404/`, `pages/blog/` |
 | Compare | `components/kalio/compare/` (words in `compare-skin.ts`) |
 | Styles | `style/digito-skin.scss` (home, header, footer, cards, listings), `style/digito-pages.scss` (every other page), both loaded last |
-| Theme row in the footer (palettes, Light / Dark) | `components/digito/digito-theme.ts` (palettes, which variables each colour feeds, the dark values); the switcher itself is `components/theme-switcher/` (no Digito names inside). Dark values for fixed colours come from the build step in `vite.config.ts` (`postcss-dark-tokens`). A new palette needs white text at 4.5:1 or more on its colour: check with `components/theme-switcher/tools/contrast-audit.cjs` |
+| Theme in the header (palettes, Light / Dark; the action is in `components/kalio/shell/KalioHeader.vue`) | `components/digito/digito-theme.ts` (palettes, which variables each colour feeds, the dark values); the switcher itself is `components/theme-switcher/` (no Digito names inside). Dark values for fixed colours come from the build step in `vite.config.ts` (`postcss-dark-tokens`). A new palette needs white text at 4.5:1 or more on its colour: check with `components/theme-switcher/tools/contrast-audit.cjs` |
 
 [`DIGITO.md`](https://github.com/selldone-custom-layouts/official-digito/blob/main/DIGITO.md) explains what Digito changed and why; [`KALIO.md`](https://github.com/selldone-custom-layouts/official-digito/blob/main/KALIO.md) explains every shared behaviour and each workaround.
 
