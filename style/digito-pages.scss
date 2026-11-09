@@ -1361,3 +1361,15 @@ body .u--price.u--price .small.small {
   font-weight: inherit;
   vertical-align: baseline !important;
 }
+
+/* The product page fills its column from the first paint (its flex row
+   sized to the gallery's pictures while they loaded) and uses the same
+   1440px column as every other page. */
+.s--product.k-product > div {
+  width: 100%;
+  min-width: 0;
+}
+
+.s--product .s--product-section-info {
+  max-width: none !important;
+}
