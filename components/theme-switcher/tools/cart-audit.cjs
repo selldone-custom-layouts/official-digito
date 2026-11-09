@@ -4,7 +4,7 @@
 // request, so nothing reaches the server and no order is made.
 //
 // Usage (Node, from any folder):
-//   SHOP=digini-hzgablru WAIT=".dg-dotd" CART=".dg-header__act.-cart" STORAGE_KEY=digito-theme \
+//   SHOP=<xapi name> WAIT="<home selector>" CART="<header cart button>" STORAGE_KEY=<storageKey> \
 //     node cart-audit.cjs <base-url> <palette> <light|dark> [shots-folder]
 // - SHOP: the shop's xapi name (the storefront's @name). WAIT: something the home always shows.
 // - CART: the header's cart button (opens the drawer). STORAGE_KEY: the theme switcher's storageKey.

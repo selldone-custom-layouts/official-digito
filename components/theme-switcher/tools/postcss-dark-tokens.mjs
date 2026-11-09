@@ -32,7 +32,7 @@
  *
  * vite.config.ts:
  *   import darkTokens from "./components/theme-switcher/tools/postcss-dark-tokens.mjs";
- *   css: { postcss: { plugins: [darkTokens({ darkSelector: "html.dg-dark", include: [...] })] } }
+ *   css: { postcss: { plugins: [darkTokens({ darkSelector: "html.<config.darkClass>", include: [...] })] } }
  */
 
 const DEFAULTS = {

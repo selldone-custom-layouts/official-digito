@@ -4,9 +4,9 @@
 // readable): screenshots miss a grey word on a dark card; computed styles do not.
 //
 // Usage (Node, from any folder):
-//   STORAGE='{"digito-theme":"{\"palette\":\"blue\",\"mode\":\"dark\"}"}' \
+//   STORAGE='{"<storageKey>":"{\"palette\":\"blue\",\"mode\":\"dark\"}"}' \
 //   PAGES="home=/,category=/laptop-category,product=/product/710083" \
-//     node contrast-audit.cjs https://digito.selldone.shop ".dg-dotd"
+//     node contrast-audit.cjs https://<shop>.selldone.shop "<a selector the home always shows>"
 // - <base-url>: the live shop or a dev server; [wait-selector]: something the home always shows (default "main").
 // - STORAGE: JSON of localStorage entries written before the first load (the theme switcher's choice).
 // - PAGES: name=path pairs, opened in-app with the router (a headless direct load of /product/ gets
@@ -80,7 +80,7 @@ const probe = () => {
     return o;
   };
   const disabled = (el) => !!el.closest(":disabled,[aria-disabled='true'],.v-btn--disabled,.v-field--disabled,[inert]");
-  const ICON = /(^|\s)(dg-ms|material-icons|material-symbols|v-icon|fa-|mdi)/;
+  const ICON = /(^|\s)([a-z]+-ms|material-icons|material-symbols|v-icon|fa-|mdi)/; // icon fonts (a Layout's own too: x-ms)
 
   const fails = new Map();
   const seen = new Set();

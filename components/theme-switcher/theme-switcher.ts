@@ -48,7 +48,7 @@ export interface ThemePalette {
 }
 
 export interface ThemeSwitcherConfig {
-  /** localStorage key, e.g. "digito-theme". */
+  /** localStorage key, one per Layout, e.g. "<layout>-theme". */
   storageKey: string;
   /** The first is the default (the brand). */
   palettes: ThemePalette[];
