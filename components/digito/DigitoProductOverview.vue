@@ -105,6 +105,7 @@
               <span v-if="price.save > 0" class="dg-save">Save {{ fmt(price.save, true) }}</span>
             </div>
             <p v-if="price.was" class="dg-pdp__was">Was <s>{{ fmt(price.was) }}</s></p>
+            <p v-if="endsAt" class="dg-pdp__ends"><digito-icon name="schedule" size="18" />Deal ends in <b>{{ endsLeft }}</b></p>
           </template>
           <s-product-section-tax></s-product-section-tax>
           <s-product-section-cashback :amount="0" :currency="GetUserSelectedCurrency()?.code"></s-product-section-cashback>
@@ -200,7 +201,9 @@
       class="dg-pdp__note"
     ></basket-item-user-message-form>
 
-    <product-discount-countdown></product-discount-countdown>
+    <!-- Selldone's rotated countdown badge (ProductDiscountCountdown) is
+         replaced by the "Deal ends in" line in the buy card, on the same
+         dates (digito-clock.ts). -->
   </div>
 </template>
 
@@ -211,6 +214,7 @@ import DigitoIcon from "./DigitoIcon.vue";
 import { aisleIndex, aisleRoute, catalogueRoute, priceOf } from "../kalio/kalio-catalog";
 import { specGroups, specValue } from "../kalio/compare/kalio-compare";
 import { money, waysOf } from "./digito-home";
+import { clock, dealEnd, leftText, releaseClock, useClock } from "./digito-clock";
 import "../kalio/kalio-offer-price";
 
 export default {
@@ -241,6 +245,13 @@ export default {
       const p = priceOf(this.shop, v ? { ...this.$product, ...v, price: v.price, discount: v.discount, dis_start: v.dis_start, dis_end: v.dis_end, currency: v.currency || this.$product.currency } : this.$product, this.currency);
       return { now: p.now, was: p.was, save: p.was ? Math.round((p.was - p.now) * 100) / 100 : 0 };
     },
+    /** The deal's end, the chosen variant's when it has its own price. */
+    endsAt() {
+      return this.price.was ? dealEnd(this.$product, this.current_variant) : null;
+    },
+    endsLeft() {
+      return leftText(this.endsAt, clock.now);
+    },
     stock() {
       const q = this.current_variant ? this.current_variant.quantity : this.$product.quantity;
       return Number(q) > 0 ? Number(q) : 0;
@@ -270,6 +281,14 @@ export default {
         .filter((p) => p.key)
         .slice(0, 4);
     },
+  },
+
+  mounted() {
+    useClock();
+  },
+
+  beforeUnmount() {
+    releaseClock();
   },
 
   watch: {

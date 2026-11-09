@@ -5,8 +5,8 @@
   A breadcrumb, the title (the category's name, "Results for “…”",
   "Today's deals" or "All products") with one line under it, and chips:
   the category's brands, a search's categories, or the categories that have
-  deals. On the deals page the head is a blue band with the "Next deal in"
-  clock. Under it a toolbar: the sort menu on a computer; on a phone and
+  deals. On the deals page the head is a blue band with the "Deals end in"
+  clock to the soonest deal's own end date. Under it a toolbar: the sort menu on a computer; on a phone and
   tablet a sticky "Filter | Sort" bar that opens the filter sheet. No product
   counts: the shop is the point, not its size.
 -->
@@ -25,7 +25,7 @@
 
     <header :class="{ '-deals': mode === 'deals' }" class="dg-shoptop__head">
       <div class="dg-shoptop__txt">
-        <span v-if="mode === 'deals'" class="dg-clock"><digito-icon name="schedule" size="16" />Next deal in <b>{{ clock }}</b></span>
+        <span v-if="mode === 'deals' && dealsEnd" class="dg-clock"><digito-icon name="schedule" size="16" />{{ dealsLeftLabel }} <b>{{ dealsLeft }}</b></span>
         <h1>{{ title }}</h1>
         <p v-if="line">{{ line }}</p>
       </div>
@@ -86,6 +86,7 @@ import DigitoIcon from "./DigitoIcon.vue";
 import { SORTS, countOn } from "../tario/shop/tario-filters";
 import { aisleImage, aisleRoute, aisles, catalogueRoute } from "../kalio/kalio-catalog";
 import { allProducts, money, savingOf } from "./digito-home";
+import { clock, dealEnd, leftText, releaseClock, soonestEnd, useClock } from "./digito-clock";
 
 export default {
   name: "DigitoShopTop",
@@ -104,7 +105,7 @@ export default {
   },
   emits: ["update:sort", "brand"],
 
-  data: () => ({ sheet: false, all: [], cats: [], clock: "" }),
+  data: () => ({ sheet: false, all: [], cats: [] }),
 
   computed: {
     sorts() {
@@ -133,6 +134,18 @@ export default {
       if (this.mode === "deals") return "Real savings on the shop’s own prices. A new Deal of the Day every midnight.";
       if (this.mode === "search") return "";
       return "Everything in the shop, ready to filter.";
+    },
+    /** The soonest end among the shop's running deals (Selldone's dates). */
+    dealsEnd() {
+      return this.mode === "deals" ? soonestEnd(this.all.filter((p) => savingOf(p) > 0)) : null;
+    },
+    /** One end for every deal reads "Deals end in"; different ends, the next. */
+    dealsLeftLabel() {
+      const ends = new Set(this.all.filter((p) => savingOf(p) > 0).map((p) => dealEnd(p)).filter((e) => e != null));
+      return ends.size > 1 ? "Next deal ends in" : "Deals end in";
+    },
+    dealsLeft() {
+      return leftText(this.dealsEnd, clock.now);
     },
     currency() {
       return this.$shop?.currency || "USD";
@@ -184,25 +197,13 @@ export default {
   mounted() {
     allProducts().then((list) => (this.all = list));
     aisles().then((list) => (this.cats = list));
-    this.tick();
-    this.timer = setInterval(this.tick, 1000);
+    useClock();
   },
 
   beforeUnmount() {
-    clearInterval(this.timer);
+    releaseClock();
     document.documentElement.classList.remove("dg-locked");
   },
 
-  methods: {
-    tick() {
-      if (this.mode !== "deals") return;
-      const now = new Date();
-      const end = new Date(now);
-      end.setHours(24, 0, 0, 0);
-      const s = Math.max(0, Math.floor((end - now) / 1000));
-      const pad = (n) => String(n).padStart(2, "0");
-      this.clock = `${pad(Math.floor(s / 3600))}:${pad(Math.floor((s % 3600) / 60))}:${pad(s % 60)}`;
-    },
-  },
 };
 </script>

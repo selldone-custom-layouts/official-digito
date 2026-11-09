@@ -10,8 +10,9 @@
   swipes on a phone, and never moves with reduced motion.
 
   The Deal of the Day is one of the shop's deals, a different one each
-  day; "Next deal in" counts down to the shopper's midnight. The shop's
-  discounts have no end date, so nothing says "Ends in".
+  day. "Ends in" counts down to that deal's own end date in Selldone (the
+  owner, 9 November 2026: "a real timer from Selldone"); a deal with no end
+  date shows no clock.
 -->
 <template>
   <section v-if="busy || slides.length || dotd" class="dg-hero">
@@ -59,9 +60,9 @@
     <article v-if="dotd" class="dg-dotd">
       <div class="dg-dotd__head">
         <h2>Deal of the Day</h2>
-        <span class="dg-clock"><digito-icon name="schedule" size="16" />Next deal in <b>{{ clock }}</b></span>
+        <span v-if="dotdEnd" class="dg-clock"><digito-icon name="schedule" size="16" />Ends in <b>{{ dotdLeft }}</b></span>
       </div>
-      <digito-card :max-swatches="6" :product="dotd" big class="-dotd" no-foot />
+      <digito-card :max-swatches="6" :product="dotd" big class="-dotd" no-foot no-timer />
     </article>
   </section>
 </template>
@@ -72,6 +73,7 @@ import DigitoCard from "./DigitoCard.vue";
 import DigitoPhoto from "./DigitoPhoto.vue";
 import { aisleRoute, aisles } from "../kalio/kalio-catalog";
 import { allProducts, dealsOf, finalOf, money, photoOf, savingOf } from "./digito-home";
+import { clock, dealEnd, leftText, releaseClock, useClock } from "./digito-clock";
 
 export default {
   name: "DigitoHero",
@@ -80,7 +82,17 @@ export default {
 
   emits: ["dotd"],
 
-  data: () => ({ slides: [], dotd: null, busy: true, at: 0, paused: false, clock: "", reduced: false }),
+  data: () => ({ slides: [], dotd: null, busy: true, at: 0, paused: false, reduced: false }),
+
+  computed: {
+    /** The Deal of the Day's own end, by Selldone's dates. */
+    dotdEnd() {
+      return this.dotd ? dealEnd(this.dotd) : null;
+    },
+    dotdLeft() {
+      return leftText(this.dotdEnd, clock.now);
+    },
+  },
 
   mounted() {
     this.reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
@@ -88,15 +100,14 @@ export default {
       this.build(cats, list);
       this.busy = false;
     });
-    this.tick();
-    this.clockTimer = setInterval(this.tick, 1000);
+    useClock();
     this.turnTimer = setInterval(() => {
       if (!this.paused && !this.reduced && !document.hidden && this.slides.length > 1) this.go(this.at + 1);
     }, 7000);
   },
 
   beforeUnmount() {
-    clearInterval(this.clockTimer);
+    releaseClock();
     clearInterval(this.turnTimer);
   },
 
@@ -153,14 +164,6 @@ export default {
       const track = this.$refs.track;
       if (!track || !track.clientWidth) return;
       this.at = Math.round(Math.abs(track.scrollLeft) / track.clientWidth);
-    },
-    tick() {
-      const now = new Date();
-      const end = new Date(now);
-      end.setHours(24, 0, 0, 0);
-      const s = Math.max(0, Math.floor((end - now) / 1000));
-      const pad = (n) => String(n).padStart(2, "0");
-      this.clock = `${pad(Math.floor(s / 3600))}:${pad(Math.floor((s % 3600) / 60))}:${pad(s % 60)}`;
     },
   },
 };

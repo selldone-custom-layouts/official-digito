@@ -187,8 +187,6 @@
       :variant-id="current_variant ? current_variant.id : null"
       class="k-pdp__note"
     ></basket-item-user-message-form>
-
-    <product-discount-countdown></product-discount-countdown>
   </div>
 </template>
 

@@ -1373,3 +1373,111 @@ body .u--price.u--price .small.small {
 .s--product .s--product-section-info {
   max-width: none !important;
 }
+
+/* ━━━━━━━━━━━━ 1.0.6: deal timers, hero arrows, swatch rings ━━━━━━━━━━━━ */
+
+/* A card's deal timer: one quiet line under "Was", reserved on every card
+   so the feet of a row stay level. */
+.dg-ends {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 18px;
+  margin-top: 2px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--dg-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  font-variant-numeric: tabular-nums;
+
+  b {
+    font-weight: 800;
+    color: var(--dg-ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dg-ms {
+    color: var(--dg-red);
+  }
+}
+
+@container (max-width: 150px) {
+  .dg-ends {
+    font-size: 10.5px;
+    gap: 3px;
+
+    .dg-ms {
+      display: none;
+    }
+  }
+}
+
+/* The product page's deal timer, under the price. */
+.dg-pdp__ends {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0 0;
+  padding: 5px 10px;
+  border-radius: 14px;
+  background: var(--dg-yellow);
+  color: var(--dg-navy);
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+
+  b {
+    font-weight: 800;
+  }
+}
+
+.dg-clock b {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Hero arrows: a solid white circle with a dark navy chevron, both always
+   shown, readable on any photo (the chevron took the slide's white). */
+.v-application .dg-bill__nav,
+.dg-bill .dg-bill__nav {
+  display: grid !important;
+  width: 44px;
+  height: 44px;
+  background: #fff !important;
+  color: var(--dg-navy) !important;
+  opacity: 1 !important;
+  box-shadow: 0 2px 10px rgba(7, 22, 52, 0.35);
+
+  .dg-ms {
+    color: var(--dg-navy) !important;
+    font-size: 26px !important;
+    font-variation-settings: "FILL" 0, "wght" 700, "GRAD" 0, "opsz" 24;
+  }
+
+  &:hover {
+    background: var(--dg-yellow) !important;
+  }
+}
+
+@media (max-width: 959px) {
+  .v-application .dg-bill__nav,
+  .dg-bill .dg-bill__nav {
+    display: none !important;
+  }
+}
+
+/* Swatch rings: the row keeps room for the chosen swatch's ring (2px gap +
+   2px ring) on every side, so the first swatch's ring is never cut by the
+   row's own clipping. The row's text edge stays where it was. */
+.dg-swrow {
+  height: 28px;
+  padding: 0 5px;
+  margin: 6px -5px 2px;
+}
+
+.dg-caps {
+  height: 22px;
+  margin: 9px 0 5px;
+}

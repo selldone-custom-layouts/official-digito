@@ -60,6 +60,9 @@
     <div :class="{ '-none': !was }" class="dg-was">
       <template v-if="was">Was <s>{{ fmt(was) }}</s></template>
     </div>
+    <div v-if="!noTimer" :class="{ '-none': !endsAt }" class="dg-ends">
+      <template v-if="endsAt"><digito-icon name="schedule" size="14" />Ends in <b>{{ endsLeft }}</b></template>
+    </div>
 
     <div class="dg-card__buy" @click.prevent.stop>
       <div v-if="shown > 0" :class="{ '-busy': busy }" aria-label="Quantity in cart" class="dg-step" role="group">
@@ -110,6 +113,7 @@ import {
 } from "../kalio/kalio-basket";
 import { openQuickBuy, savedIds } from "./digito-quick";
 import { money, productIndex } from "./digito-home";
+import { clock, dealEnd, leftText, releaseClock, useClock } from "./digito-clock";
 
 let categories = null;
 
@@ -125,6 +129,8 @@ export default {
     /** No Compare / Save line (small cards). */
     noFoot: Boolean,
     noFlag: Boolean,
+    /** No "Ends in" line (a place that shows the deal's clock itself). */
+    noTimer: Boolean,
     maxSwatches: { type: Number, default: 4 },
   },
 
@@ -156,6 +162,13 @@ export default {
     },
     picture() {
       return productImage(this.product);
+    },
+    /** When the deal ends, by Selldone's own dates (digito-clock.ts). */
+    endsAt() {
+      return this.was ? dealEnd(this.product) : null;
+    },
+    endsLeft() {
+      return leftText(this.endsAt, clock.now);
     },
     srcset() {
       return productSrcset(this.product);
@@ -210,7 +223,15 @@ export default {
     },
   },
 
+  beforeUnmount() {
+    if (this.ticking) releaseClock();
+  },
+
   mounted() {
+    if (this.endsAt != null) {
+      this.ticking = true;
+      useClock();
+    }
     if (!categories) categories = aisleIndex();
     categories.then((index) => (this.category = index.get(this.product.category_id) || null));
     if (!this.product.brand) productIndex().then((index) => (this.full = index.get(this.product.id) || null));
