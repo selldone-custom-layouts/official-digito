@@ -1157,11 +1157,18 @@ body .u--price .small,
   --c-head-w: 800;
   --c-head-track: -0.02em;
   --c-h1: 30px;
-  --c-share-bg: var(--dg-blue);
+  --c-share-bg: var(--dg-head);
   --c-share-ink: rgba(255, 255, 255, 0.88);
   --c-share-head: #fff;
   --c-star: #e5a100;
   font-family: var(--dg-font);
+
+  /* The share card is the header's colour with white words (Tario's dress
+     under it painted it white, which left its white words unreadable). */
+  .k-cmp__share {
+    background: var(--c-share-bg);
+    box-shadow: none;
+  }
 
   .k-cmp__row:nth-child(even) {
     background: transparent;
@@ -1562,13 +1569,24 @@ body .u--price.u--price .small.small {
    Most of dark mode is tokens (components/digito/digito-theme.ts) and the
    build's dark-token step (every fixed colour, vite.config.ts). These are
    the few places that need a word of their own. */
-html.dg-dark {
-  /* Selldone's footer credit and GDPR link are "plain" buttons (62% opacity). */
-  .dg-footer__legal .v-btn {
-    color: var(--dg-muted) !important;
+/* Selldone's footer credit and GDPR link are "plain" buttons (62% opacity,
+   2.7:1 and 2:1): the footer's muted grey at full strength, in both themes. */
+.dg-footer__legal .v-btn {
+  color: var(--dg-muted) !important;
+  opacity: 1 !important;
+
+  * {
     opacity: 1 !important;
   }
+}
 
+/* Captions under pictures in a product's description and a post (Selldone's
+   article plugin writes #ccc, 1.6:1). */
+:is(.medium-insert-images-safe, .medium-insert-images, .medium-insert-embeds) figure figcaption {
+  color: var(--dg-muted) !important;
+}
+
+html.dg-dark {
   /* Variant buttons that show a packshot: a white tile, so the photo's
      white ground has no edge (the chosen one keeps its inset ring). */
   .s-product-variants__options .var-sel:has(.-var-image) {

@@ -1576,7 +1576,7 @@ html.dg-locked {
     border-radius: 22px;
     background: #fff;
     border: 0;
-    color: var(--dg-soft);
+    color: var(--dg-muted);
     font: 500 15px var(--dg-font);
     display: flex;
     align-items: center;
@@ -3601,7 +3601,7 @@ html.dg-locked {
 }
 
 .dg-header__pill-search span {
-  color: var(--dg-soft) !important;
+  color: var(--dg-muted) !important; /* a placeholder still reads 4.5:1 */
 }
 
 /* Two tags side by side. */

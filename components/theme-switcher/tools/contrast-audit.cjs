@@ -48,12 +48,22 @@ const probe = () => {
   const name = (e) => `${e.tagName.toLowerCase()}.${String(e.className?.baseVal ?? e.className).trim().split(/\s+/).slice(0, 2).join(".")}`;
   const pageBg = parse(getComputedStyle(document.body).backgroundColor) || [255, 255, 255, 1];
 
+  /* A picture (img, video, canvas) under the text: text over a photo is judged by eye, not here. */
+  const media = [...document.querySelectorAll("img,video,canvas")].map((m) => [m, m.getBoundingClientRect()]).filter(([, q]) => q.width > 8 && q.height > 8);
+  const mediaUnder = (el) => {
+    const r = el.getBoundingClientRect();
+    const x = r.left + r.width / 2;
+    const y = r.top + r.height / 2;
+    return media.filter(([m, q]) => !m.contains(el) && !el.contains(m) && x >= q.left && x <= q.right && y >= q.top && y <= q.bottom).map(([m]) => m);
+  };
   /* The colour under an element: its own and its ancestors' backgrounds, composed. null over a picture. */
   const bgOf = (el) => {
     const layers = [];
+    const under = mediaUnder(el);
     for (let a = el; a; a = a.parentElement) {
       const cs = getComputedStyle(a);
       if (cs.backgroundImage && cs.backgroundImage !== "none" && /url\(/.test(cs.backgroundImage)) return null;
+      if (a !== el && under.some((m) => a.contains(m))) return null;
       const g = cs.backgroundImage && cs.backgroundImage !== "none" ? cs.backgroundImage.match(/rgba?\([^)]+\)/) : null;
       const c = parse(cs.backgroundColor);
       if (c && c[3] > 0) layers.push(c);
@@ -80,7 +90,8 @@ const probe = () => {
     const tag = el.tagName;
     if (["SCRIPT", "STYLE", "NOSCRIPT", "TEMPLATE", "svg", "path", "IMG"].includes(tag)) continue;
     const isField = ["INPUT", "TEXTAREA", "SELECT"].includes(tag) && el.type !== "hidden" && el.value;
-    const ownText = [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim().length);
+    // Text of its own, not only a separator ("•", "·", "/"): decoration needs no contrast.
+    const ownText = [...el.childNodes].some((n) => n.nodeType === 3 && /[\p{L}\p{N}]/u.test(n.textContent));
     if (!ownText && !isField) continue;
     const r = el.getBoundingClientRect();
     if (r.width < 2 || r.height < 2) continue;

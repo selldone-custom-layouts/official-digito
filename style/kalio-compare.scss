@@ -648,7 +648,7 @@
   }
 
   &__stars .v-icon {
-    color: var(--c-line-2) !important;
+    color: var(--dg-soft) !important; /* an empty star: 3:1 or more in both themes */
 
     &.-on {
       color: var(--c-star) !important;
