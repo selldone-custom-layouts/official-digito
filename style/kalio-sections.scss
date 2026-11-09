@@ -983,7 +983,7 @@ $k-shelf-pic-phone: 150px;
 
     &.-on {
       background: var(--k-green-deep);
-      color: #fff;
+      color: var(--dg-on-brand);
       box-shadow: none;
     }
   }
@@ -1760,7 +1760,7 @@ $k-shelf-pic-phone: 150px;
 
   &.-on {
     background: var(--k-green-deep);
-    color: #fff !important;
+    color: var(--dg-on-brand) !important;
     font-weight: 600;
 
     img {
@@ -1998,7 +1998,7 @@ $k-shelf-pic-phone: 150px;
       &.-on {
         border-color: var(--k-green);
         background: var(--k-green);
-        color: #fff !important;
+        color: var(--dg-on-brand) !important;
       }
     }
   }

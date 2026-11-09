@@ -69,9 +69,18 @@ Selldone's own cart, checkout, payments and orders keep working underneath. Noth
 
 The wiki's source is also in [`docs/wiki/`](docs/wiki/).
 
-### The theme switcher
+### Theme and colours
 
-The header's Theme button (palettes, Custom colour, Light / Dark) is a showcase feature. It shows only on Digito's own showcase shop (Selldone shop 15549), so when you import Digito into your shop, your shoppers see Digito in its designed blue, with no Theme button. The Layout looks exactly as it does without the switcher, and any stored choice is ignored. To offer the switcher to your shoppers, set `mode: "on"` in `components/digito/digito-theme.ts` (or add your shop's id to `showcaseShops`), then build and upload. `mode: "off"` hides it everywhere.
+Choose Digito's colours in one file, `components/digito/digito-theme.settings.ts`:
+
+- `palette`: blue, emerald, violet, teal or orange;
+- or `brandColor`: any `#RRGGBB`, made readable automatically (`textOnBrand: "auto"` keeps a light brand such as yellow, with dark words);
+- `mode`: light or dark;
+- `themeSwitcher`: showcase, on or off.
+
+You can also tell your AI agent "use the yellow theme" or "make it dark": `AGENTS.md` (section "Theme") tells it what to change. Then build and upload. See the wiki page [Theme and colours](https://github.com/selldone-custom-layouts/official-digito/wiki/Theme-and-colours).
+
+The header's Theme button (palettes, Custom colour, Light / Dark) is a showcase feature. It shows only on Digito's own showcase shop (Selldone shop 15549), so when you import Digito into your shop, your shoppers see Digito in its designed blue, with no Theme button. The Layout looks exactly as it does without the switcher, and any stored choice is ignored. To offer the switcher to your shoppers, set `themeSwitcher: "on"` in `components/digito/digito-theme.settings.ts`, then build and upload. `themeSwitcher: "off"` hides it everywhere.
 
 ## Quick start (developers)
 

@@ -91,7 +91,7 @@
 .v-theme--light,
 .v-theme--dark {
   --v-theme-primary: var(--dg-primary-rgb, 10, 75, 216) !important;
-  --v-theme-on-primary: 255, 255, 255 !important;
+  --v-theme-on-primary: var(--dg-on-brand-rgb, 255, 255, 255) !important;
   --v-theme-secondary: 7, 22, 52 !important;
   --v-theme-on-secondary: 255, 255, 255 !important;
 }
@@ -208,7 +208,7 @@ s:has(> .u--price) {
 
 .k-btn--solid {
   background: var(--k-green-deep);
-  color: #fff !important;
+  color: var(--dg-on-brand) !important;
 
   &:hover {
     background: var(--k-green-hover);

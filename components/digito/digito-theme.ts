@@ -21,13 +21,17 @@
  * light primary (a palette where it does not would set a pale yellow).
  */
 import type { ThemeSwitcherConfig } from "../theme-switcher/theme-switcher";
+import { THEME_SETTINGS } from "./digito-theme.settings";
 
 export const DIGITO_THEME: ThemeSwitcherConfig = {
+  /* The merchant's choice (palette or brand colour, light or dark, whether
+     visitors get the switcher): digito-theme.settings.ts, the one file to edit. */
+  settings: THEME_SETTINGS,
+
   /* The owner (9 November 2026): a merchant who imports Digito into their own
-     shop must not see the switcher. It shows only on Digito's showcase shop,
-     Digini (digito.selldone.shop); "on" shows it everywhere, "off" nowhere.
-     The shop is told by window.shop.id, else <meta name="shop-name">. */
-  mode: "showcase",
+     shop must not see the switcher. With themeSwitcher "showcase" it shows
+     only on these shops; the shop is told by window.shop.id, else
+     <meta name="shop-name">. */
   showcaseShops: [
     { id: 15549, name: "digini-hzgablru" }, // Digini: Digito, Besti
     { id: 15645, name: "molino" }, // Molino: Molino, Tario, Walio, Dino, Valero
@@ -87,6 +91,8 @@ export const DIGITO_THEME: ThemeSwitcherConfig = {
     "--k-leaf": "primary",
     "--k-green-soft": "soft",
     "--k-on-green": "onPrimary",
+    "--dg-on-brand": "onPrimary",
+    "--dg-on-brand-rgb": "onPrimary:rgb",
   },
 
   /* While dark. Photo wells (--k-well, --k-tint) stay white so a white
@@ -105,6 +111,7 @@ export const DIGITO_THEME: ThemeSwitcherConfig = {
     "--dg-green": "#4ade80",
     "--dg-raise": "#1e2639",
     "--dg-ink-bg": "var(--dg-blue)",
+    "--dg-on-ink-bg": "var(--dg-on-brand)",
     "--dg-navy-ink": "#c3cbd8",
     "--k-ink": "#e8ecf3",
     "--k-ink-2": "#d3d9e3",
@@ -126,7 +133,7 @@ export const DIGITO_THEME: ThemeSwitcherConfig = {
   vuetify: {
     light: "light",
     dark: "dark",
-    paletteColors: { primary: "primary" },
+    paletteColors: { primary: "primary", "on-primary": "onPrimary" },
     darkColors: {
       background: "#0d1220",
       surface: "#161d2e",
@@ -147,7 +154,7 @@ export const DIGITO_THEME: ThemeSwitcherConfig = {
 
   metaThemeColor: "light.primary",
   ui: { ink: "var(--dg-ink)", muted: "var(--dg-muted)", line: "var(--dg-line)", surface: "var(--dg-card)", font: "var(--dg-font)" },
-  labels: { theme: "Theme", palettes: "Colour", mode: "Light or dark", modeTitle: "Mode", light: "Light", dark: "Dark", custom: "Custom colour", adjusted: "Adjusted for readability" },
+  labels: { theme: "Theme", palettes: "Colour", mode: "Light or dark", modeTitle: "Mode", light: "Light", dark: "Dark", custom: "Custom colour", adjusted: "Adjusted for readability", brand: "Brand colour" },
 
   /* "Custom colour" (the owner, 9 November 2026): any colour, made readable
      by paletteFromColor(). Digito's header is painted with the light primary
@@ -156,6 +163,8 @@ export const DIGITO_THEME: ThemeSwitcherConfig = {
   custom: {
     headerContrast: 6.5,
     darkSurfaces: ["#0d1220", "#161d2e", "#1e2639"],
-    extras: { pop: "#ffd91a" },
+    darkText: "#0f1729",
+    /* The yellow accent word on the header; on a light brand with dark words, those words' colour. */
+    extras: (v) => ({ pop: v.onPrimary === "#ffffff" ? "#ffd91a" : v.onPrimary }),
   },
 };

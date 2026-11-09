@@ -20,6 +20,11 @@
  *   never under 4.5) against the lightest dark surface;
  * - dark deep and a dark tint.
  * A grey or black pick works the same way (zero chroma).
+ *
+ * With textOnBrand "auto" (a merchant's brand colour, not the visitor's
+ * picker), a light brand such as yellow keeps its colour as the fill, with
+ * dark words on it (darkText, at headerContrast), and the darkened colour is
+ * used only as text on white.
  */
 
 export interface CustomColorOptions {
@@ -33,8 +38,18 @@ export interface CustomColorOptions {
   darkLinkContrast?: number;
   /** The dark button against the dark card (default 3). */
   darkCardContrast?: number;
-  /** Extra values every custom palette carries in both modes (e.g. { pop: "#ffd91a" }). */
-  extras?: Record<string, string>;
+  /**
+   * Words on the brand colour: "white" (default; a light colour is darkened
+   * until white reads) or "auto" (a light brand such as yellow keeps its
+   * colour and gets darkText on it, when that reads; the visitor's custom
+   * picker always uses "white").
+   */
+  textOnBrand?: "auto" | "white";
+  /** The dark words used on a light brand in "auto" (default #111111). */
+  darkText?: string;
+  /** Extra values every palette carries, per mode (e.g. { pop: "#ffd91a" }); a function gets the
+      mode's values (primary, onPrimary…) and returns the extras. */
+  extras?: Record<string, string> | ((values: Record<string, string>, mode: "light" | "dark") => Record<string, string>);
 }
 
 export interface CustomPalette {
@@ -47,6 +62,8 @@ export interface CustomPalette {
 }
 
 const DEFAULTS: Required<Omit<CustomColorOptions, "extras">> = {
+  textOnBrand: "white",
+  darkText: "#111111",
   headerContrast: 4.5,
   lightSurfaces: ["#ffffff", "#f0f2f5"],
   darkSurfaces: ["#0d1220", "#161d2e", "#1e2639"],
@@ -167,7 +184,10 @@ export function paletteFromColor(input: string, options: CustomColorOptions = {}
   const picked = normalizeHex(input) || "#000000";
   const [L0, C0, h] = hexToOklch(picked);
   const C = C0 < 0.002 ? 0 : C0;
-  const extras = options.extras || {};
+  const extrasFor = (values: Record<string, string>, mode: "light" | "dark") =>
+    typeof options.extras === "function" ? options.extras(values, mode) : options.extras || {};
+  const ink = normalizeHex(o.darkText) || "#111111";
+  const auto = o.textOnBrand === "auto";
 
   /* Light primary: white on it at headerContrast (4.5 at least), and the
      primary as text on every light surface and on its own soft tint at 4.5. */
@@ -182,6 +202,19 @@ export function paletteFromColor(input: string, options: CustomColorOptions = {}
   const [Lp] = hexToOklch(primary);
   /* Hover: darker; on a near-black primary, a step lighter (still white text at 4.5). */
   const deep = Lp > 0.2 ? nudge(Lp - 0.07, C, h, -0.002, (x) => contrast(WHITE, x) >= lightNeed) : nudge(Lp + 0.06, C, h, -0.002, (x) => contrast(WHITE, x) >= lightNeed);
+
+  /* "auto": a light brand keeps its colour with dark words on it, when they
+     read (at headerContrast, since the header carries them too); the darkened
+     colour above stays the text colour on white. */
+  let lightFill = primary;
+  let lightDeep = deep;
+  let lightOn = WHITE;
+  if (auto && contrast(WHITE, picked) < lightNeed && contrast(ink, picked) >= lightNeed) {
+    lightFill = picked;
+    lightOn = ink;
+    lightDeep = nudge(L0 - 0.05, C, h, -0.002, (x) => contrast(ink, x) >= 4.5);
+    if (contrast(ink, lightDeep) < 4.5) lightDeep = picked;
+  }
 
   /* Dark primary: white at 4.6:1 or more, and 3:1 or more against the dark card. */
   const card = o.darkSurfaces[1] || o.darkSurfaces[0];
@@ -199,8 +232,18 @@ export function paletteFromColor(input: string, options: CustomColorOptions = {}
       darkPrimary = ok(down) ? down : nudge(L, C, h, 0.001, ok);
     }
   }
+  let darkOn = WHITE;
+  /* Dark words in dark mode only when the light palette has them too, so a
+     header painted with the light primary keeps one word colour in both modes. */
+  if (auto && lightOn === ink && contrast(ink, picked) >= 4.5 && contrast(picked, card) >= o.darkCardContrast) {
+    darkPrimary = picked;
+    darkOn = ink;
+  }
   const [Ld] = hexToOklch(darkPrimary);
-  const darkDeep = nudge(Ld - 0.05, C, h, -0.002, (x) => contrast(WHITE, x) >= 4.6);
+  const darkDeep =
+    darkOn === WHITE
+      ? nudge(Ld - 0.05, C, h, -0.002, (x) => contrast(WHITE, x) >= 4.6)
+      : nudge(Ld + 0.04, C, h, 0.002, (x) => contrast(ink, x) >= 4.5 && contrast(x, card) >= o.darkCardContrast); // dark words: a lighter hover
   const darkSoft = at(0.3, Math.min(C, 0.07), h);
 
   /* Dark text: the lightest dark surface decides. */
@@ -212,10 +255,12 @@ export function paletteFromColor(input: string, options: CustomColorOptions = {}
     link = nudge(Math.max(L0, lightnessFor(target * 1.03, C, h)), C, h, 0.002, (x) => contrast(x, lightest) >= linkNeed);
   }
 
+  const light: Record<string, string> = { primary: lightFill, deep: lightDeep, soft, onPrimary: lightOn, text: primary };
+  const dark: Record<string, string> = { primary: darkPrimary, deep: darkDeep, soft: darkSoft, onPrimary: darkOn, text: link };
   return {
     picked,
-    adjusted: { light: primary !== picked, dark: darkPrimary !== picked },
-    light: { ...extras, primary, deep, soft, onPrimary: WHITE, text: primary },
-    dark: { ...extras, primary: darkPrimary, deep: darkDeep, soft: darkSoft, onPrimary: WHITE, text: link },
+    adjusted: { light: lightFill !== picked, dark: darkPrimary !== picked },
+    light: { ...extrasFor(light, "light"), ...light },
+    dark: { ...extrasFor(dark, "dark"), ...dark },
   };
 }

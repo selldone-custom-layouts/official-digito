@@ -90,7 +90,7 @@
     height: 26px;
     border-radius: 50%;
     background: var(--k-green);
-    color: #fff;
+    color: var(--dg-on-brand);
     font-size: 11px;
     font-style: normal;
     font-weight: 700;
@@ -271,7 +271,7 @@
     padding: 40px 44px;
     border-radius: 32px;
     background: var(--k-green-deep);
-    color: #fff;
+    color: var(--dg-on-brand);
 
     h1 {
       margin: 8px 0 0;
@@ -688,7 +688,7 @@
 
     &:hover {
       background: var(--k-green-hover);
-      color: #fff !important;
+      color: var(--dg-on-brand) !important;
     }
   }
 

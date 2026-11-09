@@ -19,7 +19,7 @@ $t-tablet: 1100px;
   &.-red {
     border: 0;
     background: var(--k-green);
-    color: #fff !important;
+    color: var(--dg-on-brand) !important;
 
     &:hover {
       background: var(--k-green-hover);
@@ -455,7 +455,7 @@ $t-tablet: 1100px;
   &.-all {
     border-color: var(--k-ink);
     background: var(--dg-ink-bg);
-    color: #fff;
+    color: var(--dg-on-ink-bg);
   }
 
   &__n {
@@ -466,7 +466,7 @@ $t-tablet: 1100px;
     padding: 0 6px;
     border-radius: 10px;
     background: var(--k-green);
-    color: #fff;
+    color: var(--dg-on-brand);
     font-size: 12px;
     font-weight: 800;
   }
@@ -697,7 +697,7 @@ $t-tablet: 1100px;
   &.-on {
     border-color: var(--k-ink);
     background: var(--dg-ink-bg);
-    color: #fff;
+    color: var(--dg-on-ink-bg);
   }
 }
 
@@ -1674,7 +1674,7 @@ $t-tablet: 1100px;
 /* The summary's button is always red: it takes the shopper to what is missing. */
 .k-cart .k-cart__go.-off {
   background: var(--k-green) !important;
-  color: #fff !important;
+  color: var(--dg-on-brand) !important;
   opacity: 1 !important;
 
   * {
@@ -2250,7 +2250,7 @@ $t-tablet: 1100px;
       &.-on {
         background: var(--dg-ink-bg);
         border-color: var(--k-ink);
-        color: #fff;
+        color: var(--dg-on-ink-bg);
       }
     }
   }
@@ -2441,7 +2441,7 @@ $t-tablet: 1100px;
     margin-top: 26px;
     border-radius: 14px;
     background: var(--k-green);
-    color: #fff;
+    color: var(--dg-on-brand);
     text-align: center;
 
     div {
@@ -2717,7 +2717,7 @@ $t-tablet: 1100px;
       border: 0;
       border-radius: 50%;
       background: var(--k-green);
-      color: #fff;
+      color: var(--dg-on-brand);
       cursor: pointer;
     }
   }

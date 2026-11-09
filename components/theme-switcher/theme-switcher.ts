@@ -59,7 +59,26 @@ export interface ThemePalette {
     default), always, or never. */
 export type SwitcherMode = "showcase" | "on" | "off";
 
+/**
+ * The merchant's choice, in one file per Layout (e.g. digito-theme.settings.ts):
+ * the Layout's designed default on any shop, painted before the first paint.
+ * On a shop that does not show the switcher it is the only theme.
+ */
+export interface ThemeSettings {
+  /** One of the tested palettes' ids. */
+  palette?: string;
+  /** Any colour (#RRGGBB) instead of a tested palette, made readable by paletteFromColor(). */
+  brandColor?: string;
+  mode?: ThemeMode;
+  /** "showcase" (only on the Layout's showcase shops), "on" or "off". */
+  themeSwitcher?: SwitcherMode;
+  /** With brandColor: "auto" lets a light brand (yellow) keep its colour with dark words on it; "white" darkens it until white reads. */
+  textOnBrand?: "auto" | "white";
+}
+
 export interface ThemeSwitcherConfig {
+  /** The merchant's settings (palette or brandColor, mode, themeSwitcher, textOnBrand). */
+  settings?: ThemeSettings;
   /**
    * "showcase" (default): only when the running shop is one of showcaseShops
    * (a merchant who imports the Layout into their own shop never sees it);
@@ -106,7 +125,7 @@ export interface ThemeSwitcherConfig {
   ui?: { ink?: string; muted?: string; line?: string; surface?: string; font?: string };
   /** Words: the button and panel name, the palettes' and the mode's group
       names (aria-label), the panel's headings, and the two modes. */
-  labels?: { theme?: string; palettes?: string; mode?: string; modeTitle?: string; light?: string; dark?: string; custom?: string; adjusted?: string };
+  labels?: { theme?: string; palettes?: string; mode?: string; modeTitle?: string; light?: string; dark?: string; custom?: string; adjusted?: string; brand?: string };
   /**
    * The free colour picker in the header panel (a sixth swatch, "Custom
    * colour"). Its options go to paletteFromColor(): headerContrast when the
@@ -118,6 +137,8 @@ export interface ThemeSwitcherConfig {
 
 /** The custom palette's id in the state and in storage. */
 export const CUSTOM_ID = "custom";
+/** The merchant's brand colour (settings.brandColor) as a palette id. */
+export const BRAND_ID = "brand";
 
 const DEFAULT_LABELS = {
   theme: "Theme",
@@ -128,6 +149,7 @@ const DEFAULT_LABELS = {
   dark: "Dark",
   custom: "Custom colour",
   adjusted: "Adjusted for readability",
+  brand: "Brand colour",
 };
 
 let cfg: ThemeSwitcherConfig | null = null;
@@ -155,7 +177,7 @@ export function shopIdentity(): { id: number | null; name: string } {
 
 /** Whether the switcher shows on this shop (config.mode and showcaseShops). */
 export function switcherAllowed(config: ThemeSwitcherConfig): boolean {
-  const mode = config.mode || "showcase";
+  const mode = config.settings?.themeSwitcher || config.mode || "showcase";
   if (mode === "on") return true;
   if (mode === "off") return false;
   const { id, name } = shopIdentity();
@@ -190,8 +212,40 @@ const rgbOf = (hex: string): string => {
   return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16)).join(", ");
 };
 
+let brandCache: ThemePalette | null = null;
+
+/** The merchant's brand colour as a palette (settings.brandColor), or null. */
+function brandPalette(): ThemePalette | null {
+  const hex = normalizeHex(cfg?.settings?.brandColor || "");
+  if (!cfg || !hex) return null;
+  if (brandCache) return brandCache;
+  const opts = { ...(cfg.custom || {}), textOnBrand: cfg.settings?.textOnBrand || "white" };
+  const built = paletteFromColor(hex, opts);
+  brandCache = { id: BRAND_ID, name: { ...DEFAULT_LABELS, ...(cfg.labels || {}) }.brand, light: built.light as PaletteValues, dark: built.dark as PaletteValues };
+  return brandCache;
+}
+
+/** The tested palettes as shown: a brand colour from the settings takes the first (brand) place. */
+export function paletteList(): ThemePalette[] {
+  if (!cfg) return [];
+  const brand = brandPalette();
+  return brand ? [brand, ...cfg.palettes.slice(1)] : cfg.palettes;
+}
+
+/** The merchant's default choice (settings), and whether it is the Layout's own stock default. */
+function defaults(): { palette: string; mode: ThemeMode; stock: boolean } {
+  const st = cfg!.settings || {};
+  const list = paletteList();
+  const palette = brandPalette() ? BRAND_ID : list.some((p) => p.id === st.palette) ? st.palette! : list[0].id;
+  const mode: ThemeMode = st.mode === "dark" ? "dark" : st.mode === "light" ? "light" : cfg!.defaultMode || "light";
+  return { palette, mode, stock: palette === cfg!.palettes[0].id && mode === "light" };
+}
+
+/* A merchant's settings on a shop that does not show the switcher: painted, never stored or changed. */
+let fixedTheme = false;
+
 function palette(): ThemePalette {
-  const list = cfg!.palettes;
+  const list = paletteList();
   if (themeState.palette === CUSTOM_ID) {
     const custom = customPalette();
     if (custom) return custom;
@@ -210,7 +264,8 @@ function valueOf(p: ThemePalette, ref: string): string {
 }
 
 function read(): { palette: string; mode: ThemeMode; custom: string } {
-  const fallback = { palette: cfg!.palettes[0].id, mode: cfg!.defaultMode || "light", custom: "" };
+  const d = defaults();
+  const fallback = { palette: d.palette, mode: d.mode, custom: "" };
   try {
     const raw = window.localStorage.getItem(cfg!.storageKey);
     if (!raw) return fallback;
@@ -218,7 +273,7 @@ function read(): { palette: string; mode: ThemeMode; custom: string } {
     const custom = normalizeHex(v?.custom || "") || "";
     const customOk = cfg!.custom != null && cfg!.custom !== false && !!custom;
     return {
-      palette: cfg!.palettes.some((p) => p.id === v?.palette) ? v.palette : v?.palette === CUSTOM_ID && customOk ? CUSTOM_ID : fallback.palette,
+      palette: paletteList().some((p) => p.id === v?.palette) ? v.palette : v?.palette === CUSTOM_ID && customOk ? CUSTOM_ID : fallback.palette,
       mode: v?.mode === "dark" ? "dark" : v?.mode === "light" ? "light" : fallback.mode,
       custom,
     };
@@ -239,7 +294,7 @@ function save(): void {
 
 /** Paint the current choice on the whole page, now. */
 export function applyTheme(): void {
-  if (!cfg || !themeState.enabled) return;
+  if (!cfg || (!themeState.enabled && !fixedTheme)) return;
   const p = palette();
   const dark = themeState.mode === "dark";
   const root = document.documentElement;
@@ -302,7 +357,7 @@ export function setTheme(next: { palette?: string; mode?: ThemeMode; custom?: st
     themeState.custom = custom;
     themeState.palette = CUSTOM_ID;
   } else if (next.palette === CUSTOM_ID && customPalette()) themeState.palette = CUSTOM_ID;
-  else if (next.palette && cfg.palettes.some((p) => p.id === next.palette)) themeState.palette = next.palette;
+  else if (next.palette && paletteList().some((p) => p.id === next.palette)) themeState.palette = next.palette;
   if (next.mode === "light" || next.mode === "dark") themeState.mode = next.mode;
   applyTheme();
   save();
@@ -312,7 +367,7 @@ export function setTheme(next: { palette?: string; mode?: ThemeMode; custom?: st
 export function useThemeSwitcher() {
   return {
     state: themeState,
-    palettes: cfg?.palettes || [],
+    palettes: paletteList(),
     labels: { ...DEFAULT_LABELS, ...(cfg?.labels || {}) },
     customEnabled: !!cfg && cfg.custom != null && cfg.custom !== false,
     customPalette,
@@ -327,18 +382,21 @@ export function useThemeSwitcher() {
 export function bootThemeSwitcher(config: ThemeSwitcherConfig, vuetifyInstance?: any): void {
   cfg = config;
   vuetify = vuetifyInstance || null;
-  /* Not a showcase shop (or mode "off"): no effect at all. Nothing is read
-     from storage, nothing is painted, Vuetify is left as the Layout made it. */
+  brandCache = null;
   themeState.enabled = switcherAllowed(config);
-  if (!themeState.enabled) return;
-  try {
-    const themes = vuetify?.theme?.themes?.value;
-    const names = { light: config.vuetify?.light || "light", dark: config.vuetify?.dark || "dark" };
-    if (themes?.[names.dark] && config.vuetify?.darkColors) Object.assign(themes[names.dark].colors, config.vuetify.darkColors);
-    if (themes?.[names.light] && config.vuetify?.lightColors) Object.assign(themes[names.light].colors, config.vuetify.lightColors);
-  } catch {
-    /* keep Vuetify's own colours */
+  if (!themeState.enabled) {
+    /* No switcher here. The Layout's stock default: nothing at all happens.
+       A merchant's own settings (another palette, a brand colour, dark):
+       painted as the only theme; nothing is read from or written to storage. */
+    const d = defaults();
+    if (d.stock) return;
+    fixedTheme = true;
+    setVuetifyColors(config);
+    Object.assign(themeState, { palette: d.palette, mode: d.mode, custom: "" });
+    applyTheme();
+    return;
   }
+  setVuetifyColors(config);
   Object.assign(themeState, read());
   applyTheme();
   // Another tab changed it: follow.
@@ -350,5 +408,17 @@ export function bootThemeSwitcher(config: ThemeSwitcherConfig, vuetifyInstance?:
     });
   } catch {
     /* no window events (prerender) */
+  }
+}
+
+/* The dark theme's surfaces (and any fixed light colours) into Vuetify. */
+function setVuetifyColors(config: ThemeSwitcherConfig): void {
+  try {
+    const themes = vuetify?.theme?.themes?.value;
+    const names = { light: config.vuetify?.light || "light", dark: config.vuetify?.dark || "dark" };
+    if (themes?.[names.dark] && config.vuetify?.darkColors) Object.assign(themes[names.dark].colors, config.vuetify.darkColors);
+    if (themes?.[names.light] && config.vuetify?.lightColors) Object.assign(themes[names.light].colors, config.vuetify.lightColors);
+  } catch {
+    /* keep Vuetify's own colours */
   }
 }

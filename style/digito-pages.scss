@@ -692,7 +692,7 @@
     height: 44px;
     border-radius: 50%;
     background: var(--dg-blue);
-    color: #fff;
+    color: var(--dg-on-brand);
     display: grid;
     place-items: center;
   }
@@ -700,7 +700,7 @@
   &__band {
     margin-top: 16px;
     background: var(--dg-blue);
-    color: #fff;
+    color: var(--dg-on-brand);
     border-radius: var(--dg-r);
     padding: 22px 24px;
     display: grid;

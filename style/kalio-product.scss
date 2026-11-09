@@ -1156,7 +1156,7 @@
 
     .v-btn--variant-elevated {
       background: var(--k-green) !important;
-      color: #fff !important;
+      color: var(--dg-on-brand) !important;
       box-shadow: none !important;
     }
 
@@ -1238,7 +1238,7 @@
       .v-btn.bg-primary,
       .v-btn[class*="primary"] {
         background: var(--k-green) !important;
-        color: #fff !important;
+        color: var(--dg-on-brand) !important;
       }
     }
 
@@ -1653,7 +1653,7 @@
     padding: 0 20px;
     border-radius: var(--k-pill);
     background: var(--k-green-deep);
-    color: #fff !important;
+    color: var(--dg-on-brand) !important;
     font-size: 16.5px;
     font-weight: 700;
     text-decoration: none;

@@ -24,6 +24,9 @@
   --dg-raise: #f6f7f9;
   --dg-head: #0a4bd8; /* the header band: the palette's light primary in both modes */
   --dg-pop: #ffd91a; /* the accent word on the header colour (per palette) */
+  --dg-on-brand: #ffffff; /* words on the brand colour: white, or a dark ink for a light brand (textOnBrand) */
+  --dg-on-brand-rgb: 255, 255, 255;
+  --dg-on-ink-bg: #ffffff; /* words on an ink fill; on the brand colour when dark */
   --dg-ink-bg: #0f1729; /* ink used as a fill (chosen chips, ticks); the palette colour when dark */
   --dg-navy-ink: #071634; /* navy icons on a card; light grey when dark */
   --dg-green: #0f7b3e;
@@ -167,7 +170,7 @@ html.dg-locked {
   border: 0;
   border-radius: var(--dg-r-s);
   background: var(--dg-blue) !important;
-  color: #fff !important;
+  color: var(--dg-on-brand) !important;
   font: 700 14px/1 var(--dg-font) !important;
   white-space: nowrap;
   cursor: pointer;
@@ -273,7 +276,7 @@ html.dg-locked {
 
   &.-on {
     background: var(--dg-blue);
-    color: #fff !important;
+    color: var(--dg-on-brand) !important;
     box-shadow: none;
   }
 }
@@ -538,7 +541,7 @@ html.dg-locked {
   height: 38px;
   border-radius: var(--dg-r-s);
   background: var(--dg-blue);
-  color: #fff;
+  color: var(--dg-on-brand);
 
   button {
     width: 40px;
@@ -1066,7 +1069,7 @@ html.dg-locked {
   &.-all {
     .dg-cat__ring {
       background: var(--dg-blue);
-      color: #fff;
+      color: var(--dg-on-brand);
     }
 
     b {
@@ -1102,7 +1105,7 @@ html.dg-locked {
 
   &__band {
     background: var(--dg-head);
-    color: #fff;
+    color: var(--dg-on-brand);
     padding: 16px 18px 14px;
     display: flex;
     flex-direction: column;
@@ -1353,7 +1356,7 @@ html.dg-locked {
     height: 64px;
     border-radius: 32px;
     background: var(--dg-blue);
-    color: #fff !important;
+    color: var(--dg-on-brand) !important;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1479,7 +1482,7 @@ html.dg-locked {
   font-size: 31px;
   line-height: 1;
   letter-spacing: -0.045em;
-  color: #fff;
+  color: var(--dg-on-brand); /* the wordmark sits on the brand colour */
   display: inline-flex;
   align-items: baseline;
   padding-top: 4px;
@@ -1495,7 +1498,7 @@ html.dg-locked {
       top: -0.06em;
       width: 0.21em;
       height: 0.21em;
-      background: var(--dg-yellow);
+      background: var(--dg-pop); /* yellow; the brand's words colour on a light brand */
       border-radius: 2px;
       transform: translateX(-50%);
     }
@@ -1506,7 +1509,7 @@ html.dg-locked {
   position: relative;
   z-index: 20;
   background: var(--dg-head) !important;
-  color: #fff;
+  color: var(--dg-on-brand);
   border: 0 !important;
   box-shadow: none !important;
 
@@ -1525,7 +1528,7 @@ html.dg-locked {
   }
 
   &__brand {
-    color: #fff !important;
+    color: var(--dg-on-brand) !important;
     flex: none;
   }
 
@@ -1598,7 +1601,7 @@ html.dg-locked {
   }
 
   &__pick {
-    color: #fff !important;
+    color: var(--dg-on-brand) !important;
   }
 
   &__act {
@@ -1609,14 +1612,14 @@ html.dg-locked {
     white-space: nowrap;
     padding: 6px 8px;
     border-radius: 8px;
-    color: #fff !important;
+    color: var(--dg-on-brand) !important;
     background: transparent;
     border: 0;
     cursor: pointer;
     font-family: var(--dg-font);
 
     &:hover {
-      background: rgba(255, 255, 255, 0.12);
+      background: rgba(var(--dg-on-brand-rgb), 0.12);
     }
 
     > span:not(.dg-ms) {
@@ -1641,7 +1644,7 @@ html.dg-locked {
 
       .u--price,
       .u--price * {
-        color: #fff !important;
+        color: var(--dg-on-brand) !important;
         font-size: 14px !important;
         font-weight: 700 !important;
       }
@@ -1678,7 +1681,7 @@ html.dg-locked {
   &__sep {
     width: 1px;
     height: 20px;
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(var(--dg-on-brand-rgb), 0.3);
     margin: 0 6px;
     flex: none;
   }
@@ -1696,10 +1699,10 @@ html.dg-locked {
     padding: 6px 8px;
     border-radius: 6px;
     white-space: nowrap;
-    color: #fff !important;
+    color: var(--dg-on-brand) !important;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.12);
+      background: rgba(var(--dg-on-brand-rgb), 0.12);
     }
   }
 }
@@ -1712,16 +1715,16 @@ html.dg-locked {
   padding: 0 14px;
   border-radius: 16px;
   border: 0;
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(var(--dg-on-brand-rgb), 0.14);
   font: 700 13.5px var(--dg-font);
-  color: #fff !important;
+  color: var(--dg-on-brand) !important;
   white-space: nowrap;
   cursor: pointer;
   flex: none;
   transition: background-color 0.15s;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.24);
+    background: rgba(var(--dg-on-brand-rgb), 0.24);
   }
 
   &.-shop {
@@ -2012,7 +2015,7 @@ html.dg-locked {
 
   .k-drawer__head {
     background: var(--dg-head);
-    color: #fff;
+    color: var(--dg-on-brand);
     border: 0 !important;
 
     .k-drawer__title {
@@ -2511,7 +2514,7 @@ html.dg-locked {
 
     &.-deals {
       background: var(--dg-blue);
-      color: #fff;
+      color: var(--dg-on-brand);
 
       h1 {
         color: #fff;
@@ -2564,7 +2567,7 @@ html.dg-locked {
       height: 20px;
       border-radius: 10px;
       background: var(--dg-blue);
-      color: #fff;
+      color: var(--dg-on-brand);
       font-size: 12px;
       line-height: 20px;
       text-align: center;
@@ -2790,7 +2793,7 @@ html.dg-locked {
       height: 20px;
       border-radius: 10px;
       background: var(--dg-blue);
-      color: #fff;
+      color: var(--dg-on-brand);
       font-size: 11.5px;
       line-height: 20px;
       text-align: center;
