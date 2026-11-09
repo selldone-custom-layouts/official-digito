@@ -1343,3 +1343,14 @@ body .u--price .small,
 .v-application .k-prose a.dg-btn:hover {
   text-decoration: none !important;
 }
+
+/* Tablet: the five service links on one row (three and two left a hole). */
+@media (min-width: 600px) and (max-width: 959px) {
+  .dg-footer__svc {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+
+    a {
+      font-size: 12px;
+    }
+  }
+}
