@@ -10,11 +10,15 @@
  * before mounting, so the chosen theme paints first, with no flash.
  *
  * Contrast (WCAG 2.1, measured): white on each light primary — blue 6.97,
- * emerald 5.48, violet 7.10, teal 5.36, orange 5.18; white on each dark
- * primary — 5.17, 5.48, 5.70, 5.36, 5.18; each dark "text" colour on the
+ * emerald 6.99, violet 7.10, teal 6.51, orange 6.37. The light primary also
+ * paints the header and its bands in both modes, where words are 80-88%
+ * white on 15% white pills: those still read 4.6:1 or more on every palette
+ * (a brighter emerald #047857, teal #0e7490 or orange #c2410c fell to 4.0).
+ * White on each dark primary (buttons on dark cards, 3:1 or more against
+ * the card) — 5.17, 5.48, 5.70, 5.36, 5.18; each dark "text" colour on the
  * dark card #161d2e — 7.86, 11.03, 9.11, 11.60, 9.97. "pop" is the accent
- * word on the header colour (light primary in both modes): Digito's yellow
- * where it reads 4.5:1 or more (blue 5.05, violet 5.14), else a pale yellow.
+ * word on the header colour: Digito's yellow reads 4.6:1 or more on every
+ * light primary (a palette where it does not would set a pale yellow).
  */
 import type { ThemeSwitcherConfig } from "../theme-switcher/theme-switcher";
 
@@ -32,7 +36,7 @@ export const DIGITO_THEME: ThemeSwitcherConfig = {
     {
       id: "emerald",
       name: "Emerald",
-      light: { primary: "#047857", deep: "#065f46", soft: "#e3f6ee", onPrimary: "#ffffff", text: "#047857", pop: "#fff4b8" },
+      light: { primary: "#05664a", deep: "#064e3b", soft: "#e3f6ee", onPrimary: "#ffffff", text: "#05664a", pop: "#ffd91a" },
       dark: { primary: "#047857", deep: "#065f46", soft: "#123a30", onPrimary: "#ffffff", text: "#6ee7b7" },
     },
     {
@@ -44,13 +48,13 @@ export const DIGITO_THEME: ThemeSwitcherConfig = {
     {
       id: "teal",
       name: "Ocean teal",
-      light: { primary: "#0e7490", deep: "#155e75", soft: "#e0f4f8", onPrimary: "#ffffff", text: "#0e7490", pop: "#fff4b8" },
+      light: { primary: "#0c6680", deep: "#164e63", soft: "#e0f4f8", onPrimary: "#ffffff", text: "#0c6680", pop: "#ffd91a" },
       dark: { primary: "#0e7490", deep: "#155e75", soft: "#123540", onPrimary: "#ffffff", text: "#67e8f9" },
     },
     {
       id: "orange",
       name: "Sunset orange",
-      light: { primary: "#c2410c", deep: "#9a3412", soft: "#fdeee6", onPrimary: "#ffffff", text: "#c2410c", pop: "#fff4b8" },
+      light: { primary: "#a93a0b", deep: "#7c2d12", soft: "#fdeee6", onPrimary: "#ffffff", text: "#a93a0b", pop: "#ffd91a" },
       dark: { primary: "#c2410c", deep: "#9a3412", soft: "#3d2215", onPrimary: "#ffffff", text: "#fdba74" },
     },
   ],
@@ -113,7 +117,7 @@ export const DIGITO_THEME: ThemeSwitcherConfig = {
     light: "light",
     dark: "dark",
     paletteColors: { primary: "primary" },
-    lightColors: { secondary: "#071634" },
+    lightColors: { secondary: "#071634", error: "#c4122f" }, // Vuetify's #ff5252 is 3.3:1 on white
     darkColors: {
       background: "#0d1220",
       surface: "#161d2e",

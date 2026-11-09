@@ -1580,6 +1580,12 @@ body .u--price.u--price .small.small {
   }
 }
 
+/* Selldone's red notes ("[Invalid]" beside a phone or address) use Vuetify's
+   .text-red (#f44336, 3.7:1 on white): Digito's sale red, light or dark. */
+.v-application .text-red {
+  color: var(--dg-red) !important;
+}
+
 /* Captions under pictures in a product's description and a post (Selldone's
    article plugin writes #ccc, 1.6:1). */
 :is(.medium-insert-images-safe, .medium-insert-images, .medium-insert-embeds) figure figcaption {
