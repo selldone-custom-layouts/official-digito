@@ -1335,3 +1335,11 @@ body .u--price .small,
     background: var(--dg-blue-d) !important;
   }
 }
+
+/* Buttons inside an article's text area are buttons, not text links: no line. */
+.v-application .k-prose a.k-btn,
+.v-application .k-prose a.dg-btn,
+.v-application .k-prose a.k-btn:hover,
+.v-application .k-prose a.dg-btn:hover {
+  text-decoration: none !important;
+}

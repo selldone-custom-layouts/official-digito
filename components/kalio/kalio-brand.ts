@@ -62,8 +62,12 @@ function cartWords(): void {
     return out;
   };
   try {
-    const patch = walk(i18n.getLocaleMessage(locale));
-    if (patch) i18n.mergeLocaleMessage(locale, patch);
+    const patch = walk(i18n.getLocaleMessage(locale)) || {};
+    /* An electronics shop's "volume" variant is a capacity (64GB, 1TB), as
+       Digito's cards say ("Choose capacity"). A shop that names its
+       variants itself (Selldone's custom variant names) keeps its names. */
+    patch.global = { ...(patch.global || {}), variants: { ...(patch.global?.variants || {}), volume: "Capacity" } };
+    i18n.mergeLocaleMessage(locale, patch);
   } catch {
     cartSwept = false;
   }
