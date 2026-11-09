@@ -4,6 +4,7 @@
 // request, so nothing reaches the server and no order is made.
 //
 // Usage (Node, from any folder):
+// <palette> is a palette id, or custom:#rrggbb for the custom colour.
 //   SHOP=<xapi name> WAIT="<home selector>" CART="<header cart button>" STORAGE_KEY=<storageKey> \
 //     node cart-audit.cjs <base-url> <palette> <light|dark> [shots-folder]
 // - SHOP: the shop's xapi name (the storefront's @name). WAIT: something the home always shows.
@@ -11,6 +12,11 @@
 // - ADDRESS: a regular expression for the button that opens the address sheet on the cart page.
 // - PW: a Playwright install (default kalio-marketplace's).
 // Prints each failure like contrast-audit.cjs and "TOTAL n"; saves a shot of each step when a folder is given.
+/* "emerald" or "custom:#ffff00" (the custom colour). */
+const themeChoice = (palette, mode) => {
+  const m = String(palette).match(/^custom:(#?[0-9a-f]{3,6})$/i);
+  return m ? { palette: "custom", custom: (m[1][0] === "#" ? "" : "#") + m[1].toLowerCase(), mode } : { palette, mode };
+};
 const PW = process.env.PW || "D:/Kalio Sample Shop Claude/kalio-marketplace/node_modules/playwright";
 const { chromium } = require(PW);
 const { probe } = require("./contrast-audit.cjs");
@@ -66,7 +72,7 @@ const fillCart = (pg) =>
   for (const w of [1440, 390]) {
     const mob = w < 768;
     const ctx = await b.newContext({ viewport: { width: w, height: mob ? 844 : 900 }, isMobile: mob, hasTouch: mob });
-    await ctx.addInitScript(([k, v]) => { try { localStorage.setItem(k, v); } catch (e) {} }, [KEY, JSON.stringify({ palette, mode })]);
+    await ctx.addInitScript(([k, v]) => { try { localStorage.setItem(k, v); } catch (e) {} }, [KEY, JSON.stringify(themeChoice(palette, mode))]);
     await ctx.route((u) => u.href.includes("/buy/"), (r) => r.abort());
     const pg = await ctx.newPage();
     await pg.goto(base.replace(/\/$/, "") + "/", { waitUntil: "domcontentloaded", timeout: 120000 });
@@ -78,7 +84,7 @@ const fillCart = (pg) =>
       const { fails } = await pg.evaluate(probe);
       total += fails.length;
       console.log(`${w} ${name}: ${fails.length ? "\n  " + fails.slice(0, 30).join("\n  ") : "ok"}`);
-      if (outDir) await pg.screenshot({ path: `${outDir}/${palette}-${mode}-${w}-${name}.png` });
+      if (outDir) await pg.screenshot({ path: `${outDir}/${String(palette).replace(/[^a-z0-9]+/gi, "-")}-${mode}-${w}-${name}.png` });
     };
     await pg.evaluate((sel) => { window.scrollTo(0, 0); document.querySelector(sel)?.click(); }, CART);
     await pg.waitForTimeout(3000);

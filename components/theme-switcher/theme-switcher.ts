@@ -20,8 +20,14 @@
  * - <meta name="theme-color"> and color-scheme.
  * The choice is kept in localStorage (try/catch: private windows and blocked
  * storage keep it for the visit) and applied before the first paint.
+ *
+ * Besides the tested palettes, a shopper may pick any colour ("Custom
+ * colour", config.custom): paletteFromColor() (theme-color.ts) builds a whole
+ * palette from it that reads in both modes, and the pick is kept and painted
+ * before the first paint like the others.
  */
 import { reactive } from "vue";
+import { normalizeHex, paletteFromColor, type CustomColorOptions } from "./theme-color";
 
 export type ThemeMode = "light" | "dark";
 
@@ -85,16 +91,57 @@ export interface ThemeSwitcherConfig {
   ui?: { ink?: string; muted?: string; line?: string; surface?: string; font?: string };
   /** Words: the button and panel name, the palettes' and the mode's group
       names (aria-label), the panel's headings, and the two modes. */
-  labels?: { theme?: string; palettes?: string; mode?: string; modeTitle?: string; light?: string; dark?: string };
+  labels?: { theme?: string; palettes?: string; mode?: string; modeTitle?: string; light?: string; dark?: string; custom?: string; adjusted?: string };
+  /**
+   * The free colour picker in the header panel (a sixth swatch, "Custom
+   * colour"). Its options go to paletteFromColor(): headerContrast when the
+   * Layout's header is painted with the light primary (Digito: 6.5), the dark
+   * surfaces, extras every palette must carry (Digito: pop). false hides it.
+   */
+  custom?: false | (CustomColorOptions & { start?: string });
 }
 
-const DEFAULT_LABELS = { theme: "Theme", palettes: "Colour", mode: "Light or dark", modeTitle: "Mode", light: "Light", dark: "Dark" };
+/** The custom palette's id in the state and in storage. */
+export const CUSTOM_ID = "custom";
+
+const DEFAULT_LABELS = {
+  theme: "Theme",
+  palettes: "Colour",
+  mode: "Light or dark",
+  modeTitle: "Mode",
+  light: "Light",
+  dark: "Dark",
+  custom: "Custom colour",
+  adjusted: "Adjusted for readability",
+};
 
 let cfg: ThemeSwitcherConfig | null = null;
 let vuetify: any = null;
 
-/** The current choice (reactive: the footer row reads it). */
-export const themeState = reactive<{ palette: string; mode: ThemeMode }>({ palette: "", mode: "light" });
+/** The current choice (reactive: the header panel and the footer row read it). custom: the last free pick. */
+export const themeState = reactive<{ palette: string; mode: ThemeMode; custom: string }>({ palette: "", mode: "light", custom: "" });
+
+let customCache: { key: string; palette: ThemePalette & { picked: string; adjusted: { light: boolean; dark: boolean } } } | null = null;
+
+/** The palette built from the custom pick (or from config.custom.start, or the brand colour). */
+export function customPalette() {
+  if (!cfg || cfg.custom === false || cfg.custom == null) return null;
+  const opts = cfg.custom;
+  const hex = normalizeHex(themeState.custom) || normalizeHex(opts.start || "") || cfg.palettes[0].light.primary;
+  const key = hex + JSON.stringify(opts);
+  if (customCache?.key === key) return customCache.palette;
+  const built = paletteFromColor(hex, opts);
+  const palette = {
+    id: CUSTOM_ID,
+    name: { ...DEFAULT_LABELS, ...(cfg.labels || {}) }.custom,
+    light: built.light as PaletteValues,
+    dark: built.dark as PaletteValues,
+    picked: built.picked,
+    adjusted: built.adjusted,
+  };
+  customCache = { key, palette };
+  return palette;
+}
 
 const rgbOf = (hex: string): string => {
   let h = hex.trim().replace("#", "");
@@ -104,6 +151,10 @@ const rgbOf = (hex: string): string => {
 
 function palette(): ThemePalette {
   const list = cfg!.palettes;
+  if (themeState.palette === CUSTOM_ID) {
+    const custom = customPalette();
+    if (custom) return custom;
+  }
   return list.find((p) => p.id === themeState.palette) || list[0];
 }
 
@@ -117,15 +168,18 @@ function valueOf(p: ThemePalette, ref: string): string {
   return format === "rgb" && v ? rgbOf(v) : v;
 }
 
-function read(): { palette: string; mode: ThemeMode } {
-  const fallback = { palette: cfg!.palettes[0].id, mode: cfg!.defaultMode || "light" };
+function read(): { palette: string; mode: ThemeMode; custom: string } {
+  const fallback = { palette: cfg!.palettes[0].id, mode: cfg!.defaultMode || "light", custom: "" };
   try {
     const raw = window.localStorage.getItem(cfg!.storageKey);
     if (!raw) return fallback;
     const v = JSON.parse(raw);
+    const custom = normalizeHex(v?.custom || "") || "";
+    const customOk = cfg!.custom != null && cfg!.custom !== false && !!custom;
     return {
-      palette: cfg!.palettes.some((p) => p.id === v?.palette) ? v.palette : fallback.palette,
+      palette: cfg!.palettes.some((p) => p.id === v?.palette) ? v.palette : v?.palette === CUSTOM_ID && customOk ? CUSTOM_ID : fallback.palette,
       mode: v?.mode === "dark" ? "dark" : v?.mode === "light" ? "light" : fallback.mode,
+      custom,
     };
   } catch {
     return fallback;
@@ -134,7 +188,9 @@ function read(): { palette: string; mode: ThemeMode } {
 
 function save(): void {
   try {
-    window.localStorage.setItem(cfg!.storageKey, JSON.stringify({ palette: themeState.palette, mode: themeState.mode }));
+    const v: Record<string, string> = { palette: themeState.palette, mode: themeState.mode };
+    if (themeState.custom) v.custom = themeState.custom;
+    window.localStorage.setItem(cfg!.storageKey, JSON.stringify(v));
   } catch {
     /* private window or blocked storage: the choice lasts for this visit */
   }
@@ -196,10 +252,16 @@ export function applyTheme(): void {
   }
 }
 
-/** Change the palette and/or the mode (saved, applied at once). */
-export function setTheme(next: { palette?: string; mode?: ThemeMode }): void {
+/** Change the palette, the mode and/or the custom colour (saved, applied at once).
+    A custom colour selects the custom palette; a tested palette leaves it. */
+export function setTheme(next: { palette?: string; mode?: ThemeMode; custom?: string }): void {
   if (!cfg) return;
-  if (next.palette && cfg.palettes.some((p) => p.id === next.palette)) themeState.palette = next.palette;
+  const custom = next.custom != null ? normalizeHex(next.custom) : null;
+  if (custom && cfg.custom != null && cfg.custom !== false) {
+    themeState.custom = custom;
+    themeState.palette = CUSTOM_ID;
+  } else if (next.palette === CUSTOM_ID && customPalette()) themeState.palette = CUSTOM_ID;
+  else if (next.palette && cfg.palettes.some((p) => p.id === next.palette)) themeState.palette = next.palette;
   if (next.mode === "light" || next.mode === "dark") themeState.mode = next.mode;
   applyTheme();
   save();
@@ -211,6 +273,8 @@ export function useThemeSwitcher() {
     state: themeState,
     palettes: cfg?.palettes || [],
     labels: { ...DEFAULT_LABELS, ...(cfg?.labels || {}) },
+    customEnabled: !!cfg && cfg.custom != null && cfg.custom !== false,
+    customPalette,
     setTheme,
   };
 }

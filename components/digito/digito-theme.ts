@@ -138,5 +138,15 @@ export const DIGITO_THEME: ThemeSwitcherConfig = {
 
   metaThemeColor: "light.primary",
   ui: { ink: "var(--dg-ink)", muted: "var(--dg-muted)", line: "var(--dg-line)", surface: "var(--dg-card)", font: "var(--dg-font)" },
-  labels: { theme: "Theme", palettes: "Colour", mode: "Light or dark", modeTitle: "Mode", light: "Light", dark: "Dark" },
+  labels: { theme: "Theme", palettes: "Colour", mode: "Light or dark", modeTitle: "Mode", light: "Light", dark: "Dark", custom: "Custom colour", adjusted: "Adjusted for readability" },
+
+  /* "Custom colour" (the owner, 9 November 2026): any colour, made readable
+     by paletteFromColor(). Digito's header is painted with the light primary
+     and carries 80-88% white words and 15% white pills, so white on it must
+     reach 6.5:1 (which also keeps the yellow "pop" word at 4.6:1). */
+  custom: {
+    headerContrast: 6.5,
+    darkSurfaces: ["#0d1220", "#161d2e", "#1e2639"],
+    extras: { pop: "#ffd91a" },
+  },
 };

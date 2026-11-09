@@ -8,10 +8,16 @@
 // - a palette picked in the panel is still there after a reload, before the app has mounted.
 //
 // Usage (Node, from any folder):
+// <palette> is a palette id, or custom:#rrggbb for the custom colour.
 //   STORAGE_KEY=<storageKey> WAIT="<home selector>" BRAND="<logo link>" CART="<cart button>" ACCOUNT="<account action>" \
 //     node header-check.cjs <base-url> <palette> <light|dark> [shots-folder] [widths]
 // widths default "360,390,768,1024,1440". PW: a Playwright install (default kalio-marketplace's).
 // Prints a block per width and "PROBLEMS n". Deliver only at 0.
+/* "emerald" or "custom:#ffff00" (the custom colour). */
+const themeChoice = (palette, mode) => {
+  const m = String(palette).match(/^custom:(#?[0-9a-f]{3,6})$/i);
+  return m ? { palette: "custom", custom: (m[1][0] === "#" ? "" : "#") + m[1].toLowerCase(), mode } : { palette, mode };
+};
 const PW = process.env.PW || "D:/Kalio Sample Shop Claude/kalio-marketplace/node_modules/playwright";
 const { chromium } = require(PW);
 const { probe } = require("./contrast-audit.cjs");
@@ -41,7 +47,7 @@ const widths = widthsArg.split(",").map(Number);
           sessionStorage.setItem("ts-init", "1");
         }
       } catch (e) {}
-    }, [KEY, JSON.stringify({ palette, mode })]);
+    }, [KEY, JSON.stringify(themeChoice(palette, mode))]);
     const pg = await ctx.newPage();
     await pg.goto(base.replace(/\/$/, "") + "/", { waitUntil: "domcontentloaded", timeout: 120000 });
     await pg.waitForSelector(WAIT, { timeout: 120000 });
@@ -74,7 +80,7 @@ const widths = widthsArg.split(",").map(Number);
     if (lay.sw > lay.vw) bad(`the page scrolls sideways (${lay.sw} > ${lay.vw})`);
     const btn = await pg.$eval(".ts-pick__btn", (e) => ({ color: getComputedStyle(e).color, text: e.innerText.replace(/\s+/g, " ").trim() }));
     say.push(`button ${btn.color}, "${btn.text}"`);
-    if (out) await pg.screenshot({ path: `${out}/header-${palette}-${mode}-${w}-closed.png`, clip: { x: 0, y: 0, width: w, height: mob ? 300 : 140 } });
+    if (out) await pg.screenshot({ path: `${out}/header-${String(palette).replace(/[^a-z0-9]+/gi, "-")}-${mode}-${w}-closed.png`, clip: { x: 0, y: 0, width: w, height: mob ? 300 : 140 } });
 
     await pg.click(".ts-pick__btn");
     await pg.waitForTimeout(500);
@@ -108,7 +114,7 @@ const widths = widthsArg.split(",").map(Number);
       problems += inHeader.length;
       say.push("contrast:\n    " + inHeader.join("\n    "));
     }
-    if (out) await pg.screenshot({ path: `${out}/header-${palette}-${mode}-${w}-open.png`, clip: { x: 0, y: 0, width: w, height: mob ? 700 : 520 } });
+    if (out) await pg.screenshot({ path: `${out}/header-${String(palette).replace(/[^a-z0-9]+/gi, "-")}-${mode}-${w}-open.png`, clip: { x: 0, y: 0, width: w, height: mob ? 700 : 520 } });
 
     await pg.keyboard.press("Escape");
     await pg.waitForTimeout(300);

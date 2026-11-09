@@ -10,7 +10,9 @@
   Without a slot it draws a palette icon and the word "Theme".
 
   A click opens a small panel under the button: the palettes (swatch and
-  name; the chosen swatch gets a ring drawn inside it) and Light / Dark.
+  name; the chosen swatch gets a ring drawn inside it), "Custom colour" (the
+  native colour picker; any colour becomes a readable palette, with a note
+  when it had to be adjusted; config.custom) and Light / Dark.
   No scrim. It closes on a second click, on Esc (focus goes back to the
   button), on a click outside and on a page change; Tab walks from the
   button into it. It is placed under the button inside its positioned
@@ -57,6 +59,23 @@
           <span :style="{ '--sw': p[state.mode].primary }" aria-hidden="true" class="ts-pal__sw"></span>
           <span class="ts-pal__n">{{ p.name }}</span>
         </button>
+        <!-- Any colour: the native picker, applied while dragging. The swatch
+             shows the colour actually used (made readable by paletteFromColor). -->
+        <label v-if="customEnabled" :class="{ '-on': customOn }" :title="labels.custom" class="ts-pal -custom">
+          <span :class="{ '-rainbow': !customOn }" :style="customOn ? { '--sw': custom[state.mode].primary } : null" aria-hidden="true" class="ts-pal__sw"></span>
+          <span class="ts-pal__n">
+            {{ labels.custom }}
+            <small v-if="customOn && custom.adjusted[state.mode]" class="ts-pal__note">{{ labels.adjusted }}</small>
+          </span>
+          <input
+            :aria-label="labels.custom"
+            :value="pickerValue"
+            class="ts-pal__input"
+            type="color"
+            @change="onPick($event, true)"
+            @input="onPick($event, false)"
+          />
+        </label>
       </div>
       <p class="ts-pop__t">{{ labels.modeTitle }}</p>
       <theme-mode-switch />
@@ -65,7 +84,7 @@
 </template>
 
 <script>
-import { setTheme, themeState, useThemeSwitcher } from "./theme-switcher";
+import { CUSTOM_ID, customPalette, setTheme, themeState, useThemeSwitcher } from "./theme-switcher";
 import ThemeModeSwitch from "./ThemeModeSwitch.vue";
 
 let uid = 0;
@@ -84,11 +103,23 @@ export default {
   },
 
   data() {
-    const { palettes, labels } = useThemeSwitcher();
-    return { state: themeState, palettes, labels, open: false, pos: {}, popId: `ts-pop-${++uid}` };
+    const { palettes, labels, customEnabled } = useThemeSwitcher();
+    return { state: themeState, palettes, labels, customEnabled, open: false, pos: {}, popId: `ts-pop-${++uid}` };
   },
 
   computed: {
+    customOn() {
+      return this.state.palette === CUSTOM_ID;
+    },
+    /* Rebuilt when the pick changes (themeState.custom is reactive). */
+    custom() {
+      void this.state.custom;
+      return customPalette();
+    },
+    /* The picker opens on the last pick, or on the colour in use. */
+    pickerValue() {
+      return this.state.custom || (this.palettes.find((p) => p.id === this.state.palette) || this.palettes[0])?.light.primary || "#000000";
+    },
     current() {
       return this.palettes.find((p) => p.id === this.state.palette) || this.palettes[0];
     },
@@ -105,6 +136,7 @@ export default {
 
   beforeUnmount() {
     this.unbind();
+    clearTimeout(this.pickTimer);
   },
 
   methods: {
@@ -163,11 +195,25 @@ export default {
       }
       this.pos = { top: `${top}px`, left: `${Math.round(left - o.left)}px`, width: `${Math.round(width)}px` };
     },
+    /* The picker: applied at most every 60ms while dragging, and at once on change. */
+    onPick(e, final) {
+      const value = e.target.value;
+      this.pickNext = value;
+      const now = Date.now();
+      const apply = () => {
+        this.pickAt = Date.now();
+        this.pickTimer = null;
+        setTheme({ custom: this.pickNext });
+      };
+      clearTimeout(this.pickTimer);
+      if (final || !this.pickAt || now - this.pickAt >= 60) apply();
+      else this.pickTimer = setTimeout(apply, 60 - (now - this.pickAt));
+    },
     /* Arrow keys move the focus along the palettes (two columns). */
     onArrows(e) {
       const step = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: 2, ArrowUp: -2 }[e.key];
       if (!step) return;
-      const buttons = [...e.currentTarget.querySelectorAll("button")];
+      const buttons = [...e.currentTarget.querySelectorAll("button, input")];
       const i = buttons.indexOf(document.activeElement);
       if (i < 0) return;
       const rtl = getComputedStyle(e.currentTarget).direction === "rtl";
