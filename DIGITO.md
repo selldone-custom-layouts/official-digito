@@ -53,6 +53,30 @@ Digini sells everything itself. There is no "Sold by", no seller choice on the p
 
 ## Releases
 
+- **1.0.12 (9 November 2026, deploy 440, release `01M70ASJSX9NTABDCDZ5EDADZV`, pinned on domain 1239): the theme switcher moves to the header.** The owner, after seeing Besti 1.0.10: "put it at the top of the header".
+  - **Placement.** A "Theme" action at the top right, styled like Account (palette icon, "Theme" over Light or Dark), after Account and just before the cart. White words on the header in every palette and mode. On a phone it is the icon only, next to the account icon, and the header row neither wraps nor moves the logo.
+  - **The panel.** A click opens a small panel under it: the five palettes (swatch and name; the chosen swatch has a ring inside it) and Light / Dark.
+    - It has no scrim.
+    - It closes on a second click, on Esc (focus back to the button), on a click outside and on a page change.
+    - Tab walks into it; arrow keys move between palettes.
+    - On a wide screen it lines up with the button's right edge (352px wide, never within 12px of either edge); under 600px it sits 12px from each side.
+  - **The footer row is gone**, so the switcher is never shown twice.
+  - **Contrast fix.** The header actions' small label is 94% white instead of 85%. On the hover tint, "Theme" and "Account" had fallen to 4.4:1.
+  - **Package** (`components/theme-switcher/`, copied to `new-shop-kits/theme-switcher/`):
+    - `ThemeSwitcherButton.vue` is now the default placement: the header's action class, a slot for the icon and words, the panel and its placement;
+    - `ThemeModeSwitch.vue` is the Light / Dark switch shared by the panel and the footer row (kept as an option);
+    - `tools/header-check.cjs` checks the button and panel;
+    - `PORTING.md` says where to mount it in a Kalio header, how it behaves on a phone and how to test it.
+  - **Checked:**
+    - **Header check, dev:** PROBLEMS 0 for all 5 palettes × light and dark at 360, 390, 768, 1024 and 1440. It covers:
+      - placement and no wrap;
+      - the panel's 12px edges and no scrim;
+      - the contrast of the header and the panel;
+      - Esc, Tab, a second click and a click outside;
+      - a pick kept after a reload.
+    - **Header check, live:** PROBLEMS 0 for blue light and dark at all five widths, and for teal dark and orange light at 390 and 1440. On reload the theme lands about 0.1s before the header draws.
+    - **Ring sweep:** TOTAL 0 in light and dark, on dev and live.
+    - **Hover:** no underline in dark.
 - **1.0.11 (9 November 2026, deploy 438, release `01M704GNV84S2K8SGK1W12DMNB`, pinned on domain 1239): the theme switcher.** This follows the owner's rule: "colour palettes and light and dark themes in the footer; a click changes the site's theme". It is the build meant as 1.0.10: that upload (deploy 437) was cut off mid-response (`UND_ERR_SOCKET` after 125s) and never extracted, so its number is used up.
   - **The footer's Theme row** sits between the link columns and the legal row. It has:
     - five palettes, each a 32px button with the colour as an inner disc and an inset ring when chosen (never an outline), with a name as tooltip and `aria-label`;

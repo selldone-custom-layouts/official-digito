@@ -133,10 +133,24 @@ const widths = widthsArg.split(",").map(Number);
     await pg.click(`.ts-pal[title="${other}"]`);
     await pg.waitForTimeout(300);
     const picked = await pg.evaluate(() => document.documentElement.dataset.tsPalette);
+    // On a live shop the Layout's script loads after Selldone's own page (its loading screen), so wait
+    // for the switcher's boot, and note whether the app had mounted by then (it must not have).
+    await ctx.addInitScript(() => {
+      // When the theme lands on <html> and when the switcher's own button first appears.
+      window.__ts = {};
+      const t = () => performance.now();
+      new MutationObserver(() => {
+        if (window.__ts.theme == null && document.documentElement.dataset.tsPalette) window.__ts.theme = t();
+        if (window.__ts.button == null && document.querySelector(".ts-pick__btn")) window.__ts.button = t();
+      }).observe(document, { subtree: true, childList: true, attributes: true, attributeFilter: ["data-ts-palette"] });
+    });
     await pg.reload({ waitUntil: "domcontentloaded" });
+    await pg.waitForFunction(() => window.__ts && window.__ts.theme != null && window.__ts.button != null, null, { timeout: 120000 });
     const after = await pg.evaluate(() => `${document.documentElement.dataset.tsPalette}/${document.documentElement.dataset.tsMode}`);
+    const ts = await pg.evaluate(() => window.__ts);
     if (after !== `${picked}/${mode}`) bad(`after a reload: ${after}, expected ${picked}/${mode}`);
-    say.push(`picked ${other}; after a reload ${after}`);
+    if (ts.theme > ts.button) bad("the theme was applied only after the header had drawn (a flash)");
+    say.push(`picked ${other}; after a reload ${after}, applied ${Math.round(ts.button - ts.theme)}ms before the header drew`);
     console.log(`${w} ${palette} ${mode}:\n  ${say.join("\n  ")}`);
     await ctx.close();
   }
