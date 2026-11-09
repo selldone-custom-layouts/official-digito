@@ -53,6 +53,16 @@ Digini sells everything itself. There is no "Sold by", no seller choice on the p
 
 ## Releases
 
+- **1.0.14 (9 November 2026, deploy 446, release `01M70W18VF29X18G0CN5BZVX5A`, pinned on domain 1239): a shared-package fix, the same as Besti 1.0.13.**
+  - Found by Besti's live cart audit: with a custom #ffff00 in dark, the address sheet's red "[Invalid]" note read 2.72:1. Kalio fades the cart's total to half while the bill is recalculated (`.k-cart__receipt.-busy .k-cart__total`), and it is recalculated as the address sheet opens.
+  - `components/theme-switcher/theme-switcher.scss` (copied unchanged from `new-shop-kits/theme-switcher/`):
+    - the busy total keeps full strength, and the wait shows as a progress cursor;
+    - Selldone's `.text-red` words take the theme's error colour (`#c4122f` light, the dark theme's readable red in dark).
+  - Digito's own `.text-red` rule in `digito-pages.scss` (its sale red, `--dg-red`, 4.5:1 or more in both modes) stays.
+  - **Checked live:**
+    - The saved block shows 1.0.14.
+    - Cart audit (drawer, cart page, address sheet; 390 and 1440): custom #ffff00 dark TOTAL 0, blue light TOTAL 0, blue dark TOTAL 0.
+    - Blue dark printed 3 once: a Selldone error toast ("Your token does not have access…", a guest refusal seen in that run only) caught mid fade-in. Settled, the toast is white on #b82e24 (6:1). A re-run printed 0.
 - **1.0.13 (9 November 2026, deploy 441, release `01M70G0RED79GH3C3VDP3F1W9B`, pinned on domain 1239): Custom colour, the merchant's theme settings, a showcase-only switcher, and empty states with gaps.**
   - **Custom colour** (the owner chose a free picker over a longer list of tested colours). The Theme panel has a sixth item, "Custom colour": a colour wheel that opens the browser's own colour picker.
     - The pick is applied while dragging (every 60ms at most), saved as `{palette: "custom", custom: "#rrggbb"}` and painted before the first paint. A tested palette leaves Custom.

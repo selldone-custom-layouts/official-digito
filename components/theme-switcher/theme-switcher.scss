@@ -162,6 +162,23 @@ html[data-ts-mode="dark"] {
   }
 }
 
+/* Red words Selldone writes with Vuetify's .text-red (#f44336: 3.7:1 on
+   white; e.g. a price's "[Invalid]" note) read as the theme's error colour,
+   which every Layout sets to 4.5:1 or more in light and in dark (Digito and
+   Besti: #c4122f light). On every shop, switcher or not. */
+.v-application .text-red {
+  color: rgb(var(--v-theme-error)) !important;
+}
+
+/* Kalio-based Layouts fade the cart's total to half while the bill is being
+   recalculated (.k-cart__receipt.-busy); its words fell under 4.5:1 (a red
+   "[Invalid]" note to 2.7:1 in dark, with the address sheet open). The total
+   keeps full strength; the wait shows as a progress cursor. */
+.k-cart__receipt.-busy .k-cart__total {
+  opacity: 1 !important;
+  cursor: progress;
+}
+
 /* ── The header's "Theme" button and its panel ── */
 .ts-pick {
   /* Not positioned: the panel is placed in the header's own box. */
