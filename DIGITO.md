@@ -87,7 +87,16 @@ Digini sells everything itself. There is no "Sold by", no seller choice on the p
   - **Checked live:**
     - the saved block names 1.0.13;
     - the custom flow for `#ffff00` light and `#000000` dark at 1440 and 390: picked, saved, painted about 0.1s before the header on a reload, and left for Violet;
-    - on an emulated Pixel 7, a tap lands on the native colour input as a trusted click. The picker dialog itself cannot be seen headless, and iOS was not tested.
+    - on an emulated Pixel 7, a tap lands on the native colour input as a trusted click. The picker dialog itself cannot be seen headless, and iOS was not tested;
+    - for all ten extreme picks (`#ffff00 #00ffff #ffffff #000000 #808080 #ff00ff #7fff00 #ff0000 #0000ff #ffa500`) in light and dark:
+      - contrast audit (6 pages, 1440 and 390): 0;
+      - cart audit (drawer, cart, address sheet): 0;
+      - header check (390 and 1440): PROBLEMS 0;
+    - the ring sweep with `#ffff00` light and `#000000` dark: TOTAL 0;
+    - the hidden mode with a stub shop: no button, a planted dark `#ff00ff` ignored;
+    - the empty-state gaps: none touching.
+
+    Runs that timed out under load were run again and passed. A first cart audit of `#7fff00` caught Selldone's error toast mid-fade; the re-run was clean.
 - **1.0.12 (9 November 2026, deploy 440, release `01M70ASJSX9NTABDCDZ5EDADZV`, pinned on domain 1239): the theme switcher moves to the header.** The owner, after seeing Besti 1.0.10: "put it at the top of the header".
   - **Placement.** A "Theme" action at the top right, styled like Account (palette icon, "Theme" over Light or Dark), after Account and just before the cart. White words on the header in every palette and mode. On a phone it is the icon only, next to the account icon, and the header row neither wraps nor moves the logo.
   - **The panel.** A click opens a small panel under it: the five palettes (swatch and name; the chosen swatch has a ring inside it) and Light / Dark.
