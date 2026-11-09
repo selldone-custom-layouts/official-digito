@@ -1,5 +1,5 @@
 <!--
-  Kalio — the basket's lines on the basket page, by seller.
+  Digito — the cart's lines on the cart page (one list: one shop sells all).
 
   A card per seller (their mark, how many items, their subtotal), then the
   lines: packshot, name and size, a quantity stepper, the price with the
@@ -15,17 +15,8 @@
 <template>
   <div class="k-lines">
     <section v-for="group in groups" :key="group.key" class="k-lines__seller">
-      <header class="k-lines__head">
-        <img v-if="group.logo" :src="group.logo" alt="" class="k-lines__logo" height="36" width="36" />
-        <span v-else aria-hidden="true" class="k-lines__logo -shop"><v-icon size="18">storefront</v-icon></span>
-        <span class="k-lines__who">
-          <router-link v-if="group.route" :to="group.route" class="k-lines__name">{{ group.name }}</router-link>
-          <b v-else class="k-lines__name">{{ group.name }}</b>
-          <small>· {{ group.units }} {{ group.units === 1 ? "item" : "items" }}</small>
-        </span>
-        <!-- Tario 1.2.0 (cart A): the seller's shop, not a subtotal. -->
-        <router-link v-if="group.route" :to="group.route" class="k-lines__visit">Visit shop</router-link>
-      </header>
+      <!-- Digito: one shop sells everything, so the lines stand in one list
+           with no seller heading. -->
 
       <div v-for="item in group.items" :key="item.id" class="k-lines__line">
         <router-link :to="productRoute(item.product_id)" class="k-lines__pic">
@@ -34,7 +25,8 @@
         <div class="k-lines__text">
           <router-link :to="productRoute(item.product_id)" class="k-lines__title">{{ item.product?.title }}</router-link>
           <small class="k-lines__each">
-            <template v-if="size(item)">Size: {{ size(item) }} · </template
+            <template v-if="item.variant?.color"><i :style="{ background: swatch(item.variant.color) }" class="dg-sw -xs"></i> </template
+            ><template v-if="size(item)">{{ item.variant?.volume ? "Capacity" : "Option" }}: {{ size(item) }} · </template
             ><template v-if="item.product?.unit && !/^(each|ea|piece|pc)$/i.test(item.product.unit)">per {{ item.product.unit }} · </template
             ><u-price :amount="item.price" :currency="item.currency" /> each
           </small>
@@ -59,7 +51,7 @@
           class="k-lines__qty"
           role="group"
         >
-          <button :aria-label="shown(item) > 1 ? 'One fewer' : 'Remove from basket'" type="button" @click="step(item, -1)">
+          <button :aria-label="shown(item) > 1 ? 'One fewer' : 'Remove from cart'" type="button" @click="step(item, -1)">
             <v-icon size="18">{{ shown(item) > 1 ? "remove" : "delete_outline" }}</v-icon>
           </button>
           <output aria-live="polite">{{ shown(item) }}</output>
@@ -162,6 +154,12 @@ export default {
       return item.vendor_product?.quantity ?? item.variant?.quantity ?? item.product?.quantity ?? 99;
     },
 
+    swatch(c) {
+      const parts = String(c)
+        .split("/")
+        .map((x) => (x.length === 9 ? x.slice(0, 7) : x));
+      return parts.length > 1 ? `linear-gradient(135deg, ${parts[0]} 50%, ${parts[1]} 50%)` : parts[0];
+    },
     size(item) {
       return sizeOf(item.variant);
     },

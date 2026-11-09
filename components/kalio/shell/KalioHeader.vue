@@ -1,208 +1,140 @@
 <!--
-  Kalio — Header. Tario (design A, 7 November 2026): a big-box store's top —
-  a red promo strip that scrolls away (the shop's own free-shipping rule,
-  or its deals), then a white bar: the wordmark, a "Categories" menu, Deals,
-  New arrivals and Sellers, a wide search pill with a round red button,
-  Sign in and the cart with its count. No aisle strip: the categories are
-  the menu and the home page's circles.
-
-  Molino's header, which Tario started from:
-
-  One sticky white bar — the shop's name as a wordmark, an "Aisles" menu,
-  the search, then the shopper's own things: orders, saved, account and the
-  basket — and under it a strip of every aisle with the deals first. On a
-  phone the bar keeps the wordmark and the basket, the search drops under it
-  and everything else moves into a menu drawer.
+  Digito — the header (Home A "Deals hub", 8 November 2026): a blue bar, the
+  wordmark on the left, a big round white search, Account, and the Cart with
+  its count (a yellow badge) and total. A second row of pills: "Shop ▾"
+  opens the category mega menu on a click and closes it on the second
+  (DigitoMegaMenu, no dark scrim), Deals, New arrivals, Brands; then a few
+  live categories (the ones with the most deals), and Track order, Blog and
+  Help on the right. On a phone: the wordmark, account and cart; the search
+  across the width; the pills in a sideways row (the menu button opens the
+  categories drawer). Never a bottom tab bar.
 
   Every working part is the platform's: the search box and its events (the
-  layout's onSearch/onClear), the signed-in account menu
-  (SHeaderSectionUser), the basket (the storefront's, shown by Kalio's
-  own drawer, KalioBasketDrawer), the language and currency pickers, sign-in
-  through the app's need-login event, and the basket count from the
-  storefront mixin. A shop with custom header code keeps Selldone's header
+  layout's onSearch/onClear), sign-in through the app's need-login event,
+  the cart count and lines from the storefront mixin, the language and
+  currency pickers. A shop with custom header code keeps Selldone's header
   (the layout decides), and a native app shell shows none.
 -->
 <template>
-  <header v-if="!$store.getters.getIsNative" class="k-header -promo">
-    <!-- ▆▆▆▆▆▆▆▆ Promo strip ▆▆▆▆▆▆▆▆ -->
-    <div class="t-promo">
-      <div class="t-promo__row k-wrap">
-        <span v-if="promo" class="t-promo__text">
-          Free shipping on orders over <u-price :amount="promo.amount" :currency="promo.currency" />
-        </span>
-        <span v-else class="t-promo__text">Real savings in every aisle, every week</span>
-        <router-link :to="dealsRoute">Shop deals</router-link>
-      </div>
-    </div>
+  <header v-if="!$store.getters.getIsNative" class="k-header dg-header">
+    <div class="dg-header__top">
+      <router-link :aria-label="`${shopTitle} home`" :to="homeRoute" class="dg-header__brand"><digito-wordmark /></router-link>
 
-    <div class="k-header__bar">
-      <div class="k-header__row k-wrap">
-        <button
-          v-if="compact"
-          aria-label="Menu"
-          class="k-header__icon"
-          type="button"
-          @click="menu = true"
-        >
-          <v-icon size="24">menu</v-icon>
+      <div v-if="showSearch && !compact" class="dg-header__search">
+        <s-storefront-search-box
+          v-model:expand-input="globalStyle.search_mode"
+          :dark="false"
+          :negative-qr-margin="false"
+          :placeholder="`Search ${shopTitle}`"
+          :title="`Search ${shopTitle}`"
+          color="#0f1729"
+          flat
+          no-qr
+          persistent-placeholder
+          rounded="xl"
+          variant="solo"
+          @onClear="$emit('clear')"
+          @onSearch="(event) => $emit('search', event)"
+        />
+      </div>
+      <span v-else class="dg-header__sp"></span>
+
+      <nav aria-label="Your account" class="dg-header__acts">
+        <s-language-selector v-if="!compact && hasLanguages" class="dg-header__pick" icon-color="#ffffff" icon-only></s-language-selector>
+        <u-currency-selector
+          v-if="!compact && $shop.currencies && $shop.currencies.length > 1"
+          :shop="$shop"
+          class="dg-header__pick"
+          dense
+          hide-details
+          icon
+          icon-color="#ffffff"
+          icon-only
+          single-line
+          small
+          @change="onChangeUserSelectedCurrency"
+        />
+
+        <router-link v-if="user" :to="profileRoute" aria-label="Your account" class="dg-header__act">
+          <img v-if="user.id && !avatar_failed" :src="getUserAvatar(user.id)" alt="" class="dg-header__avatar" height="28" width="28" @error="avatar_failed = true" />
+          <digito-icon v-else name="person" size="26" />
+          <span><small>Account</small><b>{{ firstName }}</b></span>
+        </router-link>
+        <button v-else :disabled="busyUser" class="dg-header__act" type="button" @click="signIn">
+          <digito-icon name="person" size="26" />
+          <span><small>Account</small><b>{{ busyUser ? "…" : "Sign in" }}</b></span>
         </button>
 
-        <router-link :to="homeRoute" class="k-header__brand -logo" :aria-label="`${shopTitle} home`">
-          <img :src="BRAND.mark" alt="" class="k-brand-mark" height="34" width="34" />{{ shopTitle }}
-        </router-link>
+        <button :aria-label="`Cart, ${itemsCount} items`" class="dg-header__act -cart" type="button" @click="basket = true">
+          <digito-icon name="shopping_cart" size="26" />
+          <i v-if="itemsCount" class="dg-header__count">{{ itemsCount }}</i>
+          <span><small>Cart</small><b><u-price v-if="cartTotal" :amount="cartTotal.amount" :currency="cartTotal.currency" /><template v-else>Empty</template></b></span>
+        </button>
+      </nav>
 
-        <v-menu
-          v-if="!compact && aisleList.length"
-          v-model="aisles_open"
-          :close-on-content-click="true"
-          location="bottom start"
-          offset="12"
-        >
-          <template v-slot:activator="{ props }">
-            <button class="k-header__aisles" type="button" v-bind="props">
-              Categories
-              <v-icon :class="{ 'rotate-180': aisles_open }" class="t-all-400" size="18">expand_more</v-icon>
-            </button>
-          </template>
-          <div class="k-mega">
-            <p class="k-eyebrow">Shop by aisle</p>
-            <div class="k-mega__grid">
-              <router-link
-                v-for="aisle in aisleList"
-                :key="aisle.id"
-                :to="aisleRoute(aisle)"
-                class="k-mega__item"
-              >
-                <span :style="{ '--k-tint': tint(aisle) }" class="k-mega__ring">
-                  <img v-if="aisle.icon" :src="aisleImage(aisle, 64)" alt="" height="40" width="40" loading="lazy" />
-                </span>
-                {{ aisle.title || aisle.name }}
-              </router-link>
-            </div>
-            <div class="k-mega__foot">
-              <router-link :to="dealsRoute" class="k-more">Today’s deals <v-icon class="k-flip" size="18">chevron_right</v-icon></router-link>
-              <router-link :to="catalogueRoute" class="k-more">Every product <v-icon class="k-flip" size="18">chevron_right</v-icon></router-link>
-            </div>
-          </div>
-        </v-menu>
-
-        <nav v-if="!compact" aria-label="Shop" class="t-nav">
-          <router-link :to="dealsRoute" class="t-nav__link">Deals</router-link>
-          <router-link :to="newRoute" class="t-nav__link">New arrivals</router-link>
-          <v-menu v-if="sellerList.length" location="bottom start" offset="12">
-            <template v-slot:activator="{ props }">
-              <button class="t-nav__link" type="button" v-bind="props">
-                Sellers<v-icon size="18">expand_more</v-icon>
-              </button>
-            </template>
-            <div class="k-mega t-sellers-menu">
-              <p class="k-eyebrow">Shop by seller</p>
-              <router-link v-for="seller in sellerList" :key="seller.id" :to="sellerRoute(seller)" class="t-sellers-menu__item">
-                <img v-if="seller.icon" :src="vendorImage(seller, true)" alt="" height="36" loading="lazy" width="36" />
-                <span v-else class="t-sellers-menu__mark">{{ (seller.name || "?").charAt(0) }}</span>
-                {{ seller.name }}
-              </router-link>
-            </div>
-          </v-menu>
-        </nav>
-
-        <div v-if="showSearch && !compact" class="k-header__search">
-          <s-storefront-search-box
-            v-model:expand-input="globalStyle.search_mode"
-            :dark="false"
-            :negative-qr-margin="false"
-            :title="$t('layout_shop.search_title', { shop_name: shopTitle })"
-            color="#1f1f1f"
-            flat
-            no-qr
-            persistent-placeholder
-            rounded="lg"
-            variant="outlined"
-            @onClear="$emit('clear')"
-            @onSearch="(event) => $emit('search', event)"
-          />
-        </div>
-        <v-spacer v-else></v-spacer>
-
-        <nav aria-label="Your account" class="k-header__acts">
-          <s-language-selector v-if="!compact" class="k-header__lang" icon-color="#1f1f1f" icon-only></s-language-selector>
-          <u-currency-selector
-            v-if="!compact && $shop.currencies && $shop.currencies.length > 1"
-            :shop="$shop"
-            class="k-header__lang"
-            dense
-            hide-details
-            icon
-            icon-color="#1f1f1f"
-            icon-only
-            single-line
-            small
-            @change="onChangeUserSelectedCurrency"
-          />
-
-          <template v-if="!compact">
-            <router-link v-if="user" :to="ordersRoute" class="k-header__link">
-              <v-icon size="20">receipt_long</v-icon>
-              Orders
-            </router-link>
-          </template>
-
-          <s-header-section-user v-if="user && !compact"></s-header-section-user>
-          <button v-else-if="!user && !busyUser && !compact" class="k-header__link -signin" type="button" @click="signIn">
-            <v-icon size="20">person_outline</v-icon>
-            Sign in
-          </button>
-
-          <!-- Phone: the account beside the basket. The bottom bar that
-               held it is gone (6 November 2026); orders and the rest are
-               in the menu. -->
-          <template v-if="compact">
-            <router-link v-if="user" :to="profileRoute" aria-label="My account" class="k-header__icon -me">
-              <img v-if="user.id && !avatar_failed" :src="getUserAvatar(user.id)" alt="" height="30" width="30" @error="avatar_failed = true" />
-              <v-icon v-else size="24">person_outline</v-icon>
-            </router-link>
-            <button v-else-if="!busyUser" aria-label="Sign in" class="k-header__icon -me" type="button" @click="signIn">
-              <v-icon size="24">person_outline</v-icon>
-            </button>
-          </template>
-
-          <button
-            :aria-label="`Cart, ${itemsCount} items`"
-            class="k-header__basket"
-            type="button"
-            @click="basket = true"
-          >
-            <v-icon size="26">shopping_cart</v-icon>
-            <em v-if="itemsCount">{{ itemsCount }}</em>
-          </button>
-        </nav>
-      </div>
-
-      <!-- Phone: a search pill under the bar. Selldone's search box
+      <!-- Phone: the search across the width. Selldone's search box
            autofocuses on a phone (the keyboard would open on every page),
            so it is mounted only once the pill is tapped, already open. -->
-      <div v-if="showSearch && compact" class="k-header__search -below k-wrap">
+      <div v-if="showSearch && compact" class="dg-header__search -below">
         <s-storefront-search-box
           v-if="phone_search"
           :dark="false"
           :expand-input="true"
           :negative-qr-margin="false"
-          :title="$t('layout_shop.search_title', { shop_name: shopTitle })"
-          color="#1f1f1f"
+          :placeholder="`Search ${shopTitle}`"
+          :title="`Search ${shopTitle}`"
+          color="#0f1729"
           flat
           no-qr
           persistent-placeholder
-          rounded="lg"
-          variant="outlined"
+          rounded="xl"
+          variant="solo"
           @onClear="$emit('clear')"
           @onSearch="(event) => { phone_search = false; $emit('search', event); }"
         />
-        <button v-else class="k-header__search-pill" type="button" @click="phone_search = true">
-          Search milk, bread, berries…
-          <span aria-hidden="true" class="t-search-go"><v-icon size="20">search</v-icon></span>
+        <button v-else class="dg-header__pill-search" type="button" @click="phone_search = true">
+          <span>Search {{ shopTitle }}</span><digito-icon name="search" size="22" />
         </button>
       </div>
     </div>
+
+    <nav aria-label="Shop" class="dg-header__nav">
+      <v-menu
+        v-if="!compact"
+        v-model="mega"
+        :close-on-content-click="false"
+        :scrim="false"
+        content-class="dg-mega-pop"
+        location="bottom start"
+        offset="8"
+      >
+        <template v-slot:activator="{ props }">
+          <button :aria-expanded="mega" :class="{ '-on': mega }" class="dg-pill -shop" type="button" v-bind="props">
+            <digito-icon name="menu" size="18" />Shop<digito-icon :name="mega ? 'expand_less' : 'expand_more'" size="18" />
+          </button>
+        </template>
+        <digito-mega-menu @close="mega = false" />
+      </v-menu>
+      <button v-else class="dg-pill -shop" type="button" @click="menu = true">
+        <digito-icon name="menu" size="18" />Shop<digito-icon name="expand_more" size="18" />
+      </button>
+      <router-link :to="dealsRoute" class="dg-pill">Deals</router-link>
+      <router-link :to="newRoute" class="dg-pill">New arrivals</router-link>
+      <v-menu v-if="brandList.length" :scrim="false" content-class="dg-brands-pop" location="bottom start" offset="8">
+        <template v-slot:activator="{ props }">
+          <button class="dg-pill" type="button" v-bind="props">Brands</button>
+        </template>
+        <div class="dg-brandmenu">
+          <router-link v-for="b in brandList" :key="b" :to="brandRoute(b)">{{ b }}</router-link>
+        </div>
+      </v-menu>
+      <span class="dg-header__sep"></span>
+      <router-link v-for="c in navCats" :key="c.id" :to="aisleRoute(c)" class="dg-header__txt -cat">{{ c.title || c.name }}</router-link>
+      <span class="dg-header__grow"></span>
+      <router-link :to="ordersRoute" class="dg-header__txt -end"><digito-icon name="local_shipping" size="18" />Track order</router-link>
+      <router-link :to="blogRoute" class="dg-header__txt -end">Blog</router-link>
+      <router-link :to="helpRoute" class="dg-header__txt -end">Help</router-link>
+    </nav>
 
     <!-- ▆▆▆▆▆▆▆▆ Basket drawer ▆▆▆▆▆▆▆▆ -->
     <teleport to="body">
@@ -226,20 +158,19 @@
         <div v-if="!itemsCount" class="k-drawer__empty">
           <span aria-hidden="true" class="k-drawer__empty-mark"><v-icon size="30">shopping_bag</v-icon></span>
           <p class="k-drawer__empty-title">Your cart is empty</p>
-          <p class="k-drawer__empty-text">Pick something from the aisles and it will wait for you here.</p>
+          <p class="k-drawer__empty-text">Pick something you like and it will wait for you here.</p>
           <div class="k-drawer__empty-ctas">
-            <router-link :to="dealsRoute" class="k-btn k-btn--solid" @click="basket = false">Shop today’s deals</router-link>
-            <router-link :to="catalogueRoute" class="k-btn k-btn--line" @click="basket = false">Browse every product</router-link>
+            <router-link :to="dealsRoute" class="dg-btn" @click="basket = false">Shop today’s deals</router-link>
+            <router-link :to="catalogueRoute" class="dg-btn -line" @click="basket = false">Continue shopping</router-link>
           </div>
           <template v-if="aisleList.length">
-            <p class="k-eyebrow k-drawer__empty-label">Or start with an aisle</p>
-            <nav aria-label="Aisles" class="k-drawer__empty-aisles">
+            <p class="k-eyebrow k-drawer__empty-label">Or start with a category</p>
+            <nav aria-label="Categories" class="k-drawer__empty-aisles">
               <router-link
                 v-for="aisle in aisleList.slice(0, 8)"
                 :key="aisle.id"
-                :style="{ '--k-tint': tint(aisle) }"
                 :to="aisleRoute(aisle)"
-                class="k-aisle-chip"
+                class="dg-chip"
                 @click="basket = false"
               >
                 <img v-if="aisle.icon" :src="aisleImage(aisle, 64)" alt="" height="32" width="32" loading="lazy" />
@@ -260,7 +191,7 @@
         temporary
       >
         <div class="k-drawer__head">
-          <router-link :to="homeRoute" class="k-header__brand -logo" @click="menu = false"><img :src="BRAND.mark" alt="" class="k-brand-mark" height="30" width="30" />{{ shopTitle }}</router-link>
+          <router-link :aria-label="shopTitle + ' home'" :to="homeRoute" class="dg-menu__brand" @click="menu = false"><digito-wordmark /></router-link>
           <button aria-label="Close" class="k-header__icon" type="button" @click="menu = false">
             <v-icon>close</v-icon>
           </button>
@@ -272,12 +203,15 @@
             <router-link :to="ordersRoute" class="k-drawer__link" @click="menu = false"><v-icon size="20">receipt_long</v-icon>Orders</router-link>
             <router-link :to="savedRoute" class="k-drawer__link" @click="menu = false"><v-icon size="20">favorite_border</v-icon>Saved</router-link>
           </template>
-          <button v-else class="k-btn k-btn--solid" type="button" @click="menu = false; signIn()">Sign in</button>
+          <button v-else class="dg-btn -block" type="button" @click="menu = false; signIn()">Sign in</button>
+          <router-link :to="ordersRoute" class="k-drawer__link" @click="menu = false"><v-icon size="20">local_shipping</v-icon>Track order</router-link>
+          <router-link :to="blogRoute" class="k-drawer__link" @click="menu = false"><v-icon size="20">article</v-icon>Blog</router-link>
+          <router-link :to="helpRoute" class="k-drawer__link" @click="menu = false"><v-icon size="20">help_outline</v-icon>Help</router-link>
         </div>
 
-        <p class="k-eyebrow k-drawer__label">Categories</p>
-        <router-link :to="dealsRoute" class="k-drawer__link -deals" @click="menu = false"><v-icon size="20">local_offer</v-icon>Deals</router-link>
-        <router-link :to="newRoute" class="k-drawer__link" @click="menu = false"><v-icon size="20">fiber_new</v-icon>New arrivals</router-link>
+        <p class="k-eyebrow k-drawer__label">Shop by category</p>
+        <router-link :to="dealsRoute" class="k-drawer__link -deals" @click="menu = false"><span class="k-drawer__ring -icon"><digito-icon name="local_offer" size="22" /></span><span class="dg-menu__txt"><b>Today’s deals</b><small>Every saving in one place</small></span></router-link>
+        <router-link :to="newRoute" class="k-drawer__link" @click="menu = false"><span class="k-drawer__ring -icon"><digito-icon name="new_releases" size="22" /></span><span class="dg-menu__txt"><b>New arrivals</b><small>Just landed</small></span></router-link>
         <router-link
           v-for="aisle in aisleList"
           :key="aisle.id"
@@ -285,10 +219,10 @@
           class="k-drawer__link"
           @click="menu = false"
         >
-          <span :style="{ '--k-tint': tint(aisle) }" class="k-drawer__ring">
-            <img v-if="aisle.icon" :src="aisleImage(aisle, 64)" alt="" height="26" width="26" loading="lazy" />
+          <span class="k-drawer__ring">
+            <img v-if="aisle.icon" :src="aisleImage(aisle, 64)" alt="" height="30" width="30" loading="lazy" />
           </span>
-          {{ aisle.title || aisle.name }}
+          <span class="dg-menu__txt"><b>{{ aisle.title || aisle.name }}</b><small v-if="catLine(aisle)">{{ catLine(aisle) }}</small></span>
         </router-link>
 
         <div class="k-drawer__pickers">
@@ -307,27 +241,21 @@
 
 <script>
 import { BRAND } from "../kalio-brand";
-import { defineAsyncComponent } from "vue";
 import SStorefrontSearchBox from "@selldone/components-vue/storefront/search/SStorefrontSearchBox.vue";
 import SLanguageSelector from "@selldone/components-vue/storefront/language/selector/SLanguageSelector.vue";
 import UCurrencySelector from "@selldone/components-vue/ui/currency/selector/UCurrencySelector.vue";
 import KalioBasketDrawer from "./KalioBasketDrawer.vue";
+import DigitoWordmark from "../../digito/DigitoWordmark.vue";
+import DigitoIcon from "../../digito/DigitoIcon.vue";
+import DigitoMegaMenu from "../../digito/DigitoMegaMenu.vue";
 import { EventBus } from "@selldone/components-vue/utils/events/EventBus.ts";
-import { aisleImage, aisleRoute, aisles, catalogueRoute, dealsRoute, sellerRoute, tintFor, vendorImage, vendors } from "../kalio-catalog";
-import { freeShippingFrom } from "../../tario/tario-home";
+import { aisleImage, aisleRoute, aisles, catalogueRoute, dealsRoute } from "../kalio-catalog";
+import { allProducts, categoryLine, money, savingOf } from "../../digito/digito-home";
 import { basketView } from "../kalio-basket";
 
 export default {
   name: "KalioHeader",
-  components: {
-    SStorefrontSearchBox,
-    SLanguageSelector,
-    UCurrencySelector,
-    KalioBasketDrawer,
-    SHeaderSectionUser: defineAsyncComponent(
-      () => import("@selldone/components-vue/storefront/header/section/user/SHeaderSectionUser.vue"),
-    ),
-  },
+  components: { SStorefrontSearchBox, SLanguageSelector, UCurrencySelector, KalioBasketDrawer, DigitoWordmark, DigitoIcon, DigitoMegaMenu },
   inject: ["$shop"],
 
   props: {
@@ -341,22 +269,26 @@ export default {
     return {
       BRAND,
       aisleList: [],
-      aisles_open: false,
+      all: [],
+      mega: false,
       basket: false,
       menu: false,
       phone_search: false,
       windowWidth: window.innerWidth,
-      sellerList: [],
       avatar_failed: false,
     };
   },
 
   computed: {
     shopTitle() {
-      return this.$shop?.title || "Kalio";
+      return this.$shop?.title || BRAND.name || "";
     },
     user() {
       return this.$store.getters.getUser;
+    },
+    firstName() {
+      const name = String(this.user?.name || "").trim().split(/\s+/)[0];
+      return name ? "Hi, " + name : "Your account";
     },
     busyUser() {
       return this.$store.getters.getBusyUser;
@@ -364,18 +296,33 @@ export default {
     compact() {
       return this.$vuetify.display.smAndDown;
     },
+    hasLanguages() {
+      return (this.$shop?.languages || []).length > 1;
+    },
     globalStyle() {
       return this.$store.getters.getGlobalStyle;
     },
     itemsCount() {
       return this.getTotalItemInBaskets() || 0;
     },
-    /** How many things are in the basket, counting each one (2 breads are 2). */
     basketUnits() {
-      return this.getBaskets().reduce(
-        (sum, basket) => sum + (basket?.items || []).reduce((n, item) => n + (item.count || 0), 0),
-        0,
-      );
+      return this.getBaskets().reduce((sum, basket) => sum + (basket?.items || []).reduce((n, item) => n + (item.count || 0), 0), 0);
+    },
+    /** The physical cart's total, for "Cart $208.90". */
+    cartTotal() {
+      const basket = this.getBaskets().find((b) => b?.items?.length);
+      if (!basket) return null;
+      const bill = basket.bill || {};
+      const amount = typeof bill.price === "number" ? bill.price : basket.price;
+      return typeof amount === "number" ? { amount, currency: bill.currency || basket.currency } : null;
+    },
+    /** A few live categories beside the pills: the ones with the most deals. */
+    navCats() {
+      const deals = (c) => this.all.filter((p) => p.category_id === c.id && savingOf(p) > 0).length;
+      return [...this.aisleList].sort((a, b) => deals(b) - deals(a)).slice(0, 4);
+    },
+    brandList() {
+      return [...new Set(this.all.map((p) => p.brand).filter(Boolean))].sort((a, b) => a.localeCompare(b));
     },
     homeRoute() {
       return { path: "/" };
@@ -389,17 +336,18 @@ export default {
     newRoute() {
       return catalogueRoute({ sort: "newest" });
     },
-    /** The promo strip's offer: the lowest basket total that ships free. */
-    promo() {
-      return freeShippingFrom(this.$shop);
-    },
     ordersRoute() {
       return { name: window.$storefront.routes.HISTORY_ORDERS_PHYSICAL };
     },
     savedRoute() {
       return { name: window.$storefront.routes.USER_FAVORITES_PAGE };
     },
-    /** "My account": the Overview (design B) or the orders (design A). */
+    blogRoute() {
+      return { name: window.$storefront.routes.BLOGS_PAGE };
+    },
+    helpRoute() {
+      return { name: "ShopFAQ" };
+    },
     profileRoute() {
       return { name: "KalioAccountHome" };
     },
@@ -410,7 +358,6 @@ export default {
 
   watch: {
     drawerOpen(open) {
-      /* The phone bottom bar would sit over either drawer. */
       this.$store.commit("setForceHideNavigation", open);
     },
     basket(open) {
@@ -419,16 +366,15 @@ export default {
     $route() {
       this.menu = false;
       this.basket = false;
+      this.mega = false;
       this.phone_search = false;
     },
   },
 
   mounted() {
     aisles().then((list) => (this.aisleList = list));
-    vendors().then((list) => (this.sellerList = list));
-    this.onResize = () => {
-      this.windowWidth = window.innerWidth;
-    };
+    allProducts().then((list) => (this.all = list));
+    this.onResize = () => (this.windowWidth = window.innerWidth);
     window.addEventListener("resize", this.onResize, { passive: true });
   },
 
@@ -439,9 +385,12 @@ export default {
   methods: {
     aisleRoute,
     aisleImage,
-    sellerRoute,
-    vendorImage,
-    tint: tintFor,
+    catLine(aisle) {
+      return categoryLine(aisle, this.all, (n) => money(n, this.$shop?.currency || "USD", true));
+    },
+    brandRoute(b) {
+      return catalogueRoute({ search: b });
+    },
     signIn() {
       EventBus.$emit("need-login", true);
     },

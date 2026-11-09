@@ -1,15 +1,14 @@
 /*
- * Kalio — the sample texts of the shop's own pages (5 November 2026).
+ * Digito — the sample texts of the shop's own pages.
  *
  * About us, Terms of use and Privacy come from the shop's profiles in the
- * Selldone dashboard. molino has written none of them yet, and the owner
- * asked for full pages in the meantime, filled with general text that says
- * it is a test and not real. These are those texts; each page shows them,
- * under KalioSampleNote, only while the shop's own profile is missing.
+ * Selldone dashboard. Until the shop writes them, each page shows general
+ * text under KalioSampleNote ("Sample text — the shop writes its own"), as
+ * the owner asked: full pages, clearly marked as a test, never a promise.
+ * The text suits a single shop that sells everything itself (no sellers).
  *
  * Nothing here is a promise: the terms do not form an agreement and the
- * policy is not the shop's policy. Dates, numbers and names in the letter
- * are marked as examples.
+ * policy is not the shop's policy. Dates, numbers and names are examples.
  */
 
 export interface Section {
@@ -20,17 +19,15 @@ export interface Section {
 export function termsSample(shop: string): { short: string[]; sections: Section[] } {
   return {
     short: [
-      `Products are sold by independent sellers; ${shop} runs the shop.`,
-      "You pay at checkout, or on delivery where a seller offers it.",
+      `${shop} sells and ships every product itself.`,
+      "You pay at checkout, or on delivery where offered.",
       "Report a damaged or wrong item within 7 days.",
-      "Each order has a message thread with its seller.",
+      "Every order has a message thread with the shop.",
     ],
     sections: [
       {
         title: "Who we are",
-        text: [
-          `${shop} is an online marketplace. The products are sold by independent sellers; ${shop} runs the shop where you find them and place your order.`,
-        ],
+        text: [`${shop} is an online electronics shop. We choose, stock, pack and send every product you see here.`],
       },
       {
         title: "Your account",
@@ -42,26 +39,26 @@ export function termsSample(shop: string): { short: string[]; sections: Section[
       {
         title: "Orders and prices",
         text: [
-          "Prices are set by each seller and shown with taxes as stated at checkout. An order is placed when you confirm it; the seller confirms it when they accept it.",
+          "Prices are shown with taxes as stated at checkout. A deal's saving is shown on the product and taken off in the cart. An order is placed when you confirm it, and accepted when we confirm it.",
         ],
       },
       {
         title: "Payment",
-        text: [
-          `You pay at checkout, or on delivery where the seller offers cash on delivery. Card payments are handled by the payment provider and are not stored by ${shop}.`,
-        ],
+        text: [`You pay at checkout, or on delivery where cash on delivery is offered. Card payments are handled by the payment provider and are not stored by ${shop}.`],
       },
       {
-        title: "Delivery",
-        text: [
-          "Delivery times and costs are shown before you pay. The seller sends the items; you can follow the order and message the seller from your account.",
-        ],
+        title: "Shipping and delivery",
+        text: ["Delivery times and costs are shown before you pay. You can follow the order and message us from your account or the order page."],
       },
       {
         title: "Returns and refunds",
         text: [
-          "If something arrives damaged or wrong, tell the seller from the order page within 7 days. Fresh food can be refunded but not returned.",
+          "If something arrives damaged, faulty or wrong, tell us from the order page within 7 days. Unopened items can be returned within 30 days (example).",
         ],
+      },
+      {
+        title: "Warranty",
+        text: ["Products carry the maker's warranty where one is stated on the product page. Keep your order page: it is your receipt."],
       },
       {
         title: "Changes to these terms",
@@ -75,29 +72,25 @@ export function privacySample(shop: string): { short: string[]; sections: Sectio
   return {
     short: [
       "We use your details to take and deliver orders.",
-      "Sellers see only what they need to send your order.",
+      "Couriers see only what they need to deliver.",
       "We do not sell your data.",
       "You choose which optional cookies to allow.",
     ],
     sections: [
       {
         title: "What we collect",
-        text: [
-          "Your name, contact details and delivery address; what you order; and how you use the shop (pages viewed, searches).",
-        ],
+        text: ["Your name, contact details and delivery address; what you order; and how you use the shop (pages viewed, searches)."],
       },
       {
         title: "Why we use it",
         text: [
-          "To take and deliver your orders, to let sellers and you talk about an order, to keep the shop secure and to improve it.",
+          "To take and deliver your orders, to answer your messages about an order, to keep the shop secure and to improve it.",
           "Sample paragraph: a fuller explanation would go here, written in plain words, with an example for each use.",
         ],
       },
       {
         title: "Who sees it",
-        text: [
-          "The seller who fills your order sees what they need to send it. Payment providers handle card details. We do not sell your data.",
-        ],
+        text: [`${shop} and the courier who delivers your order see what they need for it. Payment providers handle card details. We do not sell your data.`],
       },
       {
         title: "How long we keep it",
@@ -109,7 +102,7 @@ export function privacySample(shop: string): { short: string[]; sections: Sectio
       },
       {
         title: "Cookies",
-        text: ["Essential cookies keep you signed in and your basket full. Anything optional is your choice, below."],
+        text: ["Essential cookies keep you signed in and your cart full. Anything optional is your choice, below."],
       },
     ],
   };
@@ -117,21 +110,21 @@ export function privacySample(shop: string): { short: string[]; sections: Sectio
 
 export function aboutSample(shop: string) {
   return {
-    title: "Why we built one basket",
-    lead: "Good grocers are often small, and shopping several of them used to mean several trips, several baskets and several deliveries. We wanted their shelves side by side, in one place, with one checkout.",
+    title: "Tech you can trust, at prices that make sense",
+    lead: "We started with a simple idea: the gear people use every day — laptops, headphones, cameras, storage — should be easy to compare, honestly priced and quick to arrive.",
     text: [
-      `So ${shop} is a marketplace: each product comes from an independent seller, prices are theirs, and they pack and send what you order from them. We look after the shop itself — the aisles, the basket and the account where you follow your orders.`,
+      `So ${shop} keeps its range short and well chosen, shows every saving plainly, and sends every order itself from our store in Miami (example). When something goes wrong, you talk to the people who packed it.`,
     ],
     values: [
-      { title: "Clear prices", text: "The price you see is the one you pay, with the unit price under it and savings marked plainly." },
-      { title: "Your choice of seller", text: "When two shops stock the same item, both are shown and you pick." },
-      { title: "Less waste", text: "Sizes that fit a week, and seasonal picks in the journal." },
-      { title: "People you can reach", text: "Every order has a message thread with the shop that sent it." },
+      { title: "Real prices", text: "The price you see is the one you pay. A deal shows what you save, never a made-up “was” price." },
+      { title: "Fast delivery from Miami", text: "Orders leave our store quickly, and you can follow them from your order page (example)." },
+      { title: "Easy returns", text: "Changed your mind? Ask from the order page; we make it simple." },
+      { title: "Real help", text: "Every order has a message thread with the shop. People answer, not bots." },
     ],
     timeline: [
-      { when: "Spring", text: "The first seller joins and the first aisles open. (Example.)" },
-      { when: "Summer", text: "A second seller joins; both sell from one basket. (Example.)" },
-      { when: "Today", text: "Every aisle, every seller, one checkout. (Example.)" },
+      { when: "2024", text: "The first products go online. (Example.)" },
+      { when: "2025", text: "Delivery across Miami starts. (Example.)" },
+      { when: "Today", text: "A full range of everyday tech, one checkout. (Example.)" },
     ],
     sign: `— the ${shop} team`,
   };

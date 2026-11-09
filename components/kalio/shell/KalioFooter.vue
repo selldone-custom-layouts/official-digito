@@ -1,128 +1,115 @@
 <!--
-  Kalio — Footer. Tario (design A, 7 November 2026): a light big-box footer
-  under a red rule — the wordmark and the shop's description, the aisles,
-  the sellers, the shop's own menu and the account — with no band above it.
-
-  Molino's footer, which Tario started from:
-
-  Two parts. A light green band that sends a shopper back into the aisles
-  (every aisle as a round picture). Then the footer proper on deep green:
-  the shop's name and its own description, social links and language; the
-  aisles; the sellers with their marks; the shop's own footer menu exactly
-  as the merchant set it in Selldone (falling back to the standard pages
-  when there is none); and the shopper's account links. The bottom row
-  keeps the copyright, Selldone's cookie settings and the powered-by mark,
-  which follows the shop's own copyright-mark setting.
+  Digito — the footer (Home A "Deals hub", 8 November 2026): white, under
+  the page. A service row first (Track your order, Shipping & delivery,
+  Returns & exchanges, Help center, Contact us); then link columns — Shop
+  (the shop's categories and All products), Orders, the shop (the
+  merchant's own footer menu as set in Selldone, or the standard pages),
+  Policies — beside a newsletter card (Selldone's own subscribe call) with
+  the shop's social links; then a legal row with the copyright, Terms,
+  Privacy, the cookie settings and a small "made with selldone".
 
   Everything is read live. A shop with custom footer code keeps Selldone's
   footer (the layout decides).
 -->
 <template>
-  <footer class="k-footer">
-    <!-- Tario (design A): no band over the footer; the home page ends
-         on its own "Browse every product". -->
-    <!-- ▆▆▆▆▆▆▆▆ Footer ▆▆▆▆▆▆▆▆ -->
-    <div class="k-footer__main">
-      <div class="k-wrap k-footer__grid">
-        <div class="k-footer__brand">
-          <router-link :to="{ path: '/' }" class="k-footer__mark -logo"><img :src="BRAND.mark" alt="" class="k-brand-mark" height="30" width="30" />{{ shopTitle }}</router-link>
-          <p v-if="lede" class="k-footer__lede">{{ lede }}</p>
-          <s-storefront-social-buttons class="k-footer__social"></s-storefront-social-buttons>
-          <div class="k-footer__pickers">
-            <s-language-selector hide-details variant="outlined"></s-language-selector>
-            <u-currency-selector
-              v-if="$shop.currencies && $shop.currencies.length > 1"
-              :shop="$shop"
-              hide-details
-              @change="onChangeUserSelectedCurrency"
-            />
-          </div>
+  <footer class="k-footer dg-footer">
+    <nav aria-label="Customer service" class="dg-footer__svc">
+      <router-link :to="ordersRoute"><digito-icon name="local_shipping" size="30" /><span>Track your order</span></router-link>
+      <router-link :to="termsRoute"><digito-icon name="package_2" size="30" /><span>Shipping &amp; delivery</span></router-link>
+      <router-link :to="termsRoute"><digito-icon name="assignment_return" size="30" /><span>Returns &amp; exchanges</span></router-link>
+      <router-link :to="faqRoute"><digito-icon name="support_agent" size="30" /><span>Help center</span></router-link>
+      <router-link :to="contactRoute"><digito-icon name="mail" size="30" /><span>Contact us</span></router-link>
+    </nav>
+
+    <div class="dg-footer__grid">
+      <nav aria-labelledby="dg-f-shop" class="dg-footer__col">
+        <h3 id="dg-f-shop">Shop</h3>
+        <router-link :to="dealsRoute">Today’s deals</router-link>
+        <router-link v-for="aisle in aisleList.slice(0, 6)" :key="aisle.id" :to="aisleRoute(aisle)">{{ aisle.title || aisle.name }}</router-link>
+        <router-link :to="catalogueRoute">All products</router-link>
+      </nav>
+      <nav aria-labelledby="dg-f-orders" class="dg-footer__col">
+        <h3 id="dg-f-orders">Orders</h3>
+        <router-link :to="ordersRoute">Track an order</router-link>
+        <router-link :to="cartRoute">Your cart</router-link>
+        <router-link v-if="user" :to="{ name: 'KalioAccountHome' }">Your account</router-link>
+        <button v-else class="dg-footer__textbtn" type="button" @click="signIn">Sign in</button>
+        <router-link v-if="user" :to="{ name: window.$storefront.routes.USER_FAVORITES_PAGE }">Saved items</router-link>
+      </nav>
+      <nav aria-labelledby="dg-f-shopname" class="dg-footer__col">
+        <h3 id="dg-f-shopname">{{ shopTitle }}</h3>
+        <router-link v-for="(item, i) in shopLinks" :key="'l' + i" :to="item.to">{{ item.name }}</router-link>
+      </nav>
+      <nav aria-labelledby="dg-f-policies" class="dg-footer__col">
+        <h3 id="dg-f-policies">Policies</h3>
+        <router-link :to="termsRoute">Terms of service</router-link>
+        <router-link :to="privacyRoute">Privacy policy</router-link>
+        <router-link :to="faqRoute">FAQ</router-link>
+      </nav>
+
+      <div class="dg-footer__news">
+        <h3>Get the latest deals</h3>
+        <p>New arrivals and price drops, about once a week.</p>
+        <form v-if="!subscribed" class="dg-footer__form" @submit.prevent="subscribe">
+          <input v-model="email" aria-label="Email address" autocomplete="email" placeholder="Email address" required type="email" />
+          <button :disabled="busy" class="dg-btn" type="submit">Sign up</button>
+        </form>
+        <p v-else class="dg-footer__ok"><digito-icon name="check_circle" size="20" />You’re on the list. Watch your inbox.</p>
+        <p v-if="error" class="dg-footer__err">{{ error }}</p>
+        <s-storefront-social-buttons class="dg-footer__social"></s-storefront-social-buttons>
+        <div v-if="hasPickers" class="dg-footer__pickers">
+          <s-language-selector v-if="hasLanguages" hide-details variant="outlined"></s-language-selector>
+          <u-currency-selector
+            v-if="$shop.currencies && $shop.currencies.length > 1"
+            :shop="$shop"
+            hide-details
+            @change="onChangeUserSelectedCurrency"
+          />
         </div>
-
-        <nav aria-labelledby="k-footer-shop" class="k-footer__col">
-          <h3 id="k-footer-shop" class="k-footer__head">Categories</h3>
-          <router-link :to="dealsRoute">Deals</router-link>
-          <router-link v-for="aisle in aisleList.slice(0, 8)" :key="aisle.id" :to="aisleRoute(aisle)">
-            {{ aisle.title || aisle.name }}
-          </router-link>
-          <router-link v-if="aisleList.length > 8" :to="catalogueRoute" class="-more">All categories</router-link>
-        </nav>
-
-        <nav v-if="sellerList.length" aria-labelledby="k-footer-sellers" class="k-footer__col">
-          <h3 id="k-footer-sellers" class="k-footer__head">Sellers</h3>
-          <router-link v-for="seller in sellerList" :key="seller.id" :to="sellerRoute(seller)" class="k-footer__seller">
-            <img v-if="seller.icon" :src="vendorImage(seller, true)" alt="" height="28" width="28" loading="lazy" />
-            {{ seller.name }}
-          </router-link>
-        </nav>
-
-        <nav aria-labelledby="k-footer-help" class="k-footer__col">
-          <h3 id="k-footer-help" class="k-footer__head">{{ shopTitle }}</h3>
-          <router-link v-for="(item, i) in shopLinks" :key="'l' + i" :to="item.to">{{ item.name }}</router-link>
-        </nav>
-
-        <nav aria-labelledby="k-footer-account" class="k-footer__col">
-          <h3 id="k-footer-account" class="k-footer__head">Your account</h3>
-          <template v-if="user">
-            <router-link :to="{ name: 'KalioAccountHome' }">My account</router-link>
-            <router-link :to="{ name: window.$storefront.routes.HISTORY_ORDERS_PHYSICAL }">Orders</router-link>
-            <router-link :to="{ name: window.$storefront.routes.USER_FAVORITES_PAGE }">Saved</router-link>
-          </template>
-          <button v-else class="k-footer__textbtn" type="button" @click="signIn">Sign in</button>
-          <router-link :to="{ name: window.$storefront.routes.BASKET_PAGE, params: { type: 'PHYSICAL' } }">Cart</router-link>
-        </nav>
       </div>
+    </div>
 
-      <div class="k-wrap k-footer__base">
-        <span>© {{ year }} {{ shopTitle }}</span>
-        <span class="k-footer__base-links">
-          <router-link :to="{ name: window.$storefront.routes.SHOP_PROFILE_PAGE_PRIVACY }">Privacy</router-link>
-          <router-link :to="{ name: window.$storefront.routes.SHOP_PROFILE_PAGE_TERMS }">Terms</router-link>
-          <s-footer-section-gdpr></s-footer-section-gdpr>
-          <s-footer-section-selldone></s-footer-section-selldone>
-        </span>
-      </div>
+    <div class="dg-footer__legal">
+      <span class="dg-footer__copy">© {{ year }} {{ shopTitle }}. Prices and offers can change.</span>
+      <router-link :to="termsRoute">Terms</router-link>
+      <router-link :to="privacyRoute">Privacy</router-link>
+      <s-footer-section-gdpr></s-footer-section-gdpr>
+      <s-footer-section-selldone class="dg-footer__made"></s-footer-section-selldone>
     </div>
   </footer>
 </template>
 
 <script>
-import { BRAND } from "../kalio-brand";
 import SStorefrontSocialButtons from "@selldone/components-vue/storefront/social/SStorefrontSocialButtons.vue";
 import SLanguageSelector from "@selldone/components-vue/storefront/language/selector/SLanguageSelector.vue";
 import UCurrencySelector from "@selldone/components-vue/ui/currency/selector/UCurrencySelector.vue";
 import SFooterSectionGdpr from "@selldone/components-vue/storefront/footer/section/gdpr/SFooterSectionGdpr.vue";
 import SFooterSectionSelldone from "@selldone/components-vue/storefront/footer/section/selldone/SFooterSectionSelldone.vue";
 import { EventBus } from "@selldone/components-vue/utils/events/EventBus.ts";
-import { aisleRoute, aisles, catalogueRoute, dealsRoute, sellerRoute, vendorImage, vendors } from "../kalio-catalog";
+import DigitoIcon from "../../digito/DigitoIcon.vue";
+import { aisleRoute, aisles, catalogueRoute, dealsRoute } from "../kalio-catalog";
 
 export default {
   name: "KalioFooter",
-  components: {
-    SStorefrontSocialButtons,
-    SLanguageSelector,
-    UCurrencySelector,
-    SFooterSectionGdpr,
-    SFooterSectionSelldone,
-  },
+  components: { SStorefrontSocialButtons, SLanguageSelector, UCurrencySelector, SFooterSectionGdpr, SFooterSectionSelldone, DigitoIcon },
   inject: ["$shop"],
 
   data() {
-    return {
-      BRAND,
-      window: window,
-      aisleList: [],
-      sellerList: [],
-      year: new Date().getFullYear(),
-    };
+    return { window, aisleList: [], year: new Date().getFullYear(), email: "", busy: false, subscribed: false, error: null };
   },
 
   computed: {
     shopTitle() {
-      return this.$shop?.title || "Kalio";
+      return this.$shop?.title || "";
     },
     user() {
       return this.$store.getters.getUser;
+    },
+    hasLanguages() {
+      return (this.$shop?.languages || []).length > 1;
+    },
+    hasPickers() {
+      return this.hasLanguages || (this.$shop?.currencies || []).length > 1;
     },
     catalogueRoute() {
       return catalogueRoute();
@@ -130,56 +117,76 @@ export default {
     dealsRoute() {
       return dealsRoute();
     },
-    /* The shop's own description. A new Selldone shop is given "It's my
-       awesome <name> website." until the merchant writes one; that line is
-       not shown, and the footer describes the shop from what it stocks. */
-    lede() {
-      const description = (this.$shop?.description || "").trim();
-      if (description && !/^it['’]s my awesome .* website\.?$/i.test(description)) return description;
-      if (!this.aisleList.length) return null;
-      const sellers = this.sellerList.length;
-      return sellers > 1
-        ? `${this.aisleList.length} aisles of groceries from ${sellers} independent sellers, in one cart.`
-        : `${this.aisleList.length} aisles of groceries, in one cart.`;
+    r() {
+      return window.$storefront.routes;
+    },
+    ordersRoute() {
+      return { name: this.r.HISTORY_ORDERS_PHYSICAL };
+    },
+    cartRoute() {
+      return { name: this.r.BASKET_PAGE, params: { type: "PHYSICAL" } };
+    },
+    termsRoute() {
+      return { name: this.r.SHOP_PROFILE_PAGE_TERMS };
+    },
+    privacyRoute() {
+      return { name: this.r.SHOP_PROFILE_PAGE_PRIVACY };
+    },
+    contactRoute() {
+      return { name: this.r.SHOP_CONTACT_US };
+    },
+    faqRoute() {
+      return { name: "ShopFAQ" };
     },
     /* The merchant's footer menu (Selldone menus, type FOOTER), flattened,
-       or the standard pages when the shop has none. */
+       or the standard pages when the shop has none. A link to a route this
+       storefront does not have is left out; a "Shop" link opens the
+       catalogue (the shop page is the home here). */
     shopLinks() {
       const menu = this.$shop?.menus?.find((it) => it.type === "FOOTER" && it.enable !== false);
-      const shopPage = window.$storefront.routes.SHOP_PAGE;
-      /* A link to a route this storefront does not have (a blog the shop
-         never enabled) would throw while rendering, so it is left out. Here
-         the shop page is the home, so a menu's "Shop" link opened the same
-         page as "Home"; it opens the catalogue instead. */
+      const shopPage = this.r.SHOP_PAGE;
       const items = (menu?.menu || [])
         .flat()
         .filter((item) => item && item.name && item.to)
         .filter((item) => !item.to.name || this.$router.hasRoute(item.to.name))
-        .map((item) =>
-          item.to.name === shopPage && !item.to.query ? { ...item, to: this.catalogueRoute } : item,
-        );
+        .map((item) => (item.to.name === shopPage && !item.to.query ? { ...item, to: this.catalogueRoute } : item));
       if (items.length) return items;
-      const r = window.$storefront.routes;
       return [
-        { name: "About us", to: { name: r.SHOP_PROFILE_PAGE_ABOUT_US } },
-        { name: "Contact us", to: { name: r.SHOP_CONTACT_US } },
-        { name: "Terms of use", to: { name: r.SHOP_PROFILE_PAGE_TERMS } },
-        { name: "Privacy", to: { name: r.SHOP_PROFILE_PAGE_PRIVACY } },
+        { name: "About us", to: { name: this.r.SHOP_PROFILE_PAGE_ABOUT_US } },
+        { name: "Blog", to: { name: this.r.BLOGS_PAGE } },
+        { name: "Contact us", to: this.contactRoute },
+        { name: "FAQ", to: this.faqRoute },
       ];
     },
   },
 
   mounted() {
     aisles().then((list) => (this.aisleList = list));
-    vendors().then((list) => (this.sellerList = list));
   },
 
   methods: {
     aisleRoute,
-    sellerRoute,
-    vendorImage,
     signIn() {
       EventBus.$emit("need-login", true);
+    },
+    /* Selldone's own newsletter subscription for the shop. It belongs to a
+       customer account, so a guest is asked to sign in first. */
+    subscribe() {
+      if (!this.email) return;
+      if (!this.user) {
+        this.signIn();
+        return;
+      }
+      this.busy = true;
+      this.error = null;
+      window.axios
+        .post(window.XAPI.POST_SUBSCRIBE(window.$storefront.name), { email: this.email })
+        .then(({ data }) => {
+          if (data?.error) this.error = data.error_msg || "That didn’t work. Try again.";
+          else this.subscribed = true;
+        })
+        .catch(() => (this.error = "That didn’t work. Try again in a minute."))
+        .finally(() => (this.busy = false));
     },
   },
 };

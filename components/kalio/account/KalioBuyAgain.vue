@@ -36,7 +36,7 @@
 <script>
 import CurrencyMixin from "@selldone/components-vue/mixin/currency/CurrencyMixin.ts";
 import { basketLine, pendingLine, quickAdd, shownCount } from "../kalio-basket";
-import { offers, priceOf, productImage } from "../kalio-catalog";
+import { productsById, priceOf, productImage } from "../kalio-catalog";
 import { account } from "./kalio-account";
 
 export default {
@@ -71,12 +71,7 @@ export default {
   },
 
   created() {
-    offers().then(({ shelfOf, sellersOf }) => {
-      const map = new Map();
-      for (const shelf of shelfOf.values()) for (const product of shelf) if (!map.has(product.id)) map.set(product.id, product);
-      this.catalogue = map;
-      this.sellersOf = sellersOf;
-    });
+    productsById().then((map) => (this.catalogue = map));
   },
 
   methods: {

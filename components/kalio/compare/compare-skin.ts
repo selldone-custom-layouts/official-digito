@@ -1,20 +1,23 @@
-/* The compare page's words and choices in Tario (8 November 2026).
-   KalioCompare.vue is the same in every molino Layout; this file and
-   style/kalio-compare.scss are what make it this Layout's own. */
+/* The compare page's words and choices in Digito (9 November 2026).
+   KalioCompare.vue is the same page in every Layout built from Molino; this
+   file and the Digito dress at the end of style/digito-pages.scss make it
+   this Layout's own: picks pinned at the top as white cards, differing rows
+   on a light yellow ground in bold, one Only differences switch, a blue
+   share card. */
 export const SKIN = {
   /** The page's heading (and the tab's title). */
-  title: "Compare items",
+  title: "Compare products",
   /** A small line over the heading, or none. */
-  eyebrow: null as string | null,
+  eyebrow: "Side by side" as string | null,
   /** Under "Your picks", beside the pinned cards. */
-  hint: "They stay here while you scroll. Remove one with ×.",
+  hint: "They stay at the top while you scroll. Remove one with ×.",
   /** "switch": one Only differences switch; "segmented": Everything / Only differences. */
   toggle: "switch" as "switch" | "segmented",
   emptyTitle: "Nothing to compare yet",
   browse: "Shop all categories",
   shareTitle: "Share this comparison",
   /** The Layout's mark in the share card and on the empty page (else an icon). */
-  mark: false,
+  mark: true,
   /** Number the groups 01, 02, … */
   numbered: false,
 };

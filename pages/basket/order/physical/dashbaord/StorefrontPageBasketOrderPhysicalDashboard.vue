@@ -67,7 +67,7 @@
           <section v-for="group in groups" :key="group.key" class="k-lines__seller">
             <header class="k-lines__head">
               <img v-if="group.logo" :src="group.logo" alt="" class="k-lines__logo" height="36" width="36" />
-              <span v-else aria-hidden="true" class="k-lines__logo -shop"><v-icon size="18">storefront</v-icon></span>
+              <span v-else aria-hidden="true" class="k-lines__logo -shop"><v-icon size="18">inventory_2</v-icon></span>
               <span class="k-lines__who">
                 <b class="k-lines__name">{{ group.name }}</b>
                 <small>{{ group.units }} {{ group.units === 1 ? "item" : "items" }}</small>
@@ -125,7 +125,7 @@
       </aside>
     </div>
     <!-- Tario 1.2.0 (order page A): a row to start the next order. -->
-    <tario-row :limit="12" lazy sort="bestselling" title="Forgot something? It can join your next order" class="t-order-more" />
+    <digito-rail :limit="12" class="dg-order-more" lazy sort="bestselling" title="Forgot something? It can join your next order" />
   </div>
 </template>
 
@@ -136,7 +136,7 @@ import SShopCustomerOrderWithdraw from "@selldone/components-vue/storefront/orde
 import KalioOrderDelivery from "../../../../../components/kalio/order/KalioOrderDelivery.vue";
 import KalioOrderChat from "../../../../../components/kalio/order/KalioOrderChat.vue";
 import KalioOrderReceipt from "../../../../../components/kalio/order/KalioOrderReceipt.vue";
-import TarioRow from "../../../../../components/tario/TarioRow.vue";
+import DigitoRail from "../../../../../components/digito/DigitoRail.vue";
 
 import SShopShareOrderButton from "@selldone/components-vue/storefront/order/share-order/SShopShareOrderButton.vue";
 import { ProductType } from "@selldone/core-js/enums/product/ProductType";
@@ -154,7 +154,7 @@ function sizeOf(variant) {
 export default {
   name: "StorefrontPageBasketOrderPhysicalDashboard",
   components: {
-    TarioRow,
+    DigitoRail,
     SBasketVendorOrders: SBasketVendorOrders,
     SShopShareOrderButton,
     SShopRowCustomerPendingPayment,
@@ -235,7 +235,7 @@ export default {
           const vendor = this.sellers.get(item.vendor_id);
           groups.set(key, {
             key,
-            name: vendor?.name || this.shop?.title || "",
+            name: vendor?.name || "Items in this order",
             logo: vendor ? vendorImage(vendor, true) : null,
             items: [],
             units: 0,

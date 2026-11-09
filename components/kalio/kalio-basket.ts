@@ -73,13 +73,13 @@ export function pendingLine(product: any): any {
 /** How many to show for a line: the last count tapped, else the basket's. */
 export function shownCount(product: any, line: any): number {
   if (!line) return 0;
-  const key = lineKey(product, line.variant_id);
+  const key = line.pkey || lineKey(product, line.variant_id);
   return key in wanted ? wanted[key] : line.count || 0;
 }
 
 /** True while a line has taps the server has not confirmed yet. */
 export function settling(product: any, line: any): boolean {
-  return !!line && lineKey(product, line.variant_id) in wanted;
+  return !!line && (line.pkey || lineKey(product, line.variant_id)) in wanted;
 }
 
 export function hasSizes(product: any): boolean {
@@ -264,4 +264,80 @@ export async function reorder(vm: any, items: any[]): Promise<{ added: number; f
     }
   }
   return { added, failed };
+}
+
+/* ━━━━━━━━━━━━ Digito: a colour picked on the card ━━━━━━━━━━━━
+   Every Digini product comes in colours or capacities. A card shows its
+   colours as swatches; the one picked goes straight into the cart with
+   "Add to cart" (a capacity still opens the quick-buy sheet, since each
+   capacity has its own price). The list does not carry variant ids, so the
+   first tap is counted under the colour (pendingColourKey) and the product
+   is read once to find that colour's variant; later taps step that line. */
+
+/** "#303F9Fff" and "#303f9f" are one colour; two-tone stays two-tone. */
+export function normColour(colour: any): string {
+  return String(colour || "")
+    .toLowerCase()
+    .split("/")
+    .map((c) => (c.length === 9 && c.endsWith("ff") ? c.slice(0, 7) : c))
+    .join("/");
+}
+
+/** Learned on the first add: product and colour → the variant's id. */
+const colourIds: Record<string, number> = reactive({});
+const colourKey = (product: any, colour: any) => `${product?.id}:c:${normColour(colour)}`;
+
+/** The cart line of this product in this colour, or the pending first tap. */
+export function colourLine(vm: any, product: any, colour: any): any {
+  if (!product) return null;
+  const basket = vm.getBasket(product.type || "PHYSICAL");
+  const items = (basket?.items || []).filter((item: any) => item.product_id === product.id);
+  const id = colourIds[colourKey(product, colour)];
+  const item =
+    items.find((i: any) => (id ? i.variant_id === id : normColour(i.variant?.color) === normColour(colour))) ||
+    (!id && items.length === 1 && !items[0].variant ? items[0] : null);
+  if (item) return item;
+  const pkey = colourKey(product, colour);
+  return pkey in wanted ? { product_id: product.id, variant_id: id || null, count: 0, pending: true, pkey } : null;
+}
+
+/** Every cart line of a product (any colour or capacity). */
+export function productLines(vm: any, product: any): any[] {
+  if (!product) return [];
+  const basket = vm.getBasket(product.type || "PHYSICAL");
+  return (basket?.items || []).filter((item: any) => item.product_id === product.id);
+}
+
+/** "Add to cart" on a card with a colour picked: one more of that colour. */
+export function addColour(vm: any, product: any, colour: any): Promise<any> {
+  if (!mayBuy(vm)) return Promise.resolve(null);
+  const line = colourLine(vm, product, colour);
+  if (line && !line.pending) return stepTo(vm, product, line, shownCount(product, line) + 1);
+  const pkey = colourKey(product, colour);
+  wanted[pkey] = (wanted[pkey] || 0) + 1;
+  if (queued.has(pkey)) return tails.get(pkey) || Promise.resolve(null);
+  queued.add(pkey);
+  return inTurn(pkey, () =>
+    full(product).then(
+      (loaded) => {
+        queued.delete(pkey);
+        const variants = (loaded?.product_variants || []).filter((v: any) => v.enable !== false);
+        const same = variants.filter((v: any) => normColour(v.color) === normColour(colour));
+        const variant = same.find((v: any) => v.quantity > 0) || same[0] || null;
+        const target = wanted[pkey] ?? 0;
+        if (!variant || target <= 0) {
+          delete wanted[pkey];
+          return null;
+        }
+        colourIds[pkey] = variant.id;
+        const existing = basketLine(vm, loaded, variant);
+        return add(vm, loaded, variant, (existing?.count || 0) + target, null).finally(() => delete wanted[pkey]);
+      },
+      (error) => {
+        queued.delete(pkey);
+        delete wanted[pkey];
+        throw error;
+      },
+    ),
+  ).catch(() => null);
 }

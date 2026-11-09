@@ -33,17 +33,17 @@
       <button aria-label="Close" class="t-signin__x" type="button" @click="show = false">
         <v-icon>close</v-icon>
       </button>
-      <p class="t-signin__mark"><i aria-hidden="true"></i>{{ shopTitle }}</p>
+      <p class="t-signin__mark dg-signin-band"><digito-wordmark /></p>
       <h2 id="k-signin-title" class="t-signin__title">Sign in or create account</h2>
       <p class="t-signin__lede">
-        {{ sellerCount > 1 ? `One account for every seller on ${shopTitle}.` : `Your account is made as you sign in.` }}
+        Your account is made as you sign in. No password to remember.
       </p>
       <s-shop-login v-model:show="show" class="k-signin__methods t-signin__methods" />
       <ul class="t-signin__perks">
-        <li><v-icon size="20">local_shipping</v-icon>Follow every order to your door</li>
-        <li><v-icon size="20">replay</v-icon>Buy your usual again in one tap</li>
-        <li><v-icon size="20">favorite_border</v-icon>Keep favourites for next week</li>
-        <li v-if="sellerCount > 1"><v-icon size="20">storefront</v-icon>One cart across {{ sellerCount }} independent sellers</li>
+        <li><v-icon size="20">local_shipping</v-icon>Track every order to your door</li>
+        <li><v-icon size="20">bolt</v-icon>Check out faster with saved addresses</li>
+        <li><v-icon size="20">favorite_border</v-icon>Keep the products you like in Saved</li>
+        <li><v-icon size="20">sell</v-icon>Hear first about price drops</li>
       </ul>
       <p class="t-signin__legal">
         By continuing you agree to {{ shopTitle }}’s
@@ -63,6 +63,7 @@ import { throttle } from "lodash-es";
 import SShopLogin from "@selldone/components-vue/storefront/login/SShopLogin.vue";
 import { EventBus } from "@selldone/components-vue/utils/events/EventBus.ts";
 import { aisleImage, aisles, tintFor, vendors } from "../kalio-catalog";
+import DigitoWordmark from "../../digito/DigitoWordmark.vue";
 
 /* Selldone's words for the ways in ("Login with Google", "Login by
    Email") and for the email steps, as a shop says them now. English only;
@@ -82,7 +83,8 @@ const WORDS = {
 
 export default {
   name: "KalioSignIn",
-  components: { SShopLogin },
+  components: {
+    DigitoWordmark, SShopLogin },
   inject: ["$shop"],
 
   data() {

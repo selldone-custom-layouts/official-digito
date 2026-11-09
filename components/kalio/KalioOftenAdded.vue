@@ -39,8 +39,15 @@
 
 <script>
 import CurrencyMixin from "@selldone/components-vue/mixin/currency/CurrencyMixin.ts";
-import { hasSizes, pendingLine, quickAdd } from "./kalio-basket";
-import { offers, priceOf, productImage, productSrcset, dropSrcset } from "./kalio-catalog";
+import { addColour, colourLine, pendingLine, quickAdd } from "./kalio-basket";
+import { priceOf, productImage, productSrcset, dropSrcset } from "./kalio-catalog";
+import { allProducts, savingOf } from "../digito/digito-home";
+
+/* Digito: every product comes in colours or capacities. One with
+   capacities needs its capacity picked (each has its own price), so it is
+   not offered here; one with colours goes in, in its first colour. */
+const capacities = (p) => (p.product_variants || p.variants || []).some((v) => v.volume);
+const firstColour = (p) => (p.product_variants || p.variants || []).find((v) => v.color)?.color || null;
 
 export default {
   name: "KalioOftenAdded",
@@ -75,11 +82,11 @@ export default {
       const inBasket = new Set(this.basketItems.map((item) => item.product_id));
       const aisles = new Set(this.basketItems.map((item) => item.product?.category_id).filter(Boolean));
       return this.catalogue
-        .filter((product) => !inBasket.has(product.id) && !hasSizes(product) && product.quantity > 0)
+        .filter((product) => !inBasket.has(product.id) && !capacities(product) && product.quantity > 0)
         .map((product) => ({
           product,
           near: aisles.has(product.category_id) ? 1 : 0,
-          off: product.discount && product.price ? product.discount / product.price : 0,
+          off: product.price ? savingOf(product) / product.price : 0,
         }))
         .sort((a, b) => b.near - a.near || b.off - a.off || a.product.id - b.product.id)
         .slice(0, this.count)
@@ -88,11 +95,7 @@ export default {
   },
 
   created() {
-    offers().then(({ shelfOf }) => {
-      const seen = new Map();
-      for (const shelf of shelfOf.values()) for (const product of shelf) if (!seen.has(product.id)) seen.set(product.id, product);
-      this.catalogue = [...seen.values()];
-    });
+    allProducts().then((list) => (this.catalogue = list));
   },
 
   methods: {
@@ -110,10 +113,13 @@ export default {
 
     /* Its "+" was pressed and the basket has not answered yet. */
     adding(product) {
-      return !!pendingLine(product);
+      const colour = firstColour(product);
+      return colour ? !!colourLine(this, product, colour)?.pending : !!pendingLine(product);
     },
 
     add(product) {
+      const colour = firstColour(product);
+      if (colour) return addColour(this, product, colour);
       quickAdd(this, product, (picked) => {
         this.$emit("navigate");
         this.$router.push(this.productRoute(picked.id));

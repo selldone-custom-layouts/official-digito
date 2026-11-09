@@ -63,7 +63,7 @@ export default {
 
   computed: {
     placeholder() {
-      return `Search ${this.aisle ? this.aisle.toLowerCase() : "groceries"}…`;
+      return `Search ${this.aisle ? this.aisle.toLowerCase() : "products"}…`;
     },
   },
 

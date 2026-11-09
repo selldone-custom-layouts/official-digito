@@ -1,4 +1,13 @@
-/* ▆▆▆▆▆▆▆▆▆▆▆▆▆▆ Tario — tokens, type and shared pieces ▆▆▆▆▆▆▆▆▆▆▆▆▆▆
+/* ▆▆▆▆▆▆▆▆▆▆▆▆▆▆ Digito — tokens, type and shared pieces ▆▆▆▆▆▆▆▆▆▆▆▆▆▆
+
+   Digito (9 November 2026): an electronics shop dressed as a deals hub —
+   a light grey floor (#f0f2f5, --k-paper) with white rounded section cards,
+   blue #0a4bd8 for every button and action (--k-green keeps its Kalio name),
+   sale red #c4122f for a saving (--k-coral), yellow #ffd91a only as an
+   accent, navy #071634, Plus Jakarta Sans. Product photos sit on white.
+   digito-skin.scss (loaded last) holds the structural differences.
+
+   Tario, which Digito started from:
 
    Tario (7 November 2026) is Molino Market Hall re-dressed as a bright
    big-box store: red for every commerce action and every saving, near-black
@@ -20,50 +29,50 @@
 
 :root {
   /* Ink and surface */
-  --k-ink: #1f1f1f;
-  --k-ink-2: #333333;
-  --k-muted: #666666;
-  --k-paper: #ffffff;
-  --k-wash: #f7f7f7;
+  --k-ink: #0f1729;
+  --k-ink-2: #1d2738;
+  --k-muted: #5a6474;
+  --k-paper: #f0f2f5;
+  --k-wash: #f0f2f5;
   --k-card: #ffffff;
-  --k-line: #e3e3e3;
-  --k-line-strong: #c9c9c9;
+  --k-line: #e1e5eb;
+  --k-line-strong: #c3cad5;
 
   /* Deep green carries every commerce action */
-  --k-green: #cc0000;
-  --k-green-deep: #a30000;
-  --k-green-lift: #e01b1b;
-  --k-leaf: #cc0000;
-  --k-green-soft: #fdeeee;
+  --k-green: #0a4bd8;
+  --k-green-deep: #0838a8;
+  --k-green-lift: #2a63e6;
+  --k-leaf: #0a4bd8;
+  --k-green-soft: #e8efff;
 
   /* Coral marks a saving. #c9431e keeps white badge text and sale prices
      above 4.5:1 on white; the brighter mockup coral did not. */
-  --k-coral: #cc0000;
-  --k-coral-soft: #fdeeee;
+  --k-coral: #c4122f;
+  --k-coral-soft: #fdecef;
 
   /* A product tile's ground. Each aisle sets its own --k-tint; this is the
      tint of anything that has no aisle of its own. */
-  --k-tint: #f7f7f7;
+  --k-tint: #ffffff;
 
   /* The shop pages' one ground for every packshot (design A, 3 November
      2026): the aisle is named in type, not painted on its products. */
-  --k-well: #f7f7f7;
-  --k-line-soft: #eeeeee;
+  --k-well: #ffffff;
+  --k-line-soft: #eceff3;
 
   /* Ratings (design A, 7 November 2026): amber stars on a warm grey. */
-  --k-amber: #333333;
-  --k-star-off: #d6d6d6;
+  --k-amber: #e5a100;
+  --k-star-off: #d5dae2;
 
   /* Type */
-  --k-display: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --k-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --k-display: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --k-body: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
 
   /* Geometry */
-  --k-radius: 12px;
+  --k-radius: 14px;
   --k-radius-sm: 8px;
   --k-radius-lg: 16px;
   --k-pill: 999px;
-  --k-maxw: 1280px;
+  --k-maxw: 1440px;
   --k-gutter: clamp(16px, 2.4vw, 24px);
   --k-tap: 44px;
   --k-shadow: 0 10px 28px -14px rgba(20, 20, 20, 0.32);
@@ -76,9 +85,9 @@
    ones. Kalio's green and deep green take those places (5 November 2026). */
 :root,
 .v-theme--light {
-  --v-theme-primary: 204, 0, 0 !important;
+  --v-theme-primary: 10, 75, 216 !important;
   --v-theme-on-primary: 255, 255, 255 !important;
-  --v-theme-secondary: 31, 31, 31 !important;
+  --v-theme-secondary: 7, 22, 52 !important;
   --v-theme-on-secondary: 255, 255, 255 !important;
 }
 

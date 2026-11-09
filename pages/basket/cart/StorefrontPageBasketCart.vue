@@ -36,7 +36,7 @@
       <div class="k-cart__head t-co__head">
         <h1 class="k-cart__title">Cart</h1>
         <span v-if="basket?.items?.length" class="t-co__count">
-          {{ units }} {{ units === 1 ? "item" : "items" }}<template v-if="seller_count > 1"> · {{ seller_count }} sellers, one checkout</template>
+          {{ units }} {{ units === 1 ? "item" : "items" }}
         </span>
         <s-shop-share-order-button v-if="basket?.items?.length" :basket="basket" class="k-cart__share" />
       </div>
@@ -97,7 +97,7 @@
           <!-- How do you want it: the shop's ways for each package, and when,
                on the page (Selldone's own options, Kalio's cards). -->
           <section v-if="show_when" class="t-how">
-            <h2 class="t-co__h">How do you want it?</h2>
+            <h2 class="t-co__h">Delivery method</h2>
             <s-shop-connect-shipping-options
               :basket="basket"
               :start-package-index="0"
@@ -128,7 +128,7 @@
           <!-- Before the address: the shop's ways, to choose once it is in
                (Selldone prices and lists them from the address). -->
           <section v-else-if="has_delivery && !isService && shop_ways.length" class="t-how -preview">
-            <h2 class="t-co__h">How do you want it?</h2>
+            <h2 class="t-co__h">Delivery method</h2>
             <div class="t-ways3">
               <button v-for="w in shop_ways" :key="w.key" class="t-way3" type="button" @click="openAddress()">
                 <v-icon aria-hidden="true" size="22">{{ w.icon }}</v-icon>
@@ -168,7 +168,7 @@
                       ? "Where the service takes place."
                       : all_is_pickup
                         ? "Your billing address."
-                        : "Your address, for the receipt and the seller."
+                        : "Your address, for the receipt and the delivery."
                   }}
                 </p>
                 <button class="k-cart__map" type="button" @click="openAddress()">
@@ -396,26 +396,18 @@
       <!-- Kalio: an empty basket is a starting point, so it offers the way back
            to the aisles instead of only announcing itself. The heading keeps
            the translated platform string. -->
-      <div v-else class="k-basket-empty">
-        <img
-          alt=""
-          class="k-basket-empty__art"
-          height="96"
-          src="@selldone/components-vue/assets/icons/baskets.svg"
-        />
-        <h1 class="k-basket-empty__title">
-          {{ $t("basket_page.basket_empty") }}
-        </h1>
-        <p class="k-basket-empty__lede">
-          The aisles are stocked. Pick up where you left off.
-        </p>
-        <router-link
-          :to="{ name: window.$storefront.routes.SHOP_PAGE }"
-          class="k-btn k-btn--solid"
-        >
-          Start shopping
-        </router-link>
+      <!-- Digito: an empty cart is a starting point — the way back to the
+           deals and the catalogue, and a row of today's deals under it. -->
+      <div v-else class="k-basket-empty dg-empty">
+        <span aria-hidden="true" class="dg-empty__mark"><digito-icon name="shopping_cart" size="40" /></span>
+        <h1 class="k-basket-empty__title">Your cart is empty</h1>
+        <p class="k-basket-empty__lede">Find something you like — today’s deals are a good place to start.</p>
+        <div class="dg-empty__acts">
+          <router-link :to="dealsTo" class="dg-btn">Shop today’s deals</router-link>
+          <router-link :to="{ name: window.$storefront.routes.SHOP_PAGE, query: { sort: 'newest' } }" class="dg-btn -line">Continue shopping</router-link>
+        </div>
       </div>
+      <digito-rail v-if="!(basket && basket.items && basket.items.length)" :filter="{ only_has_discount: true }" :more-to="dealsTo" class="dg-empty__rail" lazy more-label="See all deals" title="Top deals" />
 
       <div v-if="busy_shop" class="busy-overlay">
         <div class="text-h4 font-weight-thin">
@@ -448,7 +440,7 @@
       :center="center"
       :countries="$shop.countries?.length ? $shop.countries : null"
       :heading="isService ? 'Where should we come?' : all_is_pickup ? 'Your billing address' : 'Where should it go?'"
-      :lede="isService ? 'The address for the service.' : 'Your address, for the receipt and the seller.'"
+      :lede="isService ? 'The address for the service.' : 'Your address, for the receipt and the delivery.'"
       :no-map="no_map"
       :receiver-info="receiver_info"
       @save="onClickSetLocation"
@@ -495,7 +487,10 @@ import { TimeSpans } from "@selldone/core-js/enums/logistic/TimeSpans";
 import KalioCartLines from "../../../components/kalio/checkout/KalioCartLines.vue";
 import KalioOftenAdded from "../../../components/kalio/KalioOftenAdded.vue";
 import KalioAddressSheet from "../../../components/kalio/checkout/KalioAddressSheet.vue";
-import { freeShippingFrom, waysOf } from "../../../components/tario/tario-home";
+import { freeShippingFrom, waysOf } from "../../../components/digito/digito-home";
+import DigitoRail from "../../../components/digito/DigitoRail.vue";
+import DigitoIcon from "../../../components/digito/DigitoIcon.vue";
+import { dealsRoute } from "../../../components/kalio/kalio-catalog";
 
 export default {
   name: "StorefrontPageBasketCart",
@@ -510,6 +505,8 @@ export default {
   ],
 
   components: {
+    DigitoRail,
+    DigitoIcon,
     KalioCartLines,
     KalioOftenAdded,
     KalioAddressSheet,
@@ -595,6 +592,9 @@ export default {
    * ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
    */
   computed: {
+    dealsTo() {
+      return dealsRoute();
+    },
     receiver_info() {
       return this.basket?.receiver_info || null; // Kalio: no basket yet (a guest with nothing in it)
     },
@@ -1047,7 +1047,7 @@ export default {
       if (this.error_message_payment) return this.error_message_payment;
       if (this.enter_guest_email_error) return "Add your email to pay.";
       if (!this.guest_email_ok) return "Check your email address.";
-      if (this.bill && !this.can_pay) return "This basket cannot be paid yet.";
+      if (this.bill && !this.can_pay) return "This cart cannot be paid yet.";
       if (
         this.payment_ways &&
         !this.payment_ways.length &&

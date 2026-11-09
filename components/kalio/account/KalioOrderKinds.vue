@@ -8,7 +8,7 @@
   <v-menu location="bottom end" offset="6">
     <template #activator="{ props }">
       <button v-bind="props" class="k-kinds" type="button">
-        <v-icon size="19">{{ current === "PHYSICAL" ? "local_grocery_store" : "receipt_long" }}</v-icon>
+        <v-icon size="19">{{ current === "PHYSICAL" ? "shopping_bag" : "receipt_long" }}</v-icon>
         {{ currentWord }}
         <v-icon class="k-kinds__chev" size="18">expand_more</v-icon>
       </button>
@@ -16,7 +16,7 @@
     <div class="k-kinds__menu">
       <p class="k-kinds__label">Kind of order</p>
       <router-link :class="{ '-on': current === 'PHYSICAL' }" :to="groceries">
-        <v-icon size="19">local_grocery_store</v-icon>Groceries
+        <v-icon size="19">shopping_bag</v-icon>Products
       </router-link>
       <router-link v-for="kind in kinds" :key="kind.key" :class="{ '-on': current === kind.key }" :to="kind.route">
         <v-icon size="19">{{ ICONS[kind.key] }}</v-icon>{{ kind.word }}<em v-if="countOf(kind.key)">{{ countOf(kind.key) }}</em>
@@ -47,7 +47,7 @@ export default {
       return { name: window.$storefront.routes.HISTORY_ORDERS_PHYSICAL };
     },
     currentWord() {
-      if (this.current === "PHYSICAL") return "Groceries";
+      if (this.current === "PHYSICAL") return "Products";
       return this.kinds.find((kind) => kind.key === this.current)?.word || "Orders";
     },
   },

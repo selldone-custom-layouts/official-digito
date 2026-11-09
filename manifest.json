@@ -1,10 +1,10 @@
 {
   "deploy_server": "https://layouts.selldone.com",
   "deploy_path": "",
-  "package": "tario-market",
-  "name": "Tario Market",
-  "version": "1.2.10",
+  "package": "digito-electronics",
+  "name": "Digito Electronics",
+  "version": "1.0.0",
   "storefront": true,
   "backoffice": false,
-  "description": "A bright red, big-box style storefront for a grocery marketplace: a promo strip, a split hero, round categories, rows of cards with Add to cart, aisle pages with a chip bar of filters, a product page with a framed buy box and sellers side by side, a cart page with a free-shipping meter and a summary, and seller, journal and About pages of its own."
+  "description": "A deals-hub storefront for an electronics shop: a blue header with a category mega menu, a photo hero beside the Deal of the Day, round categories, deal rails with Add to cart that turns into − n +, doorbusters, a best-seller bento, category pages with a filter panel, a three-column product page with specs, reviews and Frequently bought together, a side-by-side compare page, a receipt-first cart and checkout, and blog, About, Contact and FAQ pages of its own."
 }

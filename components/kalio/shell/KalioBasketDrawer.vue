@@ -1,100 +1,82 @@
 <!--
-  Kalio — the basket drawer (the header's Basket).
+  Digito — the cart drawer (design C, the owner's pick in Molino, in
+  Digito's dress).
 
-  A receipt first: the subtotal large, what the shopper saves, and
-  Checkout right there. Then the basket in compact rows (picture, name,
-  size and seller, a quantity stepper, the line's price), and under it
-  three products often added, each with its own "+" (KalioOftenAdded). Design C of three
-  drawn on 4 November 2026 (../kalio-design/basket-drawer-options/).
+  A receipt first: Subtotal, what the shopper saves (red), delivery
+  "calculated at checkout", the total, and a blue Checkout (not stretched
+  across the drawer) beside "View cart". Then the cart in compact rows
+  (picture, name, the colour as a swatch or the capacity, price, − n +, a
+  remove button), and three products often added (KalioOftenAdded). One
+  shop, one list: no seller headings.
 
-  It replaces Selldone's BasketTopMenu ("YOUR CART", a black "Count"
-  dropdown, "Hour" and a black Checkout). The basket, its bill and the
-  steppers are the storefront's own (getBaskets, kalio-basket.ts); the
-  stepper changes the count as it is tapped and the bill follows. A
-  basket of another type (a file or a service) gets its own receipt.
+  The cart, its bill and the steppers are the storefront's own (getBaskets,
+  kalio-basket.ts); the stepper changes the count as it is tapped and the
+  bill follows. A cart of another type (a file or a service) gets its own
+  receipt.
 -->
 <template>
-  <!-- Tario 1.2.0 (drawer design A): how far from free shipping, the lines
-       under each seller, three often added, and the totals with View cart
-       and Check out at the foot. -->
-  <div class="k-bdrawer t-bdrawer">
-    <div class="t-bdrawer__body">
-      <section v-for="group in groups" :key="group.type" class="k-bdrawer__group">
-        <p v-if="groups.length > 1" class="t-bdrawer__type">{{ typeName(group.type) }}</p>
-        <div v-if="free_from && group.type === 'PHYSICAL'" class="t-meter2">
-          <template v-if="freeLeft(group) > 0">
-            Add <b><u-price :amount="freeLeft(group)" :currency="group.currency" /></b> more for free shipping
-          </template>
-          <template v-else><b>Free shipping</b> on this order</template>
-          <div class="t-meter__bar"><i :style="{ width: freePct(group) + '%' }"></i></div>
-        </div>
-        <template v-for="sg in bySeller(group)" :key="sg.key">
-          <p class="t-bdrawer__seller">
-            <img v-if="sg.logo" :src="sg.logo" alt="" height="22" width="22" />
-            Sold by {{ sg.name }}
-          </p>
-          <ul class="k-bdrawer__rows">
-            <li v-for="item in sg.items" :key="item.id" class="k-bdrawer__row">
-              <router-link :to="productRoute(item.product_id)" class="k-bdrawer__pic" @click="$emit('close')">
-                <img v-if="image(item.product)" :src="image(item.product)" alt="" height="36" loading="lazy" width="36" />
-              </router-link>
-              <div class="t-bdrawer__mid">
-                <router-link :to="productRoute(item.product_id)" class="k-bdrawer__name" @click="$emit('close')">
-                  <span>{{ item.product?.title }}</span>
-                  <small v-if="size(item)">{{ size(item) }}</small>
-                </router-link>
-                <div
-                  :aria-label="`Quantity of ${item.product?.title || 'this item'}`"
-                  :class="{ '-busy': settling(item.product, item) }"
-                  class="k-bdrawer__qty"
-                  role="group"
-                >
-                  <button :aria-label="shown(item) > 1 ? 'One fewer' : 'Remove from cart'" type="button" @click="step(item, -1)">
-                    <v-icon size="16">{{ shown(item) > 1 ? "remove" : "delete_outline" }}</v-icon>
-                  </button>
-                  <output aria-live="polite">{{ shown(item) }}</output>
-                  <button :disabled="shown(item) >= max(item)" aria-label="One more" type="button" @click="step(item, 1)">
-                    <v-icon size="16">add</v-icon>
-                  </button>
-                </div>
-              </div>
-              <span class="t-bdrawer__prices">
-                <u-price :amount="item.price * shown(item)" :class="{ '-sale': item.dis > 0 }" :currency="item.currency" class="k-bdrawer__price" />
-                <s v-if="item.dis > 0"><u-price :amount="(item.price + item.dis) * shown(item)" :currency="item.currency" /></s>
-              </span>
-            </li>
-          </ul>
-        </template>
-      </section>
-      <kalio-often-added :count="3" class="k-bdrawer__often" @navigate="$emit('close')" />
-    </div>
+  <div class="k-bdrawer dg-cdrawer">
+    <section v-for="group in groups" :key="group.type" class="dg-cdrawer__group">
+      <p v-if="groups.length > 1" class="dg-cdrawer__type">{{ typeName(group.type) }}</p>
 
-    <footer v-for="group in groups.slice(0, 1)" :key="'f' + group.type" :class="{ '-settling': group.settling }" class="t-bdrawer__foot">
-      <p class="t-bdrawer__row">
-        <span>Items ({{ group.units }})</span><u-price :amount="group.total + group.saved" :currency="group.currency" />
-      </p>
-      <p v-if="group.saved >= 0.01" class="t-bdrawer__row -save">
-        <span>You save</span><span>−<u-price :amount="group.saved" :currency="group.currency" /></span>
-      </p>
-      <p class="t-bdrawer__row -tot">
-        <span>Subtotal</span><u-price :amount="group.total" :currency="group.currency" />
-      </p>
-      <div class="t-bdrawer__btns">
-        <router-link :to="checkoutRoute(group.type)" class="t-btn -line" @click="$emit('close')">View cart</router-link>
-        <router-link :to="checkoutRoute(group.type)" class="t-btn -red" @click="$emit('close')">Check out</router-link>
+      <div :class="{ '-settling': group.settling }" class="dg-receipt">
+        <p class="dg-receipt__row"><span>Subtotal ({{ group.units }} {{ group.units === 1 ? "item" : "items" }})</span><u-price :amount="group.total + group.saved" :currency="group.currency" /></p>
+        <p v-if="group.saved >= 0.01" class="dg-receipt__row -save"><span>You save</span><span>−<u-price :amount="group.saved" :currency="group.currency" /></span></p>
+        <p class="dg-receipt__row -muted"><span>Delivery</span><span>Calculated at checkout</span></p>
+        <p class="dg-receipt__row -tot"><span>Total</span><u-price :amount="group.total" :currency="group.currency" /></p>
+        <div class="dg-receipt__btns">
+          <router-link :to="checkoutRoute(group.type)" class="dg-btn" @click="$emit('close')">
+            <v-icon size="18">lock_outline</v-icon>Checkout
+          </router-link>
+          <router-link :to="checkoutRoute(group.type)" class="dg-btn -line" @click="$emit('close')">View cart</router-link>
+        </div>
       </div>
-    </footer>
+
+      <ul class="dg-cdrawer__rows">
+        <li v-for="item in group.items" :key="item.id" class="dg-crow">
+          <router-link :to="productRoute(item.product_id)" class="dg-crow__pic" @click="$emit('close')">
+            <img v-if="image(item)" :src="image(item)" alt="" height="56" loading="lazy" width="56" />
+          </router-link>
+          <div class="dg-crow__mid">
+            <router-link :to="productRoute(item.product_id)" class="dg-crow__name" @click="$emit('close')">{{ item.product?.title }}</router-link>
+            <span v-if="item.variant" class="dg-crow__var">
+              <i v-if="item.variant.color" :style="{ background: swatch(item.variant.color) }" class="dg-sw -xs"></i>
+              {{ size(item) }}
+            </span>
+            <span class="dg-crow__price">
+              <u-price :amount="item.price * shown(item)" :class="{ '-sale': item.dis > 0 }" :currency="item.currency" />
+              <s v-if="item.dis > 0"><u-price :amount="(item.price + item.dis) * shown(item)" :currency="item.currency" /></s>
+            </span>
+          </div>
+          <div class="dg-crow__side">
+            <div :aria-label="`Quantity of ${item.product?.title || 'this item'}`" :class="{ '-busy': settling(item.product, item) }" class="dg-qty" role="group">
+              <button :disabled="shown(item) <= 1" aria-label="One fewer" type="button" @click="step(item, -1)">
+                <v-icon size="16">remove</v-icon>
+              </button>
+              <output aria-live="polite">{{ shown(item) }}</output>
+              <button :disabled="shown(item) >= max(item)" aria-label="One more" type="button" @click="step(item, 1)">
+                <v-icon size="16">add</v-icon>
+              </button>
+            </div>
+            <button :aria-label="`Remove ${item.product?.title || 'this item'}`" class="dg-crow__rm" type="button" @click="remove(item)">
+              <v-icon size="18">delete_outline</v-icon>
+            </button>
+          </div>
+        </li>
+      </ul>
+    </section>
+    <kalio-often-added :count="3" class="k-bdrawer__often" @navigate="$emit('close')" />
   </div>
 </template>
 
 <script>
 import { ProductType } from "@selldone/core-js/enums/product/ProductType";
 import { settling, shownCount, stepTo } from "../kalio-basket";
-import { productImage, vendorImage, vendors } from "../kalio-catalog";
-import { freeShippingFrom } from "../../tario/tario-home";
+import { productImage } from "../kalio-catalog";
 import KalioOftenAdded from "../KalioOftenAdded.vue";
 
-/* The size of a variant in words: its volume, weight, pack, colour or style. */
+/* The variant in words: its capacity, weight, pack, type or style. A
+   colour is drawn as a swatch beside it. */
 function sizeOf(variant) {
   if (!variant) return null;
   return variant.volume || variant.weight || variant.pack || variant.type || variant.style || null;
@@ -106,19 +88,7 @@ export default {
 
   emits: ["close"],
 
-  data() {
-    return {
-      sellerNames: new Map(),
-      sellerList: [],
-    };
-  },
-
   computed: {
-    free_from() {
-      return freeShippingFrom(this.$shop || this.getShop?.());
-    },
-    /* One receipt per basket with something in it: usually the one basket
-       of groceries. Rows taken to zero leave at once; the bill follows. */
     groups() {
       return this.getBaskets()
         .filter((basket) => basket?.items?.length)
@@ -130,12 +100,9 @@ export default {
             items,
             units: basket.items.reduce((sum, item) => sum + (item.count || 0), 0),
             total: typeof bill.price === "number" ? bill.price : basket.price,
-            /* From the lines, not the bill: a basket read on page load
-               comes without one. */
-            saved: basket.items.reduce(
-              (sum, item) => sum + (item.dis || 0) * (item.count || 0) + (item.offer_amount || 0),
-              0,
-            ),
+            /* From the lines, not the bill: a cart read on page load comes
+               without one. */
+            saved: basket.items.reduce((sum, item) => sum + (item.dis || 0) * (item.count || 0) + (item.offer_amount || 0), 0),
             currency: bill.currency || basket.currency,
             settling: basket.items.some((item) => settling(item.product || { id: item.product_id }, item)),
           };
@@ -144,77 +111,41 @@ export default {
     },
   },
 
-  created() {
-    vendors().then((list) => {
-      this.sellerNames = new Map(list.map((vendor) => [vendor.id, vendor.name]));
-      this.sellerList = list;
-    });
-  },
-
   methods: {
     settling,
-
-    image(product) {
-      return productImage(product, true);
+    image(item) {
+      const own = item.variant?.image;
+      return own ? window.CDN.GET_SHOP_IMAGE_PATH(own, 128) : productImage(item.product, true);
     },
-
     size(item) {
       return sizeOf(item.variant);
     },
-
-    /* The lines under each seller, in the order they were first added. */
-    bySeller(group) {
-      const out = new Map();
-      for (const item of group.items) {
-        const key = item.vendor_id || 0;
-        if (!out.has(key)) {
-          const vendor = this.sellerList.find((v) => v.id === key);
-          out.set(key, {
-            key,
-            name: this.sellerNames.get(key) || this.$shop?.title || "molino",
-            logo: vendor ? vendorImage(vendor, true) : null,
-            items: [],
-          });
-        }
-        out.get(key).items.push(item);
-      }
-      return [...out.values()];
+    swatch(c) {
+      const parts = String(c)
+        .split("/")
+        .map((x) => (x.length === 9 ? x.slice(0, 7) : x));
+      return parts.length > 1 ? `linear-gradient(135deg, ${parts[0]} 50%, ${parts[1]} 50%)` : parts[0];
     },
-
-    freeLeft(group) {
-      return this.free_from ? Math.max(0, this.free_from.amount - group.total) : 0;
-    },
-
-    freePct(group) {
-      return this.free_from ? Math.min(100, Math.round((group.total / this.free_from.amount) * 100)) : 0;
-    },
-
-    meta(item) {
-      const seller = this.sellerNames.get(item.vendor_id);
-      return [sizeOf(item.variant), seller].filter(Boolean).join(" · ");
-    },
-
     typeName(type) {
       return this.$t(ProductType[type]?.name || type);
     },
-
     shown(item) {
       return shownCount(item.product || { id: item.product_id }, item);
     },
-
     max(item) {
       return item.vendor_product?.quantity ?? item.variant?.quantity ?? item.product?.quantity ?? 99;
     },
-
     step(item, delta) {
       const product = { id: item.product_id, type: item.product?.type };
       stepTo(this, product, item, this.shown(item) + delta);
     },
-
+    remove(item) {
+      const product = { id: item.product_id, type: item.product?.type };
+      stepTo(this, product, item, 0);
+    },
     productRoute(id) {
       return { name: window.$storefront.routes.PRODUCT_PAGE, params: { product_id: id } };
     },
-
     checkoutRoute(type) {
       return { name: window.$storefront.routes.BASKET_PAGE, params: { type } };
     },

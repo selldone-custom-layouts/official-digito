@@ -30,11 +30,11 @@
         <!-- ⬬⬬⬬⬬⬬⬬⬬⬬⬬⬬⬬⬬ Top Shop Menu ⬬⬬⬬⬬⬬⬬⬬⬬⬬⬬⬬⬬ -->
         <slot name="header" :center="true"></slot>
 
-        <!-- ⬬⬬⬬⬬ Breadcrumb, admin shortcut, QR ⬬⬬⬬⬬ -->
-        <nav aria-label="Breadcrumb" class="k-crumbs">
-          <router-link :to="{ name: window.$storefront.routes.SHOP_PAGE }">{{ $shop.title }}</router-link>
+        <!-- ⬬⬬⬬⬬ Breadcrumb: the category's path, then the product ⬬⬬⬬⬬ -->
+        <nav aria-label="Breadcrumb" class="dg-crumbs dg-page">
+          <router-link :to="{ path: '/' }">Home</router-link>
           <template v-if="product && product.category">
-            <v-icon aria-hidden="true" class="k-flip" size="16">chevron_right</v-icon>
+            <span aria-hidden="true" class="dg-ms">chevron_right</span>
             <router-link
               :to="{
                 name: window.$storefront.routes.SHOP_CATEGORY_PAGE,
@@ -44,104 +44,72 @@
             >
           </template>
           <template v-if="product">
-            <v-icon aria-hidden="true" class="k-flip" size="16">chevron_right</v-icon>
-            <span aria-current="page" class="k-crumbs__here">{{ product.title }}</span>
+            <span aria-hidden="true" class="dg-ms">chevron_right</span>
+            <span aria-current="page">{{ product.title }}</span>
           </template>
-          <span class="k-crumbs__tools">
+          <span class="dg-crumbs__tools">
             <s-product-admin-button v-if="$vuetify.display.mdAndUp"></s-product-admin-button>
-            <s-product-qr></s-product-qr>
           </span>
         </nav>
 
-        <tario-product-overview v-if="product" can-buy show-cover />
-        <s-product-overview-loading v-else />
+        <div class="dg-page">
+          <digito-product-overview v-if="product" can-buy show-cover />
+          <s-product-overview-loading v-else />
+        </div>
         <u-loading-progress v-if="busy"></u-loading-progress>
       </div>
     </div>
 
     <template v-if="product">
-      <!-- ▁▁▁▁▁▁ 🞇 Cross selling (the merchant's own pairs) 🞇 ▁▁▁▁▁▁ -->
-      <div :style="{ order: getOrder('cross') }">
+      <div class="dg-page dg-pdp-more">
+        <!-- The merchant's own cross-sells and offers, as Selldone keeps them. -->
         <s-product-cross-sells class="s--product-section k-pdp-block"></s-product-cross-sells>
-      </div>
-      <!-- ▁▁▁▁▁▁ 🞇 Offer 🞇 ▁▁▁▁▁▁ -->
-      <div :style="{ order: getOrder('offer') }">
         <s-product-offers class="s--product-section k-pdp-block"></s-product-offers>
-      </div>
 
-      <!-- ▁▁▁▁▁▁ 🞇 Tario (product page B): one stack of folding sections 🞇 ▁▁▁▁▁▁ -->
-      <div :style="{ order: getOrder('spec') }">
-        <section aria-label="About this item" class="t-folds k-wrap">
-          <details v-if="highlight_rows.length" class="t-fold -phone" open>
-            <summary>Highlights<v-icon aria-hidden="true">expand_more</v-icon></summary>
-            <ul class="t-hl__list">
-              <li v-for="h in highlight_rows" :key="h.key">
-                <v-icon aria-hidden="true" size="20">check_circle</v-icon><span><b>{{ h.key }}:</b> {{ h.value }}</span>
-              </li>
-            </ul>
-          </details>
-          <details v-if="has_spec" class="t-fold" open>
-            <summary>Specifications<v-icon aria-hidden="true">expand_more</v-icon></summary>
-            <s-product-spec class="k-pdp-spec t-fold__spec"></s-product-spec>
-          </details>
-          <details v-if="article" class="t-fold">
-            <summary>About this product<v-icon aria-hidden="true">expand_more</v-icon></summary>
-            <s-product-article hide-title></s-product-article>
-          </details>
-          <details v-if="has_pros_cons && cons_list.length" class="t-fold">
-            <summary>Good to know<v-icon aria-hidden="true">expand_more</v-icon></summary>
-            <ul class="k-highlights__list -cons">
-              <li v-for="item in cons_list" :key="'c' + item.key">
-                <v-icon aria-hidden="true" size="20">remove_circle_outline</v-icon>
-                <span><b>{{ item.key }}</b> {{ item.value }}</span>
-              </li>
-            </ul>
-          </details>
-          <details class="t-fold">
-            <summary>Shipping &amp; delivery<v-icon aria-hidden="true">expand_more</v-icon></summary>
-            <ul v-if="ways.length" class="t-fold__ways">
-              <li v-for="w in ways" :key="w.key">
-                <v-icon aria-hidden="true">{{ w.icon }}</v-icon>
-                <span
-                  ><b>{{ w.word }}</b> — {{ w.line }}.
-                  <template v-if="w.free">Free.</template>
-                  <template v-else-if="w.freeOver">Free on orders over <u-price :amount="w.freeOver" :currency="w.currency" />.</template>
-                </span>
-              </li>
-            </ul>
-            <s-product-shipping class="k-pdp-block"></s-product-shipping>
-            <s-product-warranty class="k-pdp-block"></s-product-warranty>
-            <s-product-guide class="k-pdp-block"></s-product-guide>
-          </details>
-          <details id="k-reviews" class="t-fold" open>
-            <summary>Ratings &amp; reviews<v-icon aria-hidden="true">expand_more</v-icon></summary>
-            <kalio-reviews></kalio-reviews>
-          </details>
+        <section v-if="has_spec" id="dg-specs" aria-labelledby="dg-spec-h" class="dg-sec dg-specs">
+          <header class="dg-head"><h2 id="dg-spec-h">Specifications</h2></header>
+          <div class="dg-specs__groups">
+            <div v-for="g in spec_groups" :key="g.title" class="dg-specs__g">
+              <h3>{{ g.title }}</h3>
+              <dl>
+                <template v-for="row in g.rows" :key="row.key">
+                  <dt>{{ row.key }}</dt>
+                  <dd>{{ row.value }}</dd>
+                </template>
+              </dl>
+            </div>
+          </div>
         </section>
-      </div>
 
-      <!-- ▁▁▁▁▁▁ 🞇 Includes in the product 🞇 ▁▁▁▁▁▁ -->
-      <div :style="{ order: getOrder('includes') }">
-        <s-product-includes class="k-pdp-block"></s-product-includes>
-      </div>
-      <div :style="{ order: getOrder('files') }">
-        <s-product-files-list class="k-pdp-block"></s-product-files-list>
-      </div>
-      <div :style="{ order: getOrder('contents') }">
-        <s-product-subscription-membership class="k-pdp-block"></s-product-subscription-membership>
-      </div>
-      <!-- █████████████████████ Internal Page █████████████████████ -->
-      <div :style="{ order: getOrder('page') }">
+        <section v-if="article" aria-label="About this product" class="dg-sec dg-about">
+          <header class="dg-head"><h2>About this product</h2></header>
+          <s-product-article hide-title></s-product-article>
+        </section>
+
+        <section id="k-reviews" aria-labelledby="dg-rev-h" class="dg-sec dg-reviews">
+          <header class="dg-head"><h2 id="dg-rev-h">Reviews</h2></header>
+          <kalio-reviews></kalio-reviews>
+        </section>
+
+        <digito-fbt :product="product" />
+
+        <section v-if="has_extra" aria-label="Delivery and care" class="dg-sec dg-care">
+          <s-product-includes class="k-pdp-block"></s-product-includes>
+          <s-product-shipping class="k-pdp-block"></s-product-shipping>
+          <s-product-warranty class="k-pdp-block"></s-product-warranty>
+          <s-product-guide class="k-pdp-block"></s-product-guide>
+          <s-product-files-list class="k-pdp-block"></s-product-files-list>
+          <s-product-subscription-membership class="k-pdp-block"></s-product-subscription-membership>
+        </section>
+
         <s-product-landing></s-product-landing>
-      </div>
 
-      <!-- ⬬⬬⬬⬬ More from this aisle, as Tario cards ⬬⬬⬬⬬ -->
-      <div :style="{ order: getOrder('related-products') }">
-        <tario-row
+        <digito-rail
           v-if="product.category"
-          :key="'aisle-' + product.category.id"
+          :key="'more-' + product.category.id"
           :dir="product.category.name"
-          :exclude="product.id"
+          :exclude="[product.id]"
+          :photo-category="product.category"
           :more-to="{
             name: window.$storefront.routes.SHOP_CATEGORY_PAGE,
             params: { category_name: product.category.name },
@@ -158,9 +126,11 @@
 <script lang="ts">
 import NotificationService from "@selldone/components-vue/plugins/notification/NotificationService.ts";
 
-import TarioProductOverview from "../../components/tario/product/TarioProductOverview.vue";
-import TarioRow from "../../components/tario/TarioRow.vue";
-import { waysOf } from "../../components/tario/tario-home";
+import DigitoProductOverview from "../../components/digito/DigitoProductOverview.vue";
+import DigitoRail from "../../components/digito/DigitoRail.vue";
+import DigitoFbt from "../../components/digito/DigitoFbt.vue";
+import { waysOf } from "../../components/digito/digito-home";
+import { specGroups, specValue } from "../../components/kalio/compare/kalio-compare";
 import { EventBus } from "@selldone/components-vue/utils/events/EventBus.ts";
 import SProductOverviewLoading from "@selldone/components-vue/storefront/product/overview/loading/SProductOverviewLoading.vue";
 
@@ -210,8 +180,9 @@ export default {
     SProductIncludes,
 
     SProductOverviewLoading,
-    TarioProductOverview,
-    TarioRow,
+    DigitoProductOverview,
+    DigitoRail,
+    DigitoFbt,
 
   },
 
@@ -304,6 +275,18 @@ export default {
         if (out.length >= 6) break;
       }
       return out;
+    },
+    /* The spec in the shop's own groups, for the Specifications table. */
+    spec_groups() {
+      return specGroups([this.product])
+        .map((g) => ({ title: g.title, rows: g.keys.map((key) => ({ key, value: specValue(this.product, key) })).filter((r) => r.value) }))
+        .filter((g) => g.rows.length);
+    },
+    /* Selldone's own blocks (what is included, shipping, warranty, guide,
+       files) only when the product has any of them. */
+    has_extra() {
+      const p = this.product || {};
+      return !!(p.includes?.length || p.shipping_id || p.warranty_id || p.guide_id || p.return_policy_id || p.type === "FILE" || p.type === "SUBSCRIPTION");
     },
     has_pros_cons() {
       return (

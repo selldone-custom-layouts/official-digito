@@ -255,7 +255,7 @@
             </label>
           </div>
           <label class="k-addr__field -wide">
-            <span>Note for the seller</span>
+            <span>Note for the courier</span>
             <textarea v-model="form.message" placeholder="Gate code, landmark… (optional)" rows="2"></textarea>
           </label>
         </div>
@@ -317,7 +317,7 @@ export default {
     /** The shop's countries; all when empty. */
     countries: { type: Array, default: null },
     heading: { type: String, default: "Where should it go?" },
-    lede: { type: String, default: "Your address, for the receipt and the seller." },
+    lede: { type: String, default: "Your address, for the receipt and the delivery." },
     /** The address book: the address has a name, asked first. */
     titled: Boolean,
     /** The address's name, when it has one. */

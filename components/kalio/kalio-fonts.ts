@@ -1,18 +1,39 @@
 /*
- * Kalio — typefaces.
+ * Digito — typefaces.
  *
- * Fraunces sets the headings, DM Sans everything else. They are requested
- * from the app at start-up rather than from index.html: in production the
- * Layout runs inside the HTML Selldone renders for the shop, and index.html
- * never reaches the visitor — Market Hall's fonts, linked there, only ever
- * loaded on the dev server. Roboto stays where Selldone's page asks for it;
- * Vuetify components name it.
+ * Plus Jakarta Sans sets everything; Material Symbols Rounded draws Digito's
+ * own icons (DigitoIcon, the `.dg-ms` class). They are requested from the
+ * app at start-up rather than from index.html: in production the Layout runs
+ * inside the HTML Selldone renders for the shop, and index.html never
+ * reaches the visitor. Selldone's own parts keep the Material Icons font
+ * they ship with (v-icon).
+ *
+ * The icon font is asked for only the icons Digito draws (Google's
+ * `icon_names`), a few kilobytes instead of the whole set. A new icon in a
+ * Digito component must be added to ICONS, or it shows as its name.
  */
+
+export const ICONS = [
+  "account_circle", "add", "add_shopping_cart", "alternate_email", "apps", "arrow_back", "arrow_forward",
+  "assignment_return", "bolt", "check", "check_circle", "chevron_left", "chevron_right", "close",
+  "compare_arrows", "credit_card", "delete", "expand_less", "expand_more", "favorite", "filter_list", "help",
+  "history", "home", "inventory_2", "local_mall", "local_offer", "local_shipping", "location_on", "lock", "logout",
+  "mail", "menu", "new_releases", "notifications", "package_2", "payments", "person", "photo_camera", "public",
+  "receipt_long", "remove", "schedule", "search", "sell", "share", "shopping_cart", "smart_display", "storefront",
+  "support_agent", "trending_up", "tune", "verified", "workspace_premium",
+];
 
 const FONTS_HREF =
   "https://fonts.googleapis.com/css2" +
-  "?family=Inter:wght@400..800" +
+  "?family=Plus+Jakarta+Sans:wght@400..800" +
   "&display=swap";
+
+const ICONS_HREF =
+  "https://fonts.googleapis.com/css2" +
+  "?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,0..1,0" +
+  "&icon_names=" +
+  [...new Set(ICONS)].sort().join(",") +
+  "&display=block";
 
 function addLink(attrs: Record<string, string>) {
   if (document.head.querySelector(`link[href="${attrs.href}"]`)) return;
@@ -23,3 +44,4 @@ function addLink(attrs: Record<string, string>) {
 
 addLink({ rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: "" });
 addLink({ rel: "stylesheet", href: FONTS_HREF });
+addLink({ rel: "stylesheet", href: ICONS_HREF });

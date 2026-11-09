@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <title>tario</title>
-  <rect width="64" height="64" rx="16" fill="#cc0000"/>
-  <g transform="rotate(-32 32 32)">
-    <path d="M23 18H47A5 5 0 0 1 52 23V41A5 5 0 0 1 47 46H23L12 32Z" fill="#ffffff"/>
-    <circle cx="22" cy="32" r="4" fill="#cc0000"/>
-    <path d="M33 26.5H45M33 32H45M33 37.5H41" stroke="#cc0000" stroke-width="3.2" stroke-linecap="round"/>
-  </g>
-</svg>

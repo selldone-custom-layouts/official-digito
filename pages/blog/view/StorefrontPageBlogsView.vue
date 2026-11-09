@@ -37,7 +37,7 @@
       <div class="k-board__empty k-journal__empty">
         <v-icon size="30">menu_book</v-icon>
         <h2>We can't find this note</h2>
-        <p>It may have been moved or taken down. The rest of the journal is still here.</p>
+        <p>It may have been moved or taken down. The rest of the blog is still here.</p>
         <router-link :to="journalRoute()" class="k-btn k-btn--solid">Back to the journal</router-link>
       </div>
     </div>
@@ -67,7 +67,7 @@
 
         <section v-if="list.length" class="k-post__shop">
           <header>
-            <h2>{{ named ? "Shop this list" : "On offer this week" }}</h2>
+            <h2>{{ named ? "Shop this story" : "Today’s deals" }}</h2>
             <button
               v-if="addable.length > 1"
               :disabled="adding || allIn"
@@ -75,7 +75,7 @@
               type="button"
               @click="addAll"
             >
-              <v-icon size="20">{{ allIn ? "check" : "shopping_basket" }}</v-icon>
+              <v-icon size="20">{{ allIn ? "check" : "add_shopping_cart" }}</v-icon>
               <template v-if="allIn">All in your cart</template>
               <template v-else>Add all {{ addable.length }} · <u-price :amount="addableTotal" :currency="currency" /></template>
             </button>
@@ -114,7 +114,7 @@
     </article>
 
     <section v-if="more.length" class="k-wrap k-post__more">
-      <h2>More from the journal</h2>
+      <h2>More from the blog</h2>
       <div class="k-post__morerow">
         <router-link v-for="note in more" :key="note.id" :to="postRoute(note)" class="k-post__card">
           <span class="k-post__cardpic">

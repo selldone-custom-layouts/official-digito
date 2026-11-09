@@ -13,6 +13,7 @@
  */
 
 import { PriceHelper } from "@selldone/core-js";
+import { productIndex } from "../digito/digito-home";
 
 declare const window: any;
 
@@ -294,4 +295,15 @@ export function countProducts(dir: string | null, options: Record<string, any> =
     .list(dir, 0, 1, { products_only: true, available: true, with_total: true, ...options })
     .then(({ total }: any) => (typeof total === "number" ? total : null))
     .catch(() => null);
+}
+
+/* Digito: a picture from anywhere (an article cover the shop keeps on its
+   own host) at the size it is shown. Selldone's CDN goes through the shop's
+   resizer as above; any other host through wsrv.nl, a public image proxy
+   (WebP, cached). An image that fails drops the srcset (dropSrcset) and the
+   original loads, so a proxy outage costs speed, never the picture. */
+export function imageSrcset(url: string | null | undefined, widths: number[] = [384, 640, 960]): string | null {
+  if (!url || !/^https:\/\//.test(url)) return null;
+  if (url.startsWith("https://cdn.selldone.com/")) return photoSrcset(url);
+  return widths.map((w) => `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${w}&output=webp&q=72 ${w}w`).join(", ");
 }
