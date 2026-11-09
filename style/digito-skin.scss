@@ -362,16 +362,19 @@ html.dg-locked {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  box-shadow: inset 0 0 0 1px rgba(15, 23, 41, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 41, 0.34);
   display: inline-block;
   flex: none;
   border: 0;
   padding: 0;
   cursor: pointer;
 
+  /* The ring is two box-shadows, not an outline: an offset outline on a circle is drawn a device pixel off
+     centre at 125% and 150% screen scaling (the owner saw it on the Deal of the Day, 9 November 2026). The edge
+     is strong enough that a white swatch reads as a white disc, not an empty ring. */
   &.-on {
-    outline: 2px solid var(--dg-blue);
-    outline-offset: 2px;
+    outline: none;
+    box-shadow: inset 0 0 0 1px rgba(15, 23, 41, 0.34), 0 0 0 2px #fff, 0 0 0 4px var(--dg-blue);
   }
 
   &.-xs {
@@ -2844,12 +2847,12 @@ html.dg-locked {
   height: 28px;
   border-radius: 50%;
   border: 0;
-  box-shadow: inset 0 0 0 1px rgba(15, 23, 41, 0.2);
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 41, 0.34);
   cursor: pointer;
 
   &.-on {
-    outline: 2px solid var(--dg-blue);
-    outline-offset: 2px;
+    outline: none;
+    box-shadow: inset 0 0 0 1px rgba(15, 23, 41, 0.34), 0 0 0 2px #fff, 0 0 0 4px var(--dg-blue);
   }
 }
 
@@ -3605,4 +3608,49 @@ html.dg-locked {
   .dg-price .dg-price__now {
     font-size: 18px;
   }
+}
+
+/* Product page colour options without a photo carry their name (Selldone's picker). Selldone draws them as
+   64px circles with 18px side padding, so a long name ("Navy Blue / Cyan / Aqua") ran out of the circle
+   (the owner, 9 November 2026). They become rounded tiles that fit the swatch and up to three lines of name. */
+.s-product-variants__options .var-sel.-color:has(> .s-product-variants__color-name) {
+  /* Equal tiles that share the row: three fit a 390px phone. */
+  flex: 1 1 0 !important;
+  width: auto !important;
+  min-width: 76px !important;
+  max-width: 112px !important;
+  height: auto !important;
+  min-height: 70px !important;
+  padding: 9px 10px 8px !important;
+  border-radius: 14px !important;
+  gap: 5px;
+  justify-content: flex-start !important;
+  align-self: stretch;
+
+  /* The chosen tile keeps its size (Selldone scales it up) and shows no corner tick, like the photo tiles:
+     the blue ring and fill mark it, and the tick was cut by the tile's corner. */
+  &.selected {
+    transform: none !important;
+
+    &::after {
+      display: none !important;
+    }
+  }
+
+  .s-product-variants__color-name {
+    font-size: 11.5px !important;
+    font-weight: 600;
+    line-height: 1.25;
+    text-align: center;
+    max-width: 100%;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+  }
+}
+
+.s-product-variants__options:has(> .var-sel.-color > .s-product-variants__color-name) {
+  align-items: stretch !important;
 }
