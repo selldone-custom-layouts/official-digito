@@ -53,6 +53,8 @@ Digini sells everything itself. There is no "Sold by", no seller choice on the p
 
 ## Releases
 
+- **1.0.3 (9 November 2026):** the cents are written at full size in Selldone's own prices too (its rule is scoped and `!important`, so 1.0.1's selector lost: the cart and drawer still showed "$714.50" with small cents); the footer's five service links stand on one row on a tablet (three and two left a hole).
+
 - **1.0.2 (9 November 2026):** the account's "Pay" button is blue like every other button (it was the sale red); the compare page says "from 3 categories"; buttons inside an article's text area carry no line on hover (Terms' "Contact the shop"); a product's capacity variant is called "Capacity" (Selldone's "Size"; a shop's own variant names still win); the header search box's `rounded` prop is a boolean (a Vue warning on the order page). Uploaded as deploy 422 (release `01M6YWW1B702T9N6HSDDY72MFM`), pinned on domain 1239.
 
 - **1.0.1 (9 November 2026):** one blue for every button at rest and one deeper blue on hover, in Kalio's own sheets too (the address sheet's Save and Continue were the deeper blue); cents at full size in every price; "Often added" draws from the whole catalogue (it read the marketplace's sellers, so a single-seller shop showed none) and adds a colour product in its first colour; Buy again maps past orders onto the full catalogue; rails always open at their first card (a browser kept a snapped card in view when a rail's list was replaced, and Top deals opened scrolled to its end); the heart stays on narrow cards; the phone footer's service row is a list; doorbuster prices and "Shop now" wrap on narrow tiles; blog titles turn blue on hover instead of underlined. Pinned on domain 1239.

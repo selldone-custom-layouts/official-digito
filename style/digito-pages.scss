@@ -1354,3 +1354,10 @@ body .u--price .small,
     }
   }
 }
+
+/* (Selldone's own rule for the cents is scoped and !important: a heavier selector.) */
+body .u--price.u--price .small.small {
+  font-size: 1em !important;
+  font-weight: inherit;
+  vertical-align: baseline !important;
+}
