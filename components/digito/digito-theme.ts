@@ -23,6 +23,16 @@
 import type { ThemeSwitcherConfig } from "../theme-switcher/theme-switcher";
 
 export const DIGITO_THEME: ThemeSwitcherConfig = {
+  /* The owner (9 November 2026): a merchant who imports Digito into their own
+     shop must not see the switcher. It shows only on Digito's showcase shop,
+     Digini (digito.selldone.shop); "on" shows it everywhere, "off" nowhere.
+     The shop is told by window.shop.id, else <meta name="shop-name">. */
+  mode: "showcase",
+  showcaseShops: [
+    { id: 15549, name: "digini-hzgablru" }, // Digini: Digito, Besti
+    { id: 15645, name: "molino" }, // Molino: Molino, Tario, Walio, Dino, Valero
+  ],
+
   storageKey: "digito-theme",
   darkClass: "dg-dark",
 
@@ -117,7 +127,6 @@ export const DIGITO_THEME: ThemeSwitcherConfig = {
     light: "light",
     dark: "dark",
     paletteColors: { primary: "primary" },
-    lightColors: { secondary: "#071634", error: "#c4122f" }, // Vuetify's #ff5252 is 3.3:1 on white
     darkColors: {
       background: "#0d1220",
       surface: "#161d2e",

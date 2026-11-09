@@ -20,7 +20,7 @@
   12px from either side; on a phone 12px from both sides.
 -->
 <template>
-  <div ref="root" class="ts-pick">
+  <div v-if="state.enabled" ref="root" class="ts-pick">
     <button
       ref="btn"
       :aria-controls="popId"

@@ -52,6 +52,7 @@ Selldone's own cart, checkout, payments and orders keep working underneath. Noth
 - **Compare:** side by side, picks pinned at the top, differing rows on a yellow ground, Only differences, a link to share.
 - **Cart drawer and cart page:** a receipt first (subtotal, You save, delivery, total, Checkout), compact rows with − n +, Often added; the cart page with Delivery method tiles, a map-first address sheet and an order summary that leads to whatever is missing.
 - **About, Contact, FAQ, Terms, Privacy, blog, 404:** all in the same dress; sample text on About, Terms and Privacy is marked as sample until the shop writes its own.
+- **Theme (showcase only):** on Digito's own showcase shop, a Theme button at the top right of the header offers five tested colour palettes, a free **Custom colour** (any colour, made readable automatically) and Light / Dark. See "The theme switcher" below.
 - **Everywhere:** no "Added to cart" pop-ups, no phone bottom bar, no line under any word or icon, and no seller interface (one shop sells everything).
 
 ## Use it on your shop
@@ -67,6 +68,10 @@ Selldone's own cart, checkout, payments and orders keep working underneath. Noth
 | Fix a blank page, a rejected upload or an old version showing | [Troubleshooting](https://github.com/selldone-custom-layouts/official-digito/wiki/Troubleshooting) |
 
 The wiki's source is also in [`docs/wiki/`](docs/wiki/).
+
+### The theme switcher
+
+The header's Theme button (palettes, Custom colour, Light / Dark) is a showcase feature. It shows only on Digito's own showcase shop (Selldone shop 15549), so when you import Digito into your shop, your shoppers see Digito in its designed blue, with no Theme button. The Layout looks exactly as it does without the switcher, and any stored choice is ignored. To offer the switcher to your shoppers, set `mode: "on"` in `components/digito/digito-theme.ts` (or add your shop's id to `showcaseShops`), then build and upload. `mode: "off"` hides it everywhere.
 
 ## Quick start (developers)
 

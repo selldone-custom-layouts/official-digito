@@ -46,8 +46,15 @@ import {SetupService} from "@selldone/core-js/server";
 import {Shop} from "@selldone/core-js/models";
 
 const vuetify = VuetifyInstance(i18n);
-// The shopper's palette and Light / Dark (the footer's Theme row), painted
-// before the first paint so the default never flashes.
+// Digito's own light error red: Vuetify's #ff5252 is 3.3:1 on white.
+try {
+  vuetify.theme.themes.value.light.colors.error = "#c4122f";
+} catch (e) {
+  /* keep Vuetify's */
+}
+// The shopper's palette and Light / Dark (the header's Theme button), painted
+// before the first paint so the default never flashes. Only on Digito's
+// showcase shop (DIGITO_THEME.mode): an imported copy never shows it.
 bootThemeSwitcher(DIGITO_THEME, vuetify);
 
 //█████████████████████████████████████████████████████████████

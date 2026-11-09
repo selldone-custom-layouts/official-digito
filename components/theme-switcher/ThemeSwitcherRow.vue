@@ -9,7 +9,7 @@
   bootThemeSwitcher(); see theme-switcher.ts.
 -->
 <template>
-  <div :aria-label="labels.theme" class="ts-row" role="group">
+  <div v-if="state.enabled" :aria-label="labels.theme" class="ts-row" role="group">
     <span aria-hidden="true" class="ts-row__label">{{ labels.theme }}</span>
 
     <div :aria-label="labels.palettes" class="ts-row__palettes" role="group" @keydown="onArrows">

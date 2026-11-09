@@ -55,7 +55,22 @@ export interface ThemePalette {
   dark: PaletteValues;
 }
 
+/** Where the switcher shows: only on the Layout's own showcase shops (the
+    default), always, or never. */
+export type SwitcherMode = "showcase" | "on" | "off";
+
 export interface ThemeSwitcherConfig {
+  /**
+   * "showcase" (default): only when the running shop is one of showcaseShops
+   * (a merchant who imports the Layout into their own shop never sees it);
+   * "on": always; "off": never. Hidden means no effect at all: no button, no
+   * panel, a stored choice is ignored, Vuetify and the tokens stay at the
+   * Layout's own default.
+   */
+  mode?: SwitcherMode;
+  /** The shops that show it in "showcase" mode, by Selldone shop id and/or the
+      shop's name (the storefront's @name). Add new showcase shops here. */
+  showcaseShops?: { id?: number; name?: string }[];
   /** localStorage key, one per Layout, e.g. "<layout>-theme". */
   storageKey: string;
   /** The first is the default (the brand). */
@@ -118,8 +133,34 @@ const DEFAULT_LABELS = {
 let cfg: ThemeSwitcherConfig | null = null;
 let vuetify: any = null;
 
-/** The current choice (reactive: the header panel and the footer row read it). custom: the last free pick. */
-export const themeState = reactive<{ palette: string; mode: ThemeMode; custom: string }>({ palette: "", mode: "light", custom: "" });
+/** The current choice (reactive: the header panel and the footer row read it). custom: the last free pick;
+    enabled: whether this shop shows the switcher at all (decided at boot). */
+export const themeState = reactive<{ palette: string; mode: ThemeMode; custom: string; enabled: boolean }>({ palette: "", mode: "light", custom: "", enabled: false });
+
+/**
+ * The running shop, known at boot without waiting for /info: the shop object
+ * Selldone's page writes inline (window.shop, with its id), else the
+ * <meta name="shop-name"> every storefront page carries (the SDK reads the
+ * same tag). window.__THEME_SWITCHER_SHOP__ = { id, name } overrides both, for
+ * tests only.
+ */
+export function shopIdentity(): { id: number | null; name: string } {
+  const w = window as any;
+  const test = w.__THEME_SWITCHER_SHOP__;
+  const id = Number(test?.id ?? w.shop?.id) || null;
+  const meta = document.querySelector('meta[name="shop-name"]')?.getAttribute("content");
+  const name = String(test?.name ?? w.shop?.name ?? meta ?? "").toLowerCase();
+  return { id, name };
+}
+
+/** Whether the switcher shows on this shop (config.mode and showcaseShops). */
+export function switcherAllowed(config: ThemeSwitcherConfig): boolean {
+  const mode = config.mode || "showcase";
+  if (mode === "on") return true;
+  if (mode === "off") return false;
+  const { id, name } = shopIdentity();
+  return (config.showcaseShops || []).some((s) => (id != null && s.id != null ? s.id === id : !!s.name && !!name && s.name.toLowerCase() === name));
+}
 
 let customCache: { key: string; palette: ThemePalette & { picked: string; adjusted: { light: boolean; dark: boolean } } } | null = null;
 
@@ -198,7 +239,7 @@ function save(): void {
 
 /** Paint the current choice on the whole page, now. */
 export function applyTheme(): void {
-  if (!cfg) return;
+  if (!cfg || !themeState.enabled) return;
   const p = palette();
   const dark = themeState.mode === "dark";
   const root = document.documentElement;
@@ -255,7 +296,7 @@ export function applyTheme(): void {
 /** Change the palette, the mode and/or the custom colour (saved, applied at once).
     A custom colour selects the custom palette; a tested palette leaves it. */
 export function setTheme(next: { palette?: string; mode?: ThemeMode; custom?: string }): void {
-  if (!cfg) return;
+  if (!cfg || !themeState.enabled) return;
   const custom = next.custom != null ? normalizeHex(next.custom) : null;
   if (custom && cfg.custom != null && cfg.custom !== false) {
     themeState.custom = custom;
@@ -286,6 +327,10 @@ export function useThemeSwitcher() {
 export function bootThemeSwitcher(config: ThemeSwitcherConfig, vuetifyInstance?: any): void {
   cfg = config;
   vuetify = vuetifyInstance || null;
+  /* Not a showcase shop (or mode "off"): no effect at all. Nothing is read
+     from storage, nothing is painted, Vuetify is left as the Layout made it. */
+  themeState.enabled = switcherAllowed(config);
+  if (!themeState.enabled) return;
   try {
     const themes = vuetify?.theme?.themes?.value;
     const names = { light: config.vuetify?.light || "light", dark: config.vuetify?.dark || "dark" };
