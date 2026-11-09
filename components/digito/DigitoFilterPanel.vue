@@ -70,7 +70,7 @@
             :aria-label="v"
             :aria-pressed="picked(g).includes(v)"
             :class="{ '-on': picked(g).includes(v) }"
-            :style="{ background: swatch(v) }"
+            :style="{ '--sw': swatch(v) }"
             class="dg-fsw"
             type="button"
             @click="toggle(g, v)"

@@ -21,7 +21,7 @@
     <div class="dg-pdp__grid">
       <!-- ▆▆▆▆ Gallery ▆▆▆▆ -->
       <section v-if="showCover" aria-label="Product images" class="dg-pdp__gallery">
-        <s-shop-product-slide-show :current-variant="current_variant" :vertical="$vuetify.display.mdAndUp" />
+        <s-shop-product-slide-show :current-variant="current_variant" :vertical="false" />
       </section>
 
       <!-- ▆▆▆▆ The product ▆▆▆▆ -->

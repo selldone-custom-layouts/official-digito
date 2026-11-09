@@ -1146,7 +1146,7 @@ body .u--price .small,
   --c-paper: var(--dg-page);
   --c-well: #fff;
   --c-sale: var(--dg-red);
-  --c-diff-bg: #fff6c8;
+  --c-diff-bg: transparent;
   --c-diff-ink: var(--dg-ink);
   --c-off-bg: var(--dg-red);
   --c-r-lg: 14px;
@@ -1166,14 +1166,28 @@ body .u--price .small,
     background: transparent;
   }
 
+  /* The picks' 1px edge is drawn inside each card, so the phone's sideways
+     scroller cannot cut it (the ring rule, 9 November 2026). */
+  .k-cmp__cp {
+    box-shadow: inset 0 0 0 1px var(--c-line);
+  }
+
+  /* Electronics have no price per kilo: the line read "$355.35 / kg". */
+  .k-cmp__per {
+    display: none !important;
+  }
+
+  /* Rows that differ: no yellow fill (the owner, 9 November 2026: it looked
+     poor and its top edge seemed cut under the sticky picks). The blue dot
+     before the name and the bolder values mark them. */
   .k-cmp__row.-diff {
-    background: #fff6c8;
+    background: transparent;
   }
 
   .k-cmp__row.-diff .k-cmp__c {
     padding: 0;
     box-shadow: none;
-    font-weight: 800;
+    font-weight: 700;
   }
 }
 
@@ -1468,16 +1482,77 @@ body .u--price.u--price .small.small {
   }
 }
 
-/* Swatch rings: the row keeps room for the chosen swatch's ring (2px gap +
-   2px ring) on every side, so the first swatch's ring is never cut by the
-   row's own clipping. The row's text edge stays where it was. */
+/* Swatch rows: the ring sits inside each swatch (see .dg-sw), so the row needs
+   no room outside itself; 1.0.6's negative margin only moved the cut to the
+   rail's scroll edge. */
 .dg-swrow {
   height: 28px;
-  padding: 0 5px;
-  margin: 6px -5px 2px;
+  padding: 0;
+  margin: 6px 0 2px;
+  gap: 2px;
 }
 
 .dg-caps {
   height: 22px;
   margin: 9px 0 5px;
+}
+
+/* Gallery (the owner, 9 November 2026: a product with many pictures made a
+   column of thumbnails far taller than the picture). The picture takes the
+   card's width and the thumbnails are one row under it. The row shows a whole
+   number of thumbnails (7 on a wide card, 5 on a phone), sized from the row's
+   own width, and any more scroll in from behind Selldone's fade: no thumbnail
+   is ever cut at the edge and the card is as tall as the picture plus one row. */
+.dg-pdp__gallery {
+  .s--product-images {
+    display: flex !important;
+    flex-direction: column-reverse !important;
+    gap: 12px;
+  }
+
+  .gallery-thumbs {
+    margin: 0 !important;
+    max-height: none !important;
+    width: 100% !important;
+    height: auto !important;
+
+    > .--scroll {
+      container-type: inline-size;
+    }
+
+    .gallery-thumbs-wrap {
+      --per-row: 7;
+      display: flex !important;
+      flex-direction: row !important;
+      flex-wrap: nowrap !important;
+      justify-content: flex-start;
+      gap: 8px;
+      width: max-content !important;
+      height: auto !important;
+
+      > div {
+        flex: none;
+        width: calc((100cqw - (var(--per-row) - 1) * 8px) / var(--per-row)) !important;
+        height: auto !important;
+        aspect-ratio: 1;
+        margin: 0 !important;
+        border-radius: 10px;
+        overflow: hidden;
+
+        > .-slide {
+          width: 100% !important;
+          height: 100% !important;
+          margin: 0 !important;
+          border-radius: 10px !important;
+          transform: none !important;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 599px) {
+  .dg-pdp__gallery .gallery-thumbs .gallery-thumbs-wrap {
+    --per-row: 5;
+  }
 }

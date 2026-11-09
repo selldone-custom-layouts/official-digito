@@ -358,29 +358,50 @@ html.dg-locked {
   }
 }
 
+/* A colour swatch. THE RULE (the owner, 9 November 2026): a selection ring is drawn INSIDE the swatch's own
+   box, never outside it, so no row, card, rail or scroll container can ever cut it. The button is a 24px box;
+   the colour is a 16px disc 4px in (::before, colour from --sw); the chosen one gets a 2px inset ring at the
+   box's edge, so ring, gap and disc are one concentric drawing at every screen scale. A light colour keeps a
+   34% edge so white reads as a white disc. The tiny -xs dots in the cart lines are plain dots. */
 .dg-sw {
-  width: 16px;
-  height: 16px;
+  position: relative;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  box-shadow: inset 0 0 0 1px rgba(15, 23, 41, 0.34);
   display: inline-block;
   flex: none;
   border: 0;
   padding: 0;
+  box-shadow: none;
   cursor: pointer;
 
-  /* The ring is two box-shadows, not an outline: an offset outline on a circle is drawn a device pixel off
-     centre at 125% and 150% screen scaling (the owner saw it on the Deal of the Day, 9 November 2026). The edge
-     is strong enough that a white swatch reads as a white disc, not an empty ring. */
+  &:not(.-xs) {
+    background: none !important;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    background: var(--sw, #ccc);
+    box-shadow: inset 0 0 0 1px rgba(15, 23, 41, 0.34);
+  }
+
   &.-on {
     outline: none;
-    box-shadow: inset 0 0 0 1px rgba(15, 23, 41, 0.34), 0 0 0 2px #fff, 0 0 0 4px var(--dg-blue);
+    box-shadow: inset 0 0 0 2px var(--dg-blue);
   }
 
   &.-xs {
     width: 12px;
     height: 12px;
+    box-shadow: inset 0 0 0 1px rgba(15, 23, 41, 0.34);
     cursor: default;
+
+    &::before {
+      content: none;
+    }
   }
 }
 
@@ -2842,17 +2863,30 @@ html.dg-locked {
   }
 }
 
+/* Filter colour swatches follow the same rule: the ring sits inside the 36px box. */
 .dg-fsw {
-  width: 28px;
-  height: 28px;
+  position: relative;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: 0;
-  box-shadow: inset 0 0 0 1px rgba(15, 23, 41, 0.34);
+  padding: 0;
+  background: none !important;
+  box-shadow: none;
   cursor: pointer;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    background: var(--sw, #ccc);
+    box-shadow: inset 0 0 0 1px rgba(15, 23, 41, 0.34);
+  }
 
   &.-on {
     outline: none;
-    box-shadow: inset 0 0 0 1px rgba(15, 23, 41, 0.34), 0 0 0 2px #fff, 0 0 0 4px var(--dg-blue);
+    box-shadow: inset 0 0 0 2px var(--dg-blue);
   }
 }
 
@@ -3653,4 +3687,10 @@ html.dg-locked {
 
 .s-product-variants__options:has(> .var-sel.-color > .s-product-variants__color-name) {
   align-items: stretch !important;
+}
+
+/* Product options follow the same rule: the chosen tile's ring is drawn inside its own box. */
+.s--product-variants .s-product-variants__options .var-sel.selected {
+  box-shadow: inset 0 0 0 2px var(--dg-blue) !important;
+  border-color: var(--dg-blue) !important;
 }

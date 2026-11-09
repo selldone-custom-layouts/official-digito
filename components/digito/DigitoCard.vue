@@ -41,7 +41,7 @@
         :aria-checked="i === picked"
         :aria-label="`Colour ${i + 1}`"
         :class="{ '-on': i === picked }"
-        :style="{ background: swatchBg(c) }"
+        :style="{ '--sw': swatchBg(c) }"
         class="dg-sw"
         role="radio"
         type="button"
