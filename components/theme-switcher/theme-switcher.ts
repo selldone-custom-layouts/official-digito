@@ -7,7 +7,9 @@
  * one ThemeSwitcherConfig (storage key, palettes, the map from palette
  * values to its own CSS variables, its dark token set, Vuetify theme names)
  * to bootThemeSwitcher() before the app mounts, and puts
- * <theme-switcher-row /> in its footer. See PORTING.md in the kit.
+ * <theme-switcher-button /> in its header (the default: a "Theme" action
+ * that opens a small panel) or <theme-switcher-row /> in its footer.
+ * See PORTING.md in the kit.
  *
  * One call changes everything at once, with no reload:
  * - the Layout's tokens (inline on <html>, so they outrank its :root);
@@ -78,12 +80,15 @@ export interface ThemeSwitcherConfig {
   };
   /** Palette value for <meta name="theme-color"> (default "light.primary"); false leaves it. */
   metaThemeColor?: string | false;
-  /** Colours of the footer row itself (CSS values, usually the Layout's tokens). */
-  ui?: { ink?: string; muted?: string; line?: string; font?: string };
-  labels?: { theme?: string; palettes?: string; mode?: string; light?: string; dark?: string };
+  /** Colours of the switcher itself (CSS values, usually the Layout's tokens):
+      text, muted text, hairlines, the header panel's ground, the font. */
+  ui?: { ink?: string; muted?: string; line?: string; surface?: string; font?: string };
+  /** Words: the button and panel name, the palettes' and the mode's group
+      names (aria-label), the panel's headings, and the two modes. */
+  labels?: { theme?: string; palettes?: string; mode?: string; modeTitle?: string; light?: string; dark?: string };
 }
 
-const DEFAULT_LABELS = { theme: "Theme", palettes: "Colour", mode: "Light or dark", light: "Light", dark: "Dark" };
+const DEFAULT_LABELS = { theme: "Theme", palettes: "Colour", mode: "Light or dark", modeTitle: "Mode", light: "Light", dark: "Dark" };
 
 let cfg: ThemeSwitcherConfig | null = null;
 let vuetify: any = null;
@@ -158,6 +163,7 @@ export function applyTheme(): void {
   if (cfg.ui?.ink) style.setProperty("--ts-ink", cfg.ui.ink);
   if (cfg.ui?.muted) style.setProperty("--ts-muted", cfg.ui.muted);
   if (cfg.ui?.line) style.setProperty("--ts-line", cfg.ui.line);
+  if (cfg.ui?.surface) style.setProperty("--ts-surface", cfg.ui.surface);
   if (cfg.ui?.font) style.setProperty("--ts-font", cfg.ui.font);
 
   root.classList.toggle(cfg.darkClass || "theme-dark", dark);

@@ -137,6 +137,6 @@ export const DIGITO_THEME: ThemeSwitcherConfig = {
   },
 
   metaThemeColor: "light.primary",
-  ui: { ink: "var(--dg-ink)", muted: "var(--dg-muted)", line: "var(--dg-line)", font: "var(--dg-font)" },
-  labels: { theme: "Theme", palettes: "Colour", mode: "Light or dark", light: "Light", dark: "Dark" },
+  ui: { ink: "var(--dg-ink)", muted: "var(--dg-muted)", line: "var(--dg-line)", surface: "var(--dg-card)", font: "var(--dg-font)" },
+  labels: { theme: "Theme", palettes: "Colour", mode: "Light or dark", modeTitle: "Mode", light: "Light", dark: "Dark" },
 };

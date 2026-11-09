@@ -1,6 +1,7 @@
 <!--
   Digito — the header (Home A "Deals hub", 8 November 2026): a blue bar, the
-  wordmark on the left, a big round white search, Account, and the Cart with
+  wordmark on the left, a big round white search, Account, Theme (the
+  palettes and Light / Dark in a small panel), and the Cart with
   its count (a yellow badge) and total. A second row of pills: "Shop ▾"
   opens the category mega menu on a click and closes it on the second
   (DigitoMegaMenu, no dark scrim), Deals, New arrivals, Brands; then a few
@@ -64,6 +65,15 @@
           <digito-icon name="person" size="26" />
           <span><small>Account</small><b>{{ busyUser ? "…" : "Sign in" }}</b></span>
         </button>
+
+        <!-- Theme: the palettes and Light / Dark in a small panel (the owner,
+             9 November 2026: at the top of the header, before the cart). -->
+        <theme-switcher-button button-class="dg-header__act -theme">
+          <template #default="{ modeLabel }">
+            <digito-icon name="palette" size="26" />
+            <span><small>Theme</small><b>{{ modeLabel }}</b></span>
+          </template>
+        </theme-switcher-button>
 
         <button :aria-label="`Cart, ${itemsCount} items`" class="dg-header__act -cart" type="button" @click="basket = true">
           <digito-icon name="shopping_cart" size="26" />
@@ -247,6 +257,7 @@ import UCurrencySelector from "@selldone/components-vue/ui/currency/selector/UCu
 import KalioBasketDrawer from "./KalioBasketDrawer.vue";
 import DigitoWordmark from "../../digito/DigitoWordmark.vue";
 import DigitoIcon from "../../digito/DigitoIcon.vue";
+import ThemeSwitcherButton from "../../theme-switcher/ThemeSwitcherButton.vue";
 import DigitoMegaMenu from "../../digito/DigitoMegaMenu.vue";
 import { EventBus } from "@selldone/components-vue/utils/events/EventBus.ts";
 import { aisleImage, aisleRoute, aisles, catalogueRoute, dealsRoute } from "../kalio-catalog";
@@ -255,7 +266,7 @@ import { basketView } from "../kalio-basket";
 
 export default {
   name: "KalioHeader",
-  components: { SStorefrontSearchBox, SLanguageSelector, UCurrencySelector, KalioBasketDrawer, DigitoWordmark, DigitoIcon, DigitoMegaMenu },
+  components: { SStorefrontSearchBox, SLanguageSelector, UCurrencySelector, KalioBasketDrawer, DigitoWordmark, DigitoIcon, DigitoMegaMenu, ThemeSwitcherButton },
   inject: ["$shop"],
 
   props: {

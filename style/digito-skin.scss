@@ -1629,7 +1629,7 @@ html.dg-locked {
 
     small {
       font-size: 12px;
-      opacity: 0.85;
+      opacity: 0.94; /* 4.5:1 or more on the hover tint, on every palette */
     }
 
     b {
@@ -2426,14 +2426,6 @@ html.dg-locked {
     display: flex;
     gap: 8px;
     margin-top: 12px;
-  }
-
-  /* The Theme row (components/theme-switcher): palettes and Light / Dark. */
-  &__theme {
-    max-width: var(--dg-max);
-    margin: 0 auto;
-    padding: 14px var(--dg-pad);
-    border-top: 1px solid var(--dg-line);
   }
 
   &__legal {

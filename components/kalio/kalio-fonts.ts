@@ -18,7 +18,7 @@ export const ICONS = [
   "assignment_return", "bolt", "check", "check_circle", "chevron_left", "chevron_right", "close",
   "compare_arrows", "credit_card", "delete", "expand_less", "expand_more", "favorite", "filter_list", "help",
   "history", "home", "inventory_2", "local_mall", "local_offer", "local_shipping", "location_on", "lock", "logout",
-  "mail", "menu", "new_releases", "notifications", "package_2", "payments", "person", "photo_camera", "public",
+  "mail", "menu", "new_releases", "notifications", "package_2", "palette", "payments", "person", "photo_camera", "public",
   "receipt_long", "remove", "schedule", "search", "sell", "share", "shopping_cart", "smart_display", "storefront",
   "support_agent", "trending_up", "tune", "verified", "workspace_premium",
 ];
