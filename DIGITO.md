@@ -53,6 +53,65 @@ Digini sells everything itself. There is no "Sold by", no seller choice on the p
 
 ## Releases
 
+- **1.0.11 (9 November 2026, deploy 438, release `01M704GNV84S2K8SGK1W12DMNB`, pinned on domain 1239): the theme switcher.** This follows the owner's rule: "colour palettes and light and dark themes in the footer; a click changes the site's theme". It is the build meant as 1.0.10: that upload (deploy 437) was cut off mid-response (`UND_ERR_SOCKET` after 125s) and never extracted, so its number is used up.
+  - **The footer's Theme row** sits between the link columns and the legal row. It has:
+    - five palettes, each a 32px button with the colour as an inner disc and an inset ring when chosen (never an outline), with a name as tooltip and `aria-label`;
+    - the chosen palette's name;
+    - a Light / Dark switch.
+
+    Every button is reachable by keyboard; Left and Right move between swatches. At 360px it wraps to two lines with no sideways scroll.
+  - **One click changes everything at once**, with no reload:
+    - Digito's and Kalio's tokens;
+    - Vuetify's primary in both themes;
+    - Vuetify's light/dark theme, so Selldone's fields, menus, dialogs and sheets follow;
+    - the buy button (`--theme-btn-color` follows `--k-green`);
+    - `<meta name="theme-color">`.
+
+    The choice is kept in localStorage (`digito-theme`, behind try/catch) and painted before the app mounts, so a reload never flashes the default.
+  - **The palettes**, with white text on each measured (light / dark):
+
+    | Palette | Light | Dark |
+    | --- | --- | --- |
+    | Digito blue | `#0a4bd8` 6.97 | `#2563eb` 5.17 |
+    | Emerald | `#05664a` 6.99 | `#047857` 5.48 |
+    | Violet | `#6d28d9` 7.10 | `#7c3aed` 5.70 |
+    | Ocean teal | `#0c6680` 6.51 | `#0e7490` 5.36 |
+    | Sunset orange | `#a93a0b` 6.37 | `#c2410c` 5.18 |
+
+    - Dark links and accent words on the dark card read 7.9 to 11.6:1.
+    - The header, the cart drawer's head, the sign-in band, the doorbuster band and the compare share card keep the palette's light colour in both modes. Their 80–88% white words and 15% white pills need a primary of about 6.3:1. That is why emerald, teal and orange are deeper than their first picks (`#047857`, `#0e7490`, `#c2410c`, which left "Account" and the Deals pill at 4.0–4.4:1).
+    - A graphite palette was dropped: it is invisible on a dark card.
+  - **The switcher is a package with no Digito names**, in `components/theme-switcher/`:
+    - the state and boot;
+    - the footer row and its SCSS;
+    - `tools/postcss-dark-tokens.mjs`;
+    - `tools/contrast-audit.cjs` and `tools/cart-audit.cjs`.
+
+    Digito's part is one config, `components/digito/digito-theme.ts`. The package, Digito's config as an example and `PORTING.md` are in `new-shop-kits/theme-switcher/`, for Tario, Walio, Dino, Valero and Molino.
+  - **How dark mode works.**
+    - **The build step.** `vite.config.ts` runs `postcss-dark-tokens` over the Layout's styles and Selldone's components. It rewrites every light literal colour into `var(--tsd-…, <literal>)`, with the dark values under `html.dg-dark`. Light mode computes exactly as before, and nothing is overridden from outside.
+    - **Light tiles for packshots.** Product photos keep light tiles: `--k-well`/`--k-tint`, photo selectors, the doorbuster and frequently-bought-together tiles, and the variant photos.
+    - **Source changes**, each one identical in light:
+      - accent text goes through `--dg-link` (249 places);
+      - ink fills through `--dg-ink-bg`;
+      - badges with white words through `--dg-red-solid`;
+      - white boxes that hold no photo through the new `--k-plain`.
+    - **Other dark fixes:**
+      - Selldone's inline `color="#111"` icons are lifted in dark;
+      - the Apple mark is inverted.
+  - **Found and fixed on the way (light mode too):**
+    - The compare page's share card had white words on white: Tario's dress painted it white under Digito's blue.
+    - Selldone's footer credit and GDPR link (62% opacity, 2.0–2.7:1) are now readable.
+    - The phone search placeholder now reads 4.5:1.
+    - Breadcrumb chevrons and empty compare stars now reach 3:1.
+    - Article captions (`#ccc`) and Selldone's red "[Invalid]" notes are now readable.
+    - Vuetify's light error colour is now `#c4122f`.
+  - **Checked:**
+    - **Contrast audit**, from computed styles, on every word and icon. On dev it covered all 5 palettes × light and dark at 1440 and 390, on home, category, deals, two products (opened in-app), compare, blog and 404, plus the cart drawer, the cart page and the address sheet (a local cart, `/buy/` blocked). Every run printed TOTAL 0, and the guest sign-in sheet was checked too.
+    - **Ring sweep:** TOTAL 0 in light and dark, on dev and live.
+    - **Hover:** no underline in dark.
+    - **Reload:** the choice survives a reload and applies before mount.
+    - **Live:** the saved block names 1.0.11. The live contrast audit printed TOTAL 0 for blue dark, orange light and teal dark (8 pages, 1440 and 390), and the cart audit printed TOTAL 0 for emerald dark and violet light.
 - **1.0.9 (9 November 2026, deploy 433, release `01M6ZRW6N84JVV33912TTK22N8`, pinned on domain 1239):** the owner's ring rule. Every selection ring is drawn inside its element's own box, so no container can cut it. 1.0.6 had moved the swatch row 5px outside the card, so the first card's ring in every rail was cut by the rail's scroll edge instead. Swatches are 24px buttons with the colour as a 16px ::before disc (colour from `--sw`) and an inset 2px ring when chosen. Filter swatches are the same at 36px, chosen option tiles use an inset ring, and the compare picks have an inset edge. The product gallery is the picture at the card's width plus one row of thumbnails under it, sized so a whole number fits (7, or 5 on a phone) and the rest scroll. Before, a column of thumbnails ran far below the picture. The compare page has no yellow on differing rows (the dot and bolder values mark them) and no "/ kg" line. Checked with `ringsweep.cjs` (8 pages, 1440 and 390, live): 0 cut rings.
 
 - **1.0.8 (9 November 2026, deploy 431, release `01M6ZQMRDY3W4R6HR5B7BEFMDB`, pinned on domain 1239):** swatches have a stronger edge (34% instead of 18%), so a white swatch reads as a white disc inside the selection ring, not an empty circle.
