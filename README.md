@@ -1,27 +1,27 @@
 <p align="center">
-  <img src="docs/screenshots/cover.jpg" alt="Tario Market — a red, big-box style storefront Layout for Selldone, on desktop and phone" width="100%">
+  <img src="docs/screenshots/cover.jpg" alt="Digito Electronics — a blue deals-hub storefront Layout for Selldone, on desktop and phone" width="100%">
 </p>
 
-<h1 align="center">Tario Market</h1>
+<h1 align="center">Digito Electronics</h1>
 
 <p align="center">
-  <b>A bright red, big-box style storefront for a Selldone grocery marketplace.</b><br>
+  <b>A deals-hub storefront for a Selldone electronics shop.</b><br>
   A custom Selldone Layout built on the official <a href="https://github.com/selldone/storefront">selldone/storefront</a>.
 </p>
 
 <p align="center">
-  <a href="https://tario.selldone.shop"><img src="https://img.shields.io/badge/live%20shop-tario.selldone.shop-CC0000?style=flat-square" alt="Live shop"></a>
-  <a href="https://github.com/selldone-custom-layouts/official-tario/wiki"><img src="https://img.shields.io/badge/docs-wiki-6C3DF4?style=flat-square" alt="Wiki"></a>
-  <a href="https://github.com/selldone-custom-layouts/official-tario/wiki/Install-with-AI"><img src="https://img.shields.io/badge/set%20up-with%20AI-f39f37?style=flat-square" alt="Set up with AI"></a>
+  <a href="https://digito.selldone.shop"><img src="https://img.shields.io/badge/live%20shop-digito.selldone.shop-0A4BD8?style=flat-square" alt="Live shop"></a>
+  <a href="https://github.com/selldone-custom-layouts/official-digito/wiki"><img src="https://img.shields.io/badge/docs-wiki-6C3DF4?style=flat-square" alt="Wiki"></a>
+  <a href="https://github.com/selldone-custom-layouts/official-digito/wiki/Install-with-AI"><img src="https://img.shields.io/badge/set%20up-with%20AI-f39f37?style=flat-square" alt="Set up with AI"></a>
   <img src="https://img.shields.io/badge/Selldone-Layout-2B2F7A?style=flat-square" alt="Selldone Layout">
   <img src="https://img.shields.io/badge/Vue-3-1fc8a9?style=flat-square&logo=vuedotjs&logoColor=white" alt="Vue 3">
 </p>
 
 <p align="center">
-  <a href="https://tario.selldone.shop"><b>Open the live shop</b></a> ·
-  <a href="https://github.com/selldone-custom-layouts/official-tario/wiki/Install-with-AI">Set it up with AI</a> ·
-  <a href="https://github.com/selldone-custom-layouts/official-tario/wiki/Manual-Setup">Manual setup</a> ·
-  <a href="https://github.com/selldone-custom-layouts/official-tario/wiki/Shop-Requirements">What your shop needs</a> ·
+  <a href="https://digito.selldone.shop"><b>Open the live shop</b></a> ·
+  <a href="https://github.com/selldone-custom-layouts/official-digito/wiki/Install-with-AI">Set it up with AI</a> ·
+  <a href="https://github.com/selldone-custom-layouts/official-digito/wiki/Manual-Setup">Manual setup</a> ·
+  <a href="https://github.com/selldone-custom-layouts/official-digito/wiki/Shop-Requirements">What your shop needs</a> ·
   <a href="https://github.com/selldone-custom-layouts">All Selldone custom layouts</a>
 </p>
 
@@ -29,82 +29,70 @@
 
 ## What it is
 
-**Tario Market** dresses a grocery marketplace like a big-box store:
-- red for every action and every saving;
-- near-black headings in a heavy sans;
-- a big-box home: a hero that turns, round categories, rows of cards with a red **Add to cart**, promo tiles and lifestyle photos;
-- white cards on light-grey wells;
-- aisle and search pages with a chip bar of filters, a product page with a framed buy box, and a cart page with a free-shipping meter.
+**Digito Electronics** dresses a single-seller electronics shop like a big deals hub:
+- a light grey floor with white rounded section cards;
+- one blue for every button, a yellow accent for the logo's dots, chips and the clock, a red "Save $X" for every saving;
+- Plus Jakarta Sans and Material Symbols Rounded;
+- the shop's own lifestyle photos in the hero and photo cards, and a collage of the category's products wherever a photo is missing.
 
-It runs on **[tario.selldone.shop](https://tario.selldone.shop)**, a second address of the same Selldone shop, molino. The shop's main address keeps its own Layout, [Molino Market Hall](https://github.com/selldone-custom-layouts/official-molino). Selldone lets each domain of a shop carry its own Layout.
+It runs on **[digito.selldone.shop](https://digito.selldone.shop)**, an address of the Selldone shop Digini. Selldone lets each domain of a shop carry its own Layout.
 
-Selldone's own basket, checkout, payments, vendor offers and orders keep working underneath. Nothing about the shop is hard-coded: the name, logo, aisles, sellers and prices all come from the shop that runs it.
+Selldone's own cart, checkout, payments and orders keep working underneath. Nothing about the shop is hard-coded: the name (one line in `kalio-brand.ts`), categories, products, prices, deals, tags and brands all come from the shop that runs it.
 
 ## Highlights
 
-- **Header:** a red promo strip with the shop's own free-shipping rule, then the wordmark with its round red dot, **Categories**, Deals, New arrivals and **Sellers** menus, a wide search pill with a round red button, Sign in and the cart with its count.
+- **Header:** a blue bar with the wordmark (every "i" dotted with a yellow square), a big round search, Account, and the Cart with its count and total; a row of pills — **Shop ▾** opens a category mega menu on a click (and closes on the next), Deals, New arrivals, Brands — the categories with the most deals, and Track order, Blog and Help.
 - **Home:**
-  - a split hero that turns: the week's deals ("up to N% off", read live), what is new, and the fresh aisle;
-  - "Shop by category" as rows of round pictures;
-  - **Top deals** and **New arrivals** rows;
-  - "Deals for every aisle": promo tiles that say what each aisle has on offer;
-  - "Ways to get it": pickup, delivery and shipping with their free rules, from the shop's settings;
-  - "Fresh finds": three tall editorial tiles;
-  - "Trending in" every aisle, and the sellers.
-
-  Eleven lifestyle photos ship in [`assets/tario/`](assets/tario/); a missing one is replaced by the aisle's own packshots. Empty sections fold away.
-- **Cards:** the price first and large (red on offer, "reg $x" and "Sale" beside it), the name, "★★★★☆ 4.2 (19)" once rated, who sells it, and a square red **Add to cart** that turns into "− 1 in cart +" in place; products with sizes say "Choose options".
-- **Aisle, search, Deals and All products:** the title, the aisle's types as round shortcuts (Milk, Eggs, Butter…), and one row of filter chips over a four-across grid: **Filter & sort** opens every filter in a panel (a sheet on a phone), Deals switches the offers on, and Price, Size, Type and the aisle's other filters each open a small menu. The filters are the aisle's own Selldone filters. A search also shows the aisles its results sit in.
-- **Product page:**
-  - pictures with thumbnails under them and the product's highlights;
-  - a framed buy box: **Pickup | Delivery | Shipping** from the shop's own delivery methods, the price with the saving, the sizes, a **Compare sellers** table, and Add to cart;
-  - "Goes well with": the product and two partners from neighbouring aisles, added with one button;
-  - folding Specifications, Shipping & delivery and Ratings & reviews.
-- **Cart page:** "Cart · 4 items · 2 sellers, one checkout", a free-shipping meter from the shop's own rule, a card per seller with Visit shop and Remove, "How do you want it?" tiles, Deliver to (a map-first address sheet) and Your receipt goes to, and an order summary whose red button leads to whatever is still missing.
-- **Cart drawer:** the meter, the lines under each seller, three products often added, and View cart / Check out.
-- **Seller page:** a banner with the seller's mark and live numbers, tabs (Shop, Deals, New, About), the seller's aisles, their deals and every product with the same chip bar.
-- **Sign-in, About, journal, 404:** a sign-in card with the shop's own ways in; About with a photo, the shop's numbers on a red band and its sellers; a journal with a featured story and a grid; a 404 with a search and the aisles.
-- **Orders and account:** the order page with a package per seller, chat and the receipt, and the buyer account with its side menu.
-- **Everywhere:** no "Added to cart" pop-ups and no phone bottom bar.
+  - a photo hero that turns, one slide per category with a wide photo, the deepest saving first, beside the **Deal of the Day** with a "Next deal in" clock to midnight;
+  - **Shop by category** in two even rows of big circles (an "All categories" tile keeps the rows even);
+  - **Top deals** on one line with arrows, **Doorbusters** one per category, the shop's tags as "<Tag> Items" rows, a **Best sellers** bento from the best-seller tag, a sign-in nudge for guests, **Gear for every moment** tall photo cards, **Trending now**, **Shop by budget** (price bands from the shop's own prices), **New arrivals**, **Shop by brand** and the four newest articles.
+- **Cards:** a white photo well, colour swatches (a click picks the colour the cart button adds) or capacity chips, the name in two lines, brand · category, the price with a red **Save $X** and "Was $Y", a full-width blue **Add to cart** that turns into "− 1 in cart +" in place, **Choose capacity** (a quick-buy sheet with an ×) for products whose capacities have their own prices, Compare and Save.
+- **Category, search and deals pages:** a short head (the category's brands as chips, a search's categories, or the categories with deals and the clock), a filter panel with Only deals, a price range, Colour, Capacity, the category's own spec filters and brands, a sort menu, and five cards a row; a Filter and Sort bar and a sheet on a phone.
+- **Product page:** three columns — the gallery, the product (brand · category · model, the rating line, colours and capacities with their own pictures and prices, key specs, highlights) and a sticky buy card (price, saving, stock, delivery and pickup from the shop's own methods, Add to cart, Compare, Save); then Specifications in the shop's own groups, Reviews, **Frequently bought together** and More in the category.
+- **Compare:** side by side, picks pinned at the top, differing rows on a yellow ground, Only differences, a link to share.
+- **Cart drawer and cart page:** a receipt first (subtotal, You save, delivery, total, Checkout), compact rows with − n +, Often added; the cart page with Delivery method tiles, a map-first address sheet and an order summary that leads to whatever is missing.
+- **About, Contact, FAQ, Terms, Privacy, blog, 404:** all in the same dress; sample text on About, Terms and Privacy is marked as sample until the shop writes its own.
+- **Everywhere:** no "Added to cart" pop-ups, no phone bottom bar, no line under any word or icon, and no seller interface (one shop sells everything).
 
 ## Use it on your shop
 
 | You want to… | Read |
 | --- | --- |
-| Let an AI agent (Claude Code, Codex…) set it up for your shop | [Install with AI](https://github.com/selldone-custom-layouts/official-tario/wiki/Install-with-AI) |
-| Do it yourself, step by step | [Manual Setup](https://github.com/selldone-custom-layouts/official-tario/wiki/Manual-Setup) |
-| Know what data your shop needs for the design to look right | [Shop Requirements](https://github.com/selldone-custom-layouts/official-tario/wiki/Shop-Requirements) |
-| Build, upload and verify a release | [Build and Upload](https://github.com/selldone-custom-layouts/official-tario/wiki/Build-and-Upload) |
-| Put the Layout live on your shop, or on one domain of it | [Go Live](https://github.com/selldone-custom-layouts/official-tario/wiki/Go-Live) |
-| Change colours, fonts, sections or pages | [Customize](https://github.com/selldone-custom-layouts/official-tario/wiki/Customize) |
-| Fix a blank page, a rejected upload or an old version showing | [Troubleshooting](https://github.com/selldone-custom-layouts/official-tario/wiki/Troubleshooting) |
+| Let an AI agent (Claude Code, Codex…) set it up for your shop | [Install with AI](https://github.com/selldone-custom-layouts/official-digito/wiki/Install-with-AI) |
+| Do it yourself, step by step | [Manual Setup](https://github.com/selldone-custom-layouts/official-digito/wiki/Manual-Setup) |
+| Know what data your shop needs for the design to look right | [Shop Requirements](https://github.com/selldone-custom-layouts/official-digito/wiki/Shop-Requirements) |
+| Build, upload and verify a release | [Build and Upload](https://github.com/selldone-custom-layouts/official-digito/wiki/Build-and-Upload) |
+| Put the Layout live on your shop, or on one domain of it | [Go Live](https://github.com/selldone-custom-layouts/official-digito/wiki/Go-Live) |
+| Change colours, fonts, photos, sections or pages | [Customize](https://github.com/selldone-custom-layouts/official-digito/wiki/Customize) |
+| Fix a blank page, a rejected upload or an old version showing | [Troubleshooting](https://github.com/selldone-custom-layouts/official-digito/wiki/Troubleshooting) |
 
 The wiki's source is also in [`docs/wiki/`](docs/wiki/).
 
 ## Quick start (developers)
 
 ```bash
-git clone --recurse-submodules https://github.com/selldone-custom-layouts/official-tario.git
-cd official-tario
+git clone https://github.com/selldone-custom-layouts/official-digito.git
+cd official-digito
+npm run setup            # Selldone's modules
 npm install --force
-npm run serve            # dev server on http://localhost:9124
+npm run serve            # dev server on http://localhost:9130
 ```
 
-Releases: `bash scripts/release.sh <new-version> desk`. See [Build and Upload](https://github.com/selldone-custom-layouts/official-tario/wiki/Build-and-Upload).
+Point `.env` at your shop (`VITE_APP_SAMPLE_SHOP_NAME`). Releases: `bash scripts/release.sh <new-version> desk`. See [Build and Upload](https://github.com/selldone-custom-layouts/official-digito/wiki/Build-and-Upload).
 
 ## Where things are
 
 | Area | Files |
 | --- | --- |
-| The home page (design A) and its photos | [`components/tario/`](components/tario/), [`style/tario-home.scss`](style/tario-home.scss), [`assets/tario/`](assets/tario/) |
-| Tario's dress: header, footer, wells, checkout steps | [`style/tario-skin.scss`](style/tario-skin.scss), [`style/tario-home.scss`](style/tario-home.scss) |
-| Tokens: red, near-black, Inter, corners | [`style/kalio-tokens.scss`](style/kalio-tokens.scss) |
-| What Tario changed from Molino, and why | [`TARIO.md`](TARIO.md) |
-| The components and every behaviour (shared with Molino) | [`components/kalio/`](components/kalio/), [`KALIO.md`](KALIO.md) |
+| The home page, card, rails, hero, mega menu, filter panel, product overview | [`components/digito/`](components/digito/) |
+| The name and logo (one place) | [`components/kalio/kalio-brand.ts`](components/kalio/kalio-brand.ts), [`assets/brand/`](assets/brand/) |
+| Lifestyle photos, named `<shape>-<category name>.webp` | [`assets/digito/`](assets/digito/) |
+| Tokens: blue, red, navy, the grey floor, Plus Jakarta Sans | [`style/kalio-tokens.scss`](style/kalio-tokens.scss) |
+| Digito's dress | [`style/digito-skin.scss`](style/digito-skin.scss), [`style/digito-pages.scss`](style/digito-pages.scss) |
+| What Digito changed, and why | [`DIGITO.md`](DIGITO.md) |
+| The components and every behaviour it shares with Molino and Tario | [`components/kalio/`](components/kalio/), [`KALIO.md`](KALIO.md), [`TARIO.md`](TARIO.md) |
 | Release tooling | [`scripts/`](scripts/) |
 | Selldone storefront's original README | [`README.selldone.md`](README.selldone.md) |
-
-The code shares its components with [Molino Market Hall](https://github.com/selldone-custom-layouts/official-molino): the class names start with `k-` and the files with `kalio-`. Tario's own pieces start with `t-` / `tario-`.
 
 ## Credits and license
 

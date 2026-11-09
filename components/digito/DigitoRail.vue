@@ -68,6 +68,8 @@ export default {
     spread: Boolean,
     /** Product ids to leave out (shown elsewhere, or the page's own). */
     exclude: { type: Array, default: () => [] },
+    /** The caller is still reading the products it will pass: skeletons, no fetch. */
+    pending: Boolean,
     /** A category whose photo tile fills a short row (fewer than six). */
     photoCategory: { type: Object, default: null },
   },
@@ -78,7 +80,7 @@ export default {
     return {
       headingId: `dg-rail-${++railCount}`,
       fetched: [],
-      busy: this.items === null,
+      busy: this.items === null || this.pending,
       all: [],
       at_start: true,
       at_end: false,
@@ -118,13 +120,23 @@ export default {
       },
       immediate: true,
     },
+    /* A new list starts at its first card. (A browser keeps a snapped
+       card in view when the list under it changes, so a rail whose cards
+       were replaced could open scrolled to its end.) */
     shown() {
-      this.$nextTick(this.measure);
+      this.$nextTick(() => {
+        if (this.$refs.track) this.$refs.track.scrollLeft = 0;
+        this.measure();
+      });
+    },
+    pending(now) {
+      if (!now && this.items !== null) this.busy = false;
     },
   },
 
   mounted() {
-    if (this.items !== null) {
+    if (this.items !== null || this.pending) {
+      if (!this.pending) this.busy = false;
       this.$nextTick(this.measure);
       return;
     }

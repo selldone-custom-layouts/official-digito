@@ -37,9 +37,17 @@ Those are Selldone's own components using the theme colour. Set `--v-theme-prima
 
 Specs must be **flat**, plus `spec_order`. Save the category's filter list again after editing specs. See [Shop Requirements](Shop-Requirements).
 
-## Prices change after editing vendors
+## A deal does not show
 
-Creating or deleting a vendor offer recomputes the product and variant prices and clears the product discount. Restore them from your saved copy. Put deals on each seller's offer.
+A discount counts only between its start and end dates, as Selldone's own price rule and the cart do. A product whose discount end date has passed shows its full price and no "Save" chip. Clear or move the end date in the dashboard.
+
+## A tag has no row on the home
+
+A tag with no products shows nothing. Selldone has no list of a shop's tags, so the Layout finds tags through a vocabulary of common ones (`VOCABULARY` in `components/digito/digito-home.ts`) and every other tag those products carry. Add the tag to that list, or put one of the common tags on one of its products.
+
+## A category has no photo
+
+The slot shows a collage of the category's own products. Add `assets/digito/<shape>-<category name>.webp` (see Shop Requirements).
 
 ## The map is grey or 0 px tall
 

@@ -213,7 +213,7 @@ $k-header-strip: 46px;
     transition: background-color 140ms ease;
 
     &:hover {
-      background: var(--k-green-deep);
+      background: var(--k-green-hover);
     }
 
     em {
@@ -707,7 +707,7 @@ $k-header-strip: 46px;
     transition: background 0.15s;
 
     &:hover {
-      background: var(--k-green);
+      background: var(--k-green-hover);
     }
 
     .v-icon {

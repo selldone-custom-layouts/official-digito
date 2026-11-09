@@ -28,7 +28,7 @@
 
     <digito-categories />
 
-    <digito-rail v-if="topDeals.length || !loaded" :items="loaded ? topDeals : null" :more-to="dealsRoute" more-label="See all deals" title="Top deals" />
+    <digito-rail v-if="topDeals.length || !loaded" :items="topDeals" :more-to="dealsRoute" :pending="!loaded" more-label="See all deals" title="Top deals" />
 
     <digito-doorbusters :deals="doorDeals" />
 

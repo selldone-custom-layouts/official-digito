@@ -40,7 +40,8 @@
 
   /* Deep green carries every commerce action */
   --k-green: #0a4bd8;
-  --k-green-deep: #0838a8;
+  --k-green-deep: #0a4bd8;
+  --k-green-hover: #0838a8;
   --k-green-lift: #2a63e6;
   --k-leaf: #0a4bd8;
   --k-green-soft: #e8efff;
@@ -206,7 +207,7 @@ s:has(> .u--price) {
   color: #fff !important;
 
   &:hover {
-    background: var(--k-green);
+    background: var(--k-green-hover);
   }
 }
 

@@ -17,13 +17,13 @@ An uploaded version changes nothing until it is **attached** to your shop.
 
 Pin the **exact** version, never `latest`, so an unverified upload never goes live. Read `api.shops.layout.options` before and after.
 
-## Two Layouts on one shop (how Tario runs)
+## Two Layouts on one shop (how Digito runs)
 
-A shop can show a different Layout on one of its domains. Tario lives only on `tario.selldone.shop`, while the shop's default (and every other domain) stays on another Layout:
+A shop can show a different Layout on one of its domains. Digito lives only on `digito.selldone.shop` (with that domain's own Home set to the shop page, `selldone_shop_home_domain_set`), while the shop's default and its other domains keep their own Layouts:
 
 ```json
 api.shops.domains.layout.set   path { "domain_key": "<the domain's id>" }
-body { "mode": "private", "layout_id": <tario's id>, "layout_version": "1.0.0" }
+body { "mode": "private", "layout_id": <this Layout's id>, "layout_version": "1.0.0" }
 ```
 
 Then **don't** pin the shop default when you release this Layout: that would move every other address too. Check both addresses' `window.sdShopLayout` after a release.

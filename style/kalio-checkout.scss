@@ -60,7 +60,7 @@
     transition: background 0.15s, color 0.15s;
 
     &:hover:not(:disabled) {
-      background: var(--k-green);
+      background: var(--k-green-hover);
       color: #fff !important;
     }
   }
@@ -927,7 +927,7 @@
     }
 
     &:hover {
-      background: var(--k-green);
+      background: var(--k-green-hover);
     }
 
     &.-off {
@@ -1175,7 +1175,7 @@
     font-weight: 700;
 
     &:hover {
-      background: var(--k-green);
+      background: var(--k-green-hover);
     }
 
     &:disabled {
@@ -2739,7 +2739,7 @@ $k-ico-gift: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewB
     }
 
     &:hover:not(:disabled) {
-      background: var(--k-green-deep);
+      background: var(--k-green-hover);
     }
 
     &:disabled {
@@ -3440,7 +3440,7 @@ $k-ico-gift: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewB
     }
 
     &:hover:not(:disabled) {
-      background: var(--k-green-deep);
+      background: var(--k-green-hover);
     }
 
     &:disabled {
@@ -3588,7 +3588,7 @@ $k-ico-gift: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewB
     }
 
     &:hover {
-      background: var(--k-green-deep);
+      background: var(--k-green-hover);
     }
   }
 

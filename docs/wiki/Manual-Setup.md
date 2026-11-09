@@ -4,7 +4,7 @@ Set the Layout up on your shop yourself. Follow these steps in order, or let an 
 
 ## 1. Get your own copy
 
-Fork **selldone-custom-layouts/official-tario** on GitHub, then clone your fork with its submodules:
+Fork **selldone-custom-layouts/official-digito** on GitHub, then clone your fork with its submodules:
 
 ```bash
 git clone --recurse-submodules https://github.com/<you>/<your-repo>.git
@@ -35,7 +35,7 @@ VITE_APP_SAMPLE_SHOP_CUSTOM_HOME=shop
 VITE_APP_SAMPLE_DEFAULT_CURRENCY=USD
 VITE_APP_SAMPLE_DEFAULT_COUNTRY=US
 VITE_APP_SAMPLE_DEFAULT_LANGUAGE=en
-VITE_APP_DEV_SERVER_PORT=9123
+VITE_APP_DEV_SERVER_PORT=9130
 ```
 
 `.env.development.local` picks the buyer-account design for development: `VITE_KALIO_ACCOUNT=desk` (side rail) or remove it for `home` (tabs).
@@ -46,7 +46,7 @@ VITE_APP_DEV_SERVER_PORT=9123
 npm run serve
 ```
 
-Open <http://localhost:9123>. Check the home, an aisle, a product page, the basket and the account against your shop. If a section looks empty, see [Shop Requirements](Shop-Requirements).
+Open <http://localhost:9130>. Check the home, a category, a product page, the cart and the account against your shop. If a section looks empty, see [Shop Requirements](Shop-Requirements).
 
 ## 5. Give the Layout your identity
 
@@ -79,7 +79,7 @@ git fetch upstream main --tags --prune
 git merge --no-ff upstream/main
 ```
 
-Resolve conflicts by keeping Molino's templates and Selldone's logic. Then re-apply the patches if the submodules changed:
+Resolve conflicts by keeping Digito's templates and Selldone's logic. Then re-apply the patches if the submodules changed:
 
 ```bash
 git -C modules/components apply ../../patches/modules-components.kalio.patch

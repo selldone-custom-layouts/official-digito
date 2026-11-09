@@ -180,7 +180,7 @@
     border-color: var(--k-green);
 
     &:hover {
-      background: var(--k-green-deep);
+      background: var(--k-green-hover);
     }
 
     .mini-name {
@@ -679,7 +679,7 @@
       }
 
       &:hover {
-        background: var(--k-green) !important;
+        background: var(--k-green-hover) !important;
         color: #fff !important;
         transform: scale(1.06);
       }
@@ -782,7 +782,7 @@
 
   &:hover {
     border-color: var(--k-green-deep);
-    background: var(--k-green-deep);
+    background: var(--k-green-hover);
   }
 
   &:focus-visible {
@@ -1384,7 +1384,7 @@
   font-weight: 600 !important;
 
   &:hover {
-    background-color: var(--k-green) !important;
+    background-color: var(--k-green-hover) !important;
   }
 }
 
@@ -1931,7 +1931,7 @@
   transition: background-color 160ms ease;
 
   &:hover {
-    background-color: var(--k-green) !important;
+    background-color: var(--k-green-hover) !important;
     box-shadow: 0 14px 28px -12px rgba(14, 63, 46, 0.7) !important;
     transition: background-color 160ms ease; /* not widget-hover's 0.5s */
   }

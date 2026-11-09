@@ -1,4 +1,4 @@
-**[Tario Market](Home)**
+**[Digito Electronics](Home)**
 
 - [Install with AI](Install-with-AI)
 - [Manual Setup](Manual-Setup)
@@ -10,6 +10,6 @@
 
 ---
 
-- [Live shop](https://tario.selldone.shop)
-- [Repository](https://github.com/selldone-custom-layouts/official-tario)
+- [Live shop](https://digito.selldone.shop)
+- [Repository](https://github.com/selldone-custom-layouts/official-digito)
 - [All custom Layouts](https://github.com/selldone-custom-layouts)

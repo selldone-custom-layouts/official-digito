@@ -1126,6 +1126,7 @@
    Selldone's price writes the cents smaller; Digito's cards and product
    page write a price whole ("$714.50"), so every price on the site reads
    the same way. */
+body .u--price .small,
 .v-application .u--price .small {
   font-size: 1em !important;
   vertical-align: baseline !important;
@@ -1295,4 +1296,33 @@
       }
     }
   }
+}
+
+/* Doorbusters: where a tile is narrow, "Shop now" takes its own line under
+   the prices instead of squeezing beside them. */
+@container (max-width: 300px) {
+  .dg-door__row {
+    flex-wrap: wrap;
+
+    .dg-btn {
+      margin-inline-start: 0;
+      flex-basis: 100%;
+    }
+  }
+}
+
+.dg-door__t {
+  container-type: inline-size;
+}
+
+/* The blog cards: the title turns blue on hover, never underlined. */
+.t-post h3,
+.t-post:hover h3,
+.k-journal a:hover h3,
+.k-journal a:hover h2 {
+  text-decoration: none !important;
+}
+
+.t-post:hover h3 {
+  color: var(--dg-blue) !important;
 }
