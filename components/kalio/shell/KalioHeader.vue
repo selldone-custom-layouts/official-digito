@@ -31,7 +31,7 @@
           flat
           no-qr
           persistent-placeholder
-          rounded="xl"
+          rounded
           variant="solo"
           @onClear="$emit('clear')"
           @onSearch="(event) => $emit('search', event)"
@@ -87,7 +87,7 @@
           flat
           no-qr
           persistent-placeholder
-          rounded="xl"
+          rounded
           variant="solo"
           @onClear="$emit('clear')"
           @onSearch="(event) => { phone_search = false; $emit('search', event); }"

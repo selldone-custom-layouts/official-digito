@@ -362,7 +362,7 @@ export default {
       const n = this.items.length;
       if (n < 2) return "Add one more product to see what differs.";
       const cats = new Set(this.items.map((it) => it.product.category_id));
-      const from = cats.size === 1 ? (this.aisleTitle ? ` from ${this.aisleTitle}` : "") : ` from ${cats.size} aisles`;
+      const from = cats.size === 1 ? (this.aisleTitle ? ` from ${this.aisleTitle}` : "") : ` from ${cats.size} categories`;
       const tail = this.rowCount ? ` · ${this.diffCount} of ${this.rowCount} details differ` : "";
       return `${n} products${from}${tail}`;
     },

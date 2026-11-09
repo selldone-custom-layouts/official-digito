@@ -1326,3 +1326,12 @@ body .u--price .small,
 .t-post:hover h3 {
   color: var(--dg-blue) !important;
 }
+
+/* Every button is blue, the account's "Pay" too (it was the sale red). */
+.k-btn.-pay {
+  background: var(--dg-blue) !important;
+
+  &:hover {
+    background: var(--dg-blue-d) !important;
+  }
+}
