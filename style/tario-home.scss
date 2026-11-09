@@ -39,14 +39,14 @@ $t-tablet: 1100px;
     text-overflow: ellipsis;
 
     .u--price {
-      color: #fff !important;
+      color: var(--dg-on-brand) !important;
       font-weight: 700;
     }
   }
 
   a {
     flex: none;
-    color: #fff !important;
+    color: var(--dg-on-brand) !important;
     font-weight: 700;
     text-decoration: underline;
     text-underline-offset: 3px;
@@ -175,7 +175,7 @@ $t-tablet: 1100px;
   background: var(--k-green);
 
   .v-icon {
-    color: #fff !important;
+    color: var(--dg-on-brand) !important;
   }
 }
 

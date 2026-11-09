@@ -11,7 +11,8 @@
 // <palette> is a palette id, or custom:#rrggbb for the custom colour.
 //   STORAGE_KEY=<storageKey> WAIT="<home selector>" BRAND="<logo link>" CART="<cart button>" ACCOUNT="<account action>" \
 //     node header-check.cjs <base-url> <palette> <light|dark> [shots-folder] [widths]
-// widths default "360,390,768,1024,1440". PW: a Playwright install (default kalio-marketplace's).
+// widths default "360,390,768,1024,1440". SHOP_STUB='{"id":99999,"name":"x"}' checks a shop that does not show the switcher
+// instead (no switcher element, no sideways scroll). PW: a Playwright install (default kalio-marketplace's).
 // Prints a block per width and "PROBLEMS n". Deliver only at 0.
 /* "emerald" or "custom:#ffff00" (the custom colour). */
 const themeChoice = (palette, mode) => {
@@ -48,9 +49,29 @@ const widths = widthsArg.split(",").map(Number);
         }
       } catch (e) {}
     }, [KEY, JSON.stringify(themeChoice(palette, mode))]);
+    if (process.env.SHOP_STUB) await ctx.addInitScript((s) => { window.__THEME_SWITCHER_SHOP__ = JSON.parse(s); }, process.env.SHOP_STUB);
     const pg = await ctx.newPage();
     await pg.goto(base.replace(/\/$/, "") + "/", { waitUntil: "domcontentloaded", timeout: 120000 });
     await pg.waitForSelector(WAIT, { timeout: 120000 });
+    if (process.env.SHOP_STUB) {
+      // A shop that does not show the switcher: no switcher element and no sideways scroll.
+      await pg.waitForTimeout(2500);
+      const h = await pg.evaluate(() => ({
+        any: !!document.querySelector(".ts-pick, .ts-pick__btn, .ts-row, .ts-pop"),
+        sw: document.documentElement.scrollWidth,
+        vw: innerWidth,
+        tsMode: document.documentElement.dataset.tsMode || null,
+        tsPalette: document.documentElement.dataset.tsPalette || null,
+      }));
+      const bad = [];
+      if (h.any) bad.push("a switcher element is in the page");
+      if (h.sw > h.vw) bad.push("the page scrolls sideways");
+      problems += bad.length;
+      console.log(`${w} (no switcher on this shop): ${bad.length ? "PROBLEM " + bad.join("; ") : "hidden, no sideways scroll"}; theme ${h.tsPalette ? h.tsPalette + "/" + h.tsMode : "not written"}`);
+      if (out) await pg.screenshot({ path: `${out}/header-hidden-${mode}-${w}.png`, clip: { x: 0, y: 0, width: w, height: mob ? 300 : 140 } });
+      await ctx.close();
+      continue;
+    }
     await pg.waitForSelector(".ts-pick__btn", { timeout: 60000 });
     await pg.waitForTimeout(2500);
     const say = [];

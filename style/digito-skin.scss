@@ -546,7 +546,7 @@ html.dg-locked {
   button {
     width: 40px;
     height: 38px;
-    color: #fff !important;
+    color: var(--dg-on-brand) !important;
     display: grid;
     place-items: center;
     border-radius: var(--dg-r-s);
@@ -623,7 +623,7 @@ html.dg-locked {
     font-style: normal;
 
     .dg-ms {
-      color: #fff;
+      color: var(--dg-on-brand); /* the tick on the brand fill */
       opacity: 0;
     }
   }
@@ -2019,17 +2019,17 @@ html.dg-locked {
     border: 0 !important;
 
     .k-drawer__title {
-      color: #fff !important;
+      color: var(--dg-on-brand) !important;
       font-weight: 800 !important;
 
       small {
-        color: rgba(255, 255, 255, 0.8) !important;
+        color: rgba(var(--dg-on-brand-rgb), 0.8) !important;
       }
     }
 
     .k-header__icon {
-      color: #fff !important;
-      background: rgba(255, 255, 255, 0.14) !important;
+      color: var(--dg-on-brand) !important;
+      background: rgba(var(--dg-on-brand-rgb), 0.14) !important;
     }
   }
 
@@ -2517,7 +2517,7 @@ html.dg-locked {
       color: var(--dg-on-brand);
 
       h1 {
-        color: #fff;
+        color: var(--dg-on-brand);
       }
 
       p {
@@ -2851,7 +2851,7 @@ html.dg-locked {
     flex: none;
 
     .dg-ms {
-      color: #fff;
+      color: var(--dg-on-brand); /* the tick on the brand fill */
       opacity: 0;
     }
   }

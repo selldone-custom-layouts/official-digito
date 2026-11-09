@@ -1678,7 +1678,7 @@ $t-tablet: 1100px;
   opacity: 1 !important;
 
   * {
-    color: #fff !important;
+    color: var(--dg-on-brand) !important;
     opacity: 1 !important;
   }
 }

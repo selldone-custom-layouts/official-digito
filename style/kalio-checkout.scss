@@ -919,11 +919,11 @@
     transition: background 0.15s;
 
     .v-icon {
-      color: #fff;
+      color: var(--dg-on-brand);
     }
 
     .u--price {
-      color: #fff;
+      color: var(--dg-on-brand);
     }
 
     &:hover {
@@ -2269,7 +2269,7 @@ $k-ico-gift: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewB
     }
 
     .v-icon {
-      color: #fff;
+      color: var(--dg-on-brand);
     }
   }
 
@@ -2383,7 +2383,7 @@ $k-ico-gift: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewB
       background: var(--k-green);
 
       .v-icon {
-        color: #fff;
+        color: var(--dg-on-brand);
       }
     }
 
@@ -2735,7 +2735,7 @@ $k-ico-gift: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewB
     cursor: pointer;
 
     .v-icon {
-      color: #fff !important;
+      color: var(--dg-on-brand) !important;
     }
 
     &:hover:not(:disabled) {
@@ -2914,7 +2914,7 @@ $k-ico-gift: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewB
     transform: translate(-50%, -100%) rotate(-45deg);
 
     .v-icon {
-      color: #fff !important;
+      color: var(--dg-on-brand) !important;
       transform: rotate(45deg);
     }
   }
@@ -3079,7 +3079,7 @@ $k-ico-gift: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewB
       background: var(--k-green);
 
       .v-icon {
-        color: #fff !important;
+        color: var(--dg-on-brand) !important;
       }
     }
 
@@ -3436,7 +3436,7 @@ $k-ico-gift: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewB
 
     .v-icon,
     .v-progress-circular {
-      color: #fff !important;
+      color: var(--dg-on-brand) !important;
     }
 
     &:hover:not(:disabled) {
@@ -3584,7 +3584,7 @@ $k-ico-gift: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewB
     cursor: pointer;
 
     .v-icon {
-      color: #fff !important;
+      color: var(--dg-on-brand) !important;
     }
 
     &:hover {

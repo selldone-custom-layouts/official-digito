@@ -189,7 +189,7 @@
 
   // a guest: a person outline, white on the green (was an empty disc)
   .v-icon {
-    color: #fff !important;
+    color: var(--dg-on-brand) !important;
   }
 
   &.-lg {
@@ -1191,7 +1191,7 @@
         background: var(--k-green);
 
         .v-icon {
-          color: #fff !important;
+          color: var(--dg-on-brand) !important;
         }
       }
 
@@ -1554,7 +1554,7 @@
     cursor: pointer;
 
     .v-icon {
-      color: #fff !important;
+      color: var(--dg-on-brand) !important;
     }
 
     &:hover {
@@ -1673,7 +1673,7 @@
 
         .v-icon,
         em {
-          color: #fff !important;
+          color: var(--dg-on-brand) !important;
         }
       }
     }

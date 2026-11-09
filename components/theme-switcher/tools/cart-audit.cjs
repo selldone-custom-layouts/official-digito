@@ -10,6 +10,7 @@
 // - SHOP: the shop's xapi name (the storefront's @name). WAIT: something the home always shows.
 // - CART: the header's cart button (opens the drawer). STORAGE_KEY: the theme switcher's storageKey.
 // - ADDRESS: a regular expression for the button that opens the address sheet on the cart page.
+// - SHOP_STUB: optional JSON { id, name } standing in for the shop (a shop that does not show the switcher).
 // - PW: a Playwright install (default kalio-marketplace's).
 // Prints each failure like contrast-audit.cjs and "TOTAL n"; saves a shot of each step when a folder is given.
 /* "emerald" or "custom:#ffff00" (the custom colour). */
@@ -73,6 +74,7 @@ const fillCart = (pg) =>
     const mob = w < 768;
     const ctx = await b.newContext({ viewport: { width: w, height: mob ? 844 : 900 }, isMobile: mob, hasTouch: mob });
     await ctx.addInitScript(([k, v]) => { try { localStorage.setItem(k, v); } catch (e) {} }, [KEY, JSON.stringify(themeChoice(palette, mode))]);
+    if (process.env.SHOP_STUB) await ctx.addInitScript((s) => { window.__THEME_SWITCHER_SHOP__ = JSON.parse(s); }, process.env.SHOP_STUB);
     await ctx.route((u) => u.href.includes("/buy/"), (r) => r.abort());
     const pg = await ctx.newPage();
     await pg.goto(base.replace(/\/$/, "") + "/", { waitUntil: "domcontentloaded", timeout: 120000 });

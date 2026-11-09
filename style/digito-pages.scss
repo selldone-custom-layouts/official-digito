@@ -1189,8 +1189,9 @@ body .u--price .small,
   --c-head-track: -0.02em;
   --c-h1: 30px;
   --c-share-bg: var(--dg-head);
-  --c-share-ink: rgba(255, 255, 255, 0.88);
-  --c-share-head: #fff;
+  --c-share-ink: rgba(var(--dg-on-brand-rgb), 0.88);
+  --c-share-head: var(--dg-on-brand);
+  --c-on-accent: var(--dg-on-brand);
   --c-star: #e5a100;
   font-family: var(--dg-font);
 
@@ -1268,8 +1269,8 @@ body .u--price .small,
 
 .t-signin__x {
   z-index: 2;
-  color: #fff !important;
-  background: rgba(255, 255, 255, 0.16) !important;
+  color: var(--dg-on-brand) !important;
+  background: rgba(var(--dg-on-brand-rgb), 0.16) !important;
 }
 
 .t-signin__perks .v-icon {

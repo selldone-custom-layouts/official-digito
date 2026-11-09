@@ -184,7 +184,7 @@
     }
 
     .mini-name {
-      color: #fff !important;
+      color: var(--dg-on-brand) !important;
     }
 
     img {
@@ -892,7 +892,7 @@
     place-items: center;
     height: 36px;
     border-radius: var(--k-pill);
-    color: #fff !important; /* Selldone's [type=button] reset loads after */
+    color: var(--dg-on-brand) !important; /* Selldone's [type=button] reset loads after */
     cursor: pointer;
     transition: background-color 140ms ease;
 
@@ -1942,7 +1942,7 @@
   }
 
   .v-icon {
-    color: #fff !important;
+    color: var(--dg-on-brand) !important;
   }
 
   &.-bump {

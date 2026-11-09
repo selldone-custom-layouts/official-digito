@@ -11,6 +11,8 @@
 // - STORAGE: JSON of localStorage entries written before the first load (the theme switcher's choice).
 // - PAGES: name=path pairs, opened in-app with the router (a headless direct load of /product/ gets
 //   Selldone's SEO page). WIDTHS: default "1440,390". PW: a Playwright install (default kalio-marketplace's).
+// - SHOP_STUB: optional JSON { id, name } standing in for the shop (window.__THEME_SWITCHER_SHOP__), to test a
+//   shop that does not show the switcher.
 // - OPEN: optional JS run on each page after it settles (e.g. open the cart drawer) before the probe.
 // It prints "<element> "<text>" <ratio> (fg on bg)" per failure, the photos on dark tiles (dark mode: a white
 // packshot must sit on a light tile), and "TOTAL n" (failures). Deliver only at 0.
@@ -152,6 +154,7 @@ if (require.main === module) (async () => {
           for (const [k, v] of Object.entries(s)) localStorage.setItem(k, v);
         } catch (e) {}
       }, STORAGE);
+    if (process.env.SHOP_STUB) await ctx.addInitScript((s) => { window.__THEME_SWITCHER_SHOP__ = JSON.parse(s); }, process.env.SHOP_STUB);
     const pg = await ctx.newPage();
     await pg.goto(base.replace(/\/$/, "") + "/", { waitUntil: "domcontentloaded", timeout: 120000 });
     await pg.waitForSelector(wait, { timeout: 120000 });
