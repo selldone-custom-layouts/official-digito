@@ -53,7 +53,7 @@ Digini sells everything itself. There is no "Sold by", no seller choice on the p
 
 ## Releases
 
-- **1.0.4 (9 November 2026):** the product page fills its column from the first paint (Selldone's product wrapper is a flex row that sized itself to the gallery's pictures while they loaded, so a product opened from another page could show at two thirds of the width) and uses the same 1440px column as every other page. README screenshots from the development server (the live shop answered 500 at the time); `docs/screenshots` no longer holds Tario's.
+- **1.0.4 (9 November 2026, deploy 425, release `01M6YZGYD7CDREJTJ8HK2MANFT`, pinned on domain 1239):** the product page fills its column from the first paint (Selldone's product wrapper is a flex row that sized itself to the gallery's pictures while they loaded, so a product opened from another page could show at two thirds of the width) and uses the same 1440px column as every other page. README screenshots from the development server (the live shop answered 500 at the time); `docs/screenshots` no longer holds Tario's.
 
 - **1.0.3 (9 November 2026, deploy 424, release `01M6YZ77YEX5JMZ7BYRAQTCS44`):** the cents are written at full size in Selldone's own prices too (its rule is scoped and `!important`, so 1.0.1's selector lost: the cart and drawer still showed "$714.50" with small cents); the footer's five service links stand on one row on a tablet (three and two left a hole).
 
