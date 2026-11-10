@@ -85,7 +85,7 @@ export default {
       return this.all.filter((p) => p.category_id === c.id);
     },
     m(n, short = true) {
-      return money(n, this.$shop?.currency || "USD", short);
+      return money(n, null, short);
     },
     line(c) {
       return categoryLine(c, this.all, (n) => this.m(n));

@@ -20,6 +20,7 @@
  *    "<Tag> Items" row, except the best-seller tag (the bento) and the
  *    new-arrival tag (New arrivals).
  */
+import { baseCurrency, money as regionMoney } from "../region-switcher/region";
 
 declare const window: any;
 
@@ -274,16 +275,10 @@ export function freeShippingFrom(shop: any): { amount: number; currency: string 
 
 /* ━━━━━━━━━━━━ Money ━━━━━━━━━━━━ */
 
-/** "$1,059.90" or, short, "$589" — in the shop's currency. */
-export function money(amount: number, currency = "USD", short = false): string {
-  try {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency,
-      minimumFractionDigits: short ? 0 : 2,
-      maximumFractionDigits: short ? 0 : 2,
-    }).format(amount || 0);
-  } catch {
-    return (short ? Math.round(amount) : (amount || 0).toFixed(2)) + " " + currency;
-  }
+/** An amount in `currency` (the shop's base currency when not given),
+ *  shown in the visitor's currency: "$1,059.90", "DKK 6,359.40" or, short,
+ *  "$589". Converted with the shop's rates by the region switcher, so it
+ *  redraws the moment the visitor picks another currency. */
+export function money(amount: number, currency?: string | null, short: boolean | "auto" = false): string {
+  return regionMoney(amount, currency || baseCurrency(), { short });
 }

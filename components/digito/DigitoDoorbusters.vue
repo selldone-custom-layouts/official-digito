@@ -65,7 +65,7 @@ export default {
     image: (p) => productImage(p),
     srcset: (p) => productSrcset(p),
     money(n, short = true) {
-      return money(n, this.$shop?.currency || "USD", short);
+      return money(n, null, short ? "auto" : false);
     },
     to(p) {
       return { name: window.$storefront.routes.PRODUCT_PAGE, params: { product_id: p.id } };

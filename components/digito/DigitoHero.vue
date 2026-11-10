@@ -113,7 +113,7 @@ export default {
 
   methods: {
     money(n) {
-      return money(n, this.$shop?.currency || "USD", true);
+      return money(n, null, true);
     },
     build(cats, list) {
       const brandsOf = (id) => [...new Set(list.filter((p) => p.category_id === id).map((p) => p.brand).filter(Boolean))];

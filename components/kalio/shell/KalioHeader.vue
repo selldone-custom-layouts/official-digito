@@ -40,29 +40,15 @@
       <span v-else class="dg-header__sp"></span>
 
       <nav aria-label="Your account" class="dg-header__acts">
-        <s-language-selector v-if="!compact && hasLanguages" class="dg-header__pick" icon-color="#ffffff" icon-only></s-language-selector>
-        <u-currency-selector
-          v-if="!compact && $shop.currencies && $shop.currencies.length > 1"
-          :shop="$shop"
-          class="dg-header__pick"
-          dense
-          hide-details
-          icon
-          icon-color="#ffffff"
-          icon-only
-          single-line
-          small
-          @change="onChangeUserSelectedCurrency"
-        />
 
         <router-link v-if="user" :to="profileRoute" aria-label="Your account" class="dg-header__act">
           <img v-if="user.id && !avatar_failed" :src="getUserAvatar(user.id)" alt="" class="dg-header__avatar" height="28" width="28" @error="avatar_failed = true" />
           <digito-icon v-else name="person" size="26" />
-          <span><small>Account</small><b>{{ firstName }}</b></span>
+          <span><small>{{ t("header.account") }}</small><b>{{ firstName }}</b></span>
         </router-link>
         <button v-else :disabled="busyUser" class="dg-header__act" type="button" @click="signIn">
           <digito-icon name="person" size="26" />
-          <span><small>Account</small><b>{{ busyUser ? "…" : "Sign in" }}</b></span>
+          <span><small>{{ t("header.account") }}</small><b>{{ busyUser ? "…" : t("header.signIn") }}</b></span>
         </button>
 
         <!-- The badge counts units, as the drawer's "3 items" does (it counted
@@ -70,7 +56,7 @@
         <button :aria-label="`Cart, ${basketUnits} ${basketUnits === 1 ? 'item' : 'items'}`" class="dg-header__act -cart" type="button" @click="basket = true">
           <digito-icon name="shopping_cart" size="26" />
           <i v-if="basketUnits" class="dg-header__count">{{ basketUnits }}</i>
-          <span><small>Cart</small><b><u-price v-if="cartTotal" :amount="cartTotal.amount" :currency="cartTotal.currency" /><template v-else>Empty</template></b></span>
+          <span><small>{{ t("header.cart") }}</small><b><template v-if="cartTotal">{{ money(cartTotal.amount, cartTotal.currency) }}</template><template v-else>{{ t("header.empty") }}</template></b></span>
         </button>
       </nav>
 
@@ -120,11 +106,11 @@
       <button v-else class="dg-pill -shop" type="button" @click="menu = true">
         <digito-icon name="menu" size="18" />Shop<digito-icon name="expand_more" size="18" />
       </button>
-      <router-link :to="dealsRoute" class="dg-pill">Deals</router-link>
-      <router-link :to="newRoute" class="dg-pill">New arrivals</router-link>
+      <router-link :to="dealsRoute" class="dg-pill">{{ t("header.deals") }}</router-link>
+      <router-link :to="newRoute" class="dg-pill">{{ t("header.new") }}</router-link>
       <v-menu v-if="brandList.length" :scrim="false" content-class="dg-brands-pop" location="bottom start" offset="8">
         <template v-slot:activator="{ props }">
-          <button class="dg-pill" type="button" v-bind="props">Brands</button>
+          <button class="dg-pill" type="button" v-bind="props">{{ t("header.brands") }}</button>
         </template>
         <div class="dg-brandmenu">
           <router-link v-for="b in brandList" :key="b" :to="brandRoute(b)">{{ b }}</router-link>
@@ -133,9 +119,12 @@
       <span class="dg-header__sep"></span>
       <router-link v-for="c in navCats" :key="c.id" :to="aisleRoute(c)" class="dg-header__txt -cat">{{ c.title || c.name }}</router-link>
       <span class="dg-header__grow"></span>
-      <router-link :to="ordersRoute" class="dg-header__txt -end"><digito-icon name="local_shipping" size="18" />Track order</router-link>
-      <router-link :to="blogRoute" class="dg-header__txt -end">Blog</router-link>
-      <router-link :to="helpRoute" class="dg-header__txt -end">Help</router-link>
+      <router-link :to="ordersRoute" class="dg-header__txt -end"><digito-icon name="local_shipping" size="18" />{{ t("header.track") }}</router-link>
+      <router-link :to="blogRoute" class="dg-header__txt -end">{{ t("header.blog") }}</router-link>
+      <router-link :to="helpRoute" class="dg-header__txt -end">{{ t("header.help") }}</router-link>
+      <!-- Language and currency (the owner's choice B, 10 November 2026):
+           "🌐 EN · DKK", a small panel of chips. Hidden with one of each. -->
+      <region-switcher-button v-if="!compact" button-class="dg-header__region" />
     </nav>
 
     <!-- ▆▆▆▆▆▆▆▆ Basket drawer ▆▆▆▆▆▆▆▆ -->
@@ -209,11 +198,13 @@
           <router-link :to="ordersRoute" class="k-drawer__link" @click="menu = false"><v-icon size="20">local_shipping</v-icon>Track order</router-link>
           <router-link :to="blogRoute" class="k-drawer__link" @click="menu = false"><v-icon size="20">article</v-icon>Blog</router-link>
           <router-link :to="helpRoute" class="k-drawer__link" @click="menu = false"><v-icon size="20">help_outline</v-icon>Help</router-link>
+          <!-- "Language & currency  EN · DKK ›": a bottom sheet over the menu. -->
+          <region-sheet row-class="k-drawer__link dg-menu__region" />
         </div>
 
-        <p class="k-eyebrow k-drawer__label">Shop by category</p>
-        <router-link :to="dealsRoute" class="k-drawer__link -deals" @click="menu = false"><span class="k-drawer__ring -icon"><digito-icon name="local_offer" size="22" /></span><span class="dg-menu__txt"><b>Today’s deals</b><small>Every saving in one place</small></span></router-link>
-        <router-link :to="newRoute" class="k-drawer__link" @click="menu = false"><span class="k-drawer__ring -icon"><digito-icon name="new_releases" size="22" /></span><span class="dg-menu__txt"><b>New arrivals</b><small>Just landed</small></span></router-link>
+        <p class="k-eyebrow k-drawer__label">{{ t("menu.shopByCategory") }}</p>
+        <router-link :to="dealsRoute" class="k-drawer__link -deals" @click="menu = false"><span class="k-drawer__ring -icon"><digito-icon name="local_offer" size="22" /></span><span class="dg-menu__txt"><b>{{ t("menu.todaysDeals") }}</b><small>{{ t("menu.todaysDealsLine") }}</small></span></router-link>
+        <router-link :to="newRoute" class="k-drawer__link" @click="menu = false"><span class="k-drawer__ring -icon"><digito-icon name="new_releases" size="22" /></span><span class="dg-menu__txt"><b>{{ t("header.new") }}</b><small>{{ t("menu.newLine") }}</small></span></router-link>
         <!-- The first 6 categories in the merchant's order, then "Show N more"
              (the owner's option A, 10 November 2026). 8 or fewer: all, no
              button. The rest open inline above the button, which then reads
@@ -258,19 +249,10 @@
             @click="menuMore = !menuMore"
           >
             <span class="k-drawer__ring -icon"><digito-icon :name="menuMore ? 'expand_less' : 'expand_more'" size="24" /></span>
-            <span class="dg-menu__txt"><b>{{ menuMore ? "Show fewer" : `Show ${menuAisles.more.length} more` }}</b></span>
+            <span class="dg-menu__txt"><b>{{ menuMore ? t("menu.showFewer") : t("menu.showMore", { n: menuAisles.more.length }) }}</b></span>
           </button>
         </template>
 
-        <div class="k-drawer__pickers">
-          <s-language-selector hide-details variant="outlined"></s-language-selector>
-          <u-currency-selector
-            v-if="$shop.currencies && $shop.currencies.length > 1"
-            :shop="$shop"
-            hide-details
-            @change="onChangeUserSelectedCurrency"
-          />
-        </div>
       </v-navigation-drawer>
     </teleport>
   </header>
@@ -279,12 +261,13 @@
 <script>
 import { BRAND } from "../kalio-brand";
 import SStorefrontSearchBox from "@selldone/components-vue/storefront/search/SStorefrontSearchBox.vue";
-import SLanguageSelector from "@selldone/components-vue/storefront/language/selector/SLanguageSelector.vue";
-import UCurrencySelector from "@selldone/components-vue/ui/currency/selector/UCurrencySelector.vue";
 import KalioBasketDrawer from "./KalioBasketDrawer.vue";
 import DigitoWordmark from "../../digito/DigitoWordmark.vue";
 import DigitoIcon from "../../digito/DigitoIcon.vue";
 import DigitoMegaMenu from "../../digito/DigitoMegaMenu.vue";
+import RegionSwitcherButton from "../../region-switcher/RegionSwitcherButton.vue";
+import RegionSheet from "../../region-switcher/RegionSheet.vue";
+import { t } from "../../region-switcher/region";
 import { EventBus } from "@selldone/components-vue/utils/events/EventBus.ts";
 import { aisleImage, aisleRoute, aisles, catalogueRoute, dealsRoute } from "../kalio-catalog";
 import { allProducts, categoryLine, money, savingOf } from "../../digito/digito-home";
@@ -292,7 +275,7 @@ import { basketView } from "../kalio-basket";
 
 export default {
   name: "KalioHeader",
-  components: { SStorefrontSearchBox, SLanguageSelector, UCurrencySelector, KalioBasketDrawer, DigitoWordmark, DigitoIcon, DigitoMegaMenu },
+  components: { SStorefrontSearchBox, KalioBasketDrawer, DigitoWordmark, DigitoIcon, DigitoMegaMenu, RegionSwitcherButton, RegionSheet },
   inject: ["$shop"],
 
   props: {
@@ -431,10 +414,12 @@ export default {
   },
 
   methods: {
+    money,
+    t, // Digito's own words, per language (components/digito/i18n)
     aisleRoute,
     aisleImage,
     catLine(aisle) {
-      return categoryLine(aisle, this.all, (n) => money(n, this.$shop?.currency || "USD", true));
+      return categoryLine(aisle, this.all, (n) => money(n, null, true));
     },
     brandRoute(b) {
       return catalogueRoute({ search: b });

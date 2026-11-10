@@ -17,6 +17,7 @@
 <script>
 import { catalogueRoute } from "../kalio/kalio-catalog";
 import { allProducts, money, priceBands } from "./digito-home";
+import { baseCurrency } from "../region-switcher/region";
 
 export default {
   name: "DigitoBudget",
@@ -25,7 +26,7 @@ export default {
   data: () => ({ bands: [] }),
   computed: {
     currency() {
-      return this.$shop?.currency || "USD";
+      return baseCurrency();
     },
   },
   mounted() {

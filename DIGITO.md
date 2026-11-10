@@ -53,6 +53,36 @@ Digini sells everything itself. There is no "Sold by", no seller choice on the p
 
 ## Releases
 
+- **1.0.22 (10 November 2026, not uploaded yet: the Selldone CLI is signed out (`.persist` is empty)): language and currency in the header, and every amount in the shopper's currency.** The owner chose mockup B (`digini-design/region/region-b.html`): "I want it in the header; Walmart and Amazon have it in the header".
+  - **The switcher** is a shared package, `components/region-switcher/` (source and porting guide: `new-shop-kits/region-switcher/`).
+    - Desktop: a pill at the end of the header's second row, after Help: a globe and "DKK", or "EN · DKK" once the shop has a second language. A click opens a small panel with Currency chips (code and sign; the chosen chip is ringed inside its box) and, from two languages on, Language chips. It has no scrim. It closes on a second click, on Esc (focus back to the pill), on a click outside and on a page change. Tab walks into it, and the arrow keys move along a group.
+    - Phone: a row "Language & currency  DKK ›" in the menu, under Help. It opens a bottom sheet (teleported to `<body>`) with the same chips and Done. Esc, Done or a tap on the dim area close it, and Tab stays inside.
+    - With one currency and one language, neither shows.
+    - The old pickers are gone: the currency icon beside Account, the menu's two dropdowns and the footer's two dropdowns.
+  - **Selldone's own currency, not a copy.**
+    - The choice is `window.$storefront.currency` (the storefront SDK's stored choice, read by `CurrencyHelper.GetUserSelectedCurrency` and `u-price`).
+    - A pick calls the global `onChangeUserSelectedCurrency()`. It tells the server (guest or signed in), refetches the cart and the shop in the new currency, and redraws the app.
+    - `regionState` mirrors the code, so Digito's own amounts change at once.
+    - Rates are `shop.shop_exchange_rates`, read with `PriceHelper.getBuyRateValue`.
+    - The language uses `ShopOptionsHelper.GetLanguages` and `setCurrentLanguage`. The old pickers were gated on `$shop.languages`, which does not exist.
+  - **Every amount converts.** Digito's `money(amount, currency)` now means "an amount in `currency`, shown in the shopper's currency". Every caller that passed `$shop.currency || "USD"` (always "USD": the field does not exist) now passes the shop's base currency.
+    - Converted: the hero, doorbusters, the mega menu, the phone menu lines, Gear for every moment, the category rails, Shop by budget, the deals head, and Frequently bought together.
+    - The cards, the product page and the compare page price products in the reactive currency. `priceOf` falls back to the product's own price in its own currency when the shop has no rate (it used to show 0).
+    - The product page's and the cart's "Free over" thresholds are converted from the delivery way's currency. The cart's free-shipping meter subtracts in one currency.
+    - The cart drawer and the header's cart total format through `money()` in the cart's currency.
+  - **The price filter** (the owner: "it still said $ 6 … $ 21890"). As Selldone's `SCategoryFilter` and Tario's filter bar do, it converts every per-currency row of the category's price range into the shopper's currency. The boxes carry the shopper's sign, and the filter goes back to Selldone keyed by each row's own currency. Action Cameras in DKK: kr 1247 to 2370.
+  - **Digito's own words** have an i18n structure: `components/digito/i18n/en.ts`, registered with `defineMessages()` and read with `t()`. The header and the phone menu use it. Another language is a file with the same keys, added when the owner enables that language.
+  - **Checked on dev (10 November 2026):**
+    - `currency-check.cjs`, all six Digini currencies (USD, DKK, AED, EUR, SAR, AUD) at 1440 and 390, picked through the pill or the sheet: TOTAL 0. It walks home, a category (the filter's sign: $, kr, د.إ, €, ﷼, A$), its first product, the deals page, the cart drawer with one line, the phone menu and the mega menu.
+    - Contrast audit (the kit's fixed one) and ring sweep with the panel open (1440: blue light, blue dark, custom `#ffff00` dark) and the sheet open (390: blue light, blue dark, emerald dark): TOTAL 0. The first run caught the open pill's 24% white ground at 4.25:1 (3.85:1 on a custom yellow), so the pill is now 10% at rest and 14% open, with a ring inside.
+    - Keyboard:
+      - Tab reaches the chosen chip; the arrows move along it; Enter picks.
+      - Esc closes and the focus goes back to the pill; a second click or a click outside closes.
+      - The sheet opens on the chosen chip and Tab stays inside; Esc, Done and the dim area close it.
+    - A reload keeps the choice (EUR: pill "EUR", cards in €).
+    - The theme switcher's non-showcase stub still renders (header, 76 cards, no Theme row).
+    - The production build passes.
+
 - **1.0.21 (10 November 2026, deploy 503, release `01M72R11PN77W615END9PH0QVT`, pinned on domain 1239): the phone menu shows 6 categories, then "Show N more"** (the owner's option A; mockup `kalio-design/menu-more/menu-a.html`).
   - Today's deals and New arrivals stay pinned at the top of "Shop by category" and are not counted. Then come the first 6 categories in the merchant's order, then a "Show N more" row. N is the number hidden, read from the shop's live categories (Digini: 15, so "Show 9 more").
   - The row is a real `<button>` with `aria-expanded` and `aria-controls`, on the category rows' grid: a tinted round chip with a chevron in the ring column, and bold words in the brand ink in the words column (same left edges, 20px and 76px).

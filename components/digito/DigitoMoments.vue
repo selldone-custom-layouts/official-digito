@@ -26,6 +26,7 @@ import DigitoIcon from "./DigitoIcon.vue";
 import DigitoPhoto from "./DigitoPhoto.vue";
 import { aisleRoute, aisles } from "../kalio/kalio-catalog";
 import { allProducts, categoryLine, money, photoOf } from "./digito-home";
+import { baseCurrency } from "../region-switcher/region";
 
 export default {
   name: "DigitoMoments",
@@ -35,7 +36,7 @@ export default {
   data: () => ({ cards: [] }),
   mounted() {
     Promise.all([aisles(), allProducts()]).then(([cats, list]) => {
-      const cur = this.$shop?.currency || "USD";
+      const cur = baseCurrency();
       const make = (c) => ({
         id: c.id,
         title: c.title || c.name,

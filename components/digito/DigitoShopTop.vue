@@ -86,6 +86,7 @@ import DigitoIcon from "./DigitoIcon.vue";
 import { SORTS, countOn } from "../tario/shop/tario-filters";
 import { aisleImage, aisleRoute, aisles, catalogueRoute } from "../kalio/kalio-catalog";
 import { allProducts, money, savingOf } from "./digito-home";
+import { baseCurrency } from "../region-switcher/region";
 import { clock, dealEnd, leftText, releaseClock, soonestEnd, useClock } from "./digito-clock";
 
 export default {
@@ -148,7 +149,7 @@ export default {
       return leftText(this.dealsEnd, clock.now);
     },
     currency() {
-      return this.$shop?.currency || "USD";
+      return baseCurrency();
     },
     chips() {
       if (this.mode === "aisle" && this.aisle) {

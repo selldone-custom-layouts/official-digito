@@ -1707,6 +1707,37 @@ html.dg-locked {
   }
 }
 
+/* ━━━━━━━━━━━━ Language and currency (components/region-switcher) ━━━━━━━━━━━━
+   The header pill sits at the end of the second row, after Help; the phone
+   menu's row sits under Help. Digito's tokens feed the package's. */
+:root {
+  --rs-ink: var(--dg-ink);
+  --rs-muted: var(--dg-muted);
+  --rs-line: var(--dg-line);
+  --rs-surface: var(--dg-card);
+  --rs-accent: var(--dg-link);
+  --rs-accent-soft: var(--dg-blue-l);
+  --rs-btn: var(--dg-blue);
+  --rs-on-btn: var(--dg-on-brand);
+  --rs-pill-ink: var(--dg-on-brand);
+  --rs-pill-bg: rgba(var(--dg-on-brand-rgb), 0.1);
+  --rs-pill-bg-hover: rgba(var(--dg-on-brand-rgb), 0.14); /* no more: the header's words need 4.5:1 */
+  --rs-font: var(--dg-font);
+}
+
+.dg-header__nav .rs-pick {
+  margin-inline-start: 6px;
+}
+
+.k-drawer .dg-menu__region {
+  font-weight: 500;
+
+  .rs-row__ic svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
 .dg-pill {
   display: inline-flex;
   align-items: center;

@@ -60,15 +60,8 @@
         <p v-else class="dg-footer__ok"><digito-icon name="check_circle" size="20" />You’re on the list. Watch your inbox.</p>
         <p v-if="error" class="dg-footer__err">{{ error }}</p>
         <s-storefront-social-buttons class="dg-footer__social"></s-storefront-social-buttons>
-        <div v-if="hasPickers" class="dg-footer__pickers">
-          <s-language-selector v-if="hasLanguages" hide-details variant="outlined"></s-language-selector>
-          <u-currency-selector
-            v-if="$shop.currencies && $shop.currencies.length > 1"
-            :shop="$shop"
-            hide-details
-            @change="onChangeUserSelectedCurrency"
-          />
-        </div>
+        <!-- Language and currency live in the header's pill (the owner's
+             choice B, 10 November 2026), not here. -->
       </div>
     </div>
 
@@ -88,8 +81,6 @@
 
 <script>
 import SStorefrontSocialButtons from "@selldone/components-vue/storefront/social/SStorefrontSocialButtons.vue";
-import SLanguageSelector from "@selldone/components-vue/storefront/language/selector/SLanguageSelector.vue";
-import UCurrencySelector from "@selldone/components-vue/ui/currency/selector/UCurrencySelector.vue";
 import SFooterSectionGdpr from "@selldone/components-vue/storefront/footer/section/gdpr/SFooterSectionGdpr.vue";
 import SFooterSectionSelldone from "@selldone/components-vue/storefront/footer/section/selldone/SFooterSectionSelldone.vue";
 import { EventBus } from "@selldone/components-vue/utils/events/EventBus.ts";
@@ -100,7 +91,7 @@ import { aisleRoute, aisles, catalogueRoute, dealsRoute } from "../kalio-catalog
 
 export default {
   name: "KalioFooter",
-  components: { SStorefrontSocialButtons, SLanguageSelector, UCurrencySelector, SFooterSectionGdpr, SFooterSectionSelldone, DigitoIcon, ThemeSwitcherRow },
+  components: { SStorefrontSocialButtons, SFooterSectionGdpr, SFooterSectionSelldone, DigitoIcon, ThemeSwitcherRow },
   inject: ["$shop"],
 
   data() {
