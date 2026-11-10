@@ -2431,6 +2431,15 @@ html.dg-locked {
     margin-top: 12px;
   }
 
+  /* The Theme strip (components/theme-switcher): palettes, Custom colour and
+     Light / Dark, on the columns' edge, just above the legal row. */
+  &__theme {
+    max-width: var(--dg-max);
+    margin: 0 auto;
+    padding: 16px var(--dg-pad);
+    border-top: 1px solid var(--dg-line);
+  }
+
   &__legal {
     max-width: var(--dg-max);
     margin: 0 auto;

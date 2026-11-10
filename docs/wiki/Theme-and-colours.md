@@ -19,9 +19,9 @@ export const THEME_SETTINGS: ThemeSettings = {
   - With **`textOnBrand: "auto"`**, a light brand such as yellow keeps its colour, and its buttons and header get dark words. Links on white use a darker shade of it.
   - With **`textOnBrand: "white"`**, the colour is darkened until white words read.
 - **`mode`**: light or dark. Dark uses Digito's dark surfaces. Product photos stay on light tiles.
-- **`themeSwitcher`**: the Theme button that lets **visitors** pick a palette, a custom colour and Light / Dark.
-  - `"showcase"` (default): only on Digito's own showcase shop (Selldone shop 15549), so your shop shows your settings and no button.
-  - `"on"`: your visitors get the button; your settings are its default.
+- **`themeSwitcher`**: the Theme row in the footer (just above the legal row) that lets **visitors** pick a palette, a custom colour and Light / Dark.
+  - `"showcase"` (default): only on Digito's own showcase shop (Selldone shop 15549), so your shop shows your settings and no Theme row.
+  - `"on"`: your visitors get the row; your settings are its default.
   - `"off"`: never shown.
 
 The settings are applied before the page first paints, so there is no flash of blue. On a shop that does not show the switcher, a visitor's stored choice from another shop is never applied.
@@ -34,4 +34,4 @@ The settings are applied before the page first paints, so there is no flash of b
    PAGES="home=/,category=/<a category>,product=/product/<id>" \
      node components/theme-switcher/tools/contrast-audit.cjs https://<your shop> "main"
    ```
-3. With the switcher on, also run `components/theme-switcher/tools/header-check.cjs` (its first lines list the selectors to pass).
+3. With the switcher on, run the contrast audit again with a visitor's dark choice, `STORAGE='{"digito-theme":"{\"palette\":\"blue\",\"mode\":\"dark\"}"}'`; it must also print `TOTAL 0`.
