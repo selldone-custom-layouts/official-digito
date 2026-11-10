@@ -186,7 +186,10 @@ export default {
   },
 
   watch: {
-    $route() {
+    /* Close the filter sheet when the shopper goes to another page. Each tick
+       in the sheet writes the filter into the query (?filter=…), which closed
+       the sheet after every tap on a phone; the path stays the same then. */
+    "$route.path"() {
       this.sheet = false;
     },
     sheet(open) {

@@ -3,7 +3,7 @@
   "deploy_path": "",
   "package": "digito-electronics",
   "name": "Digito Electronics",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "storefront": true,
   "backoffice": false,
   "description": "A deals-hub storefront for an electronics shop: a blue header with a category mega menu, a photo hero beside the Deal of the Day, round categories, deal rails with Add to cart that turns into − n +, doorbusters, a best-seller bento, category pages with a filter panel, a three-column product page with specs, reviews and Frequently bought together, a side-by-side compare page, a receipt-first cart and checkout, and blog, About, Contact and FAQ pages of its own."

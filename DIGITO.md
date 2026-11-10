@@ -53,6 +53,9 @@ Digini sells everything itself. There is no "Sold by", no seller choice on the p
 
 ## Releases
 
+- **1.0.17 (10 November 2026, deploy 470, release `01M71KRWK875M1BXNSBHKY2AQQ`, pinned on domain 1239): the phone filter sheet stays open while the shopper picks.**
+  - On a phone, ticking one filter closed the whole sheet, so a second filter meant opening it again and "Show results" was never reached. `DigitoShopTop` closed the sheet on any route change, and each tick writes the filter into the query (`?filter=…`). It now closes only when the page's path changes.
+  - **Checked live (390):** a tick keeps the sheet open with the box ticked and the list narrowed (6 to 1); "Show results" closes it; reopening shows the tick. The saved block shows 1.0.17.
 - **1.0.16 (10 November 2026, deploy 469, release `01M71DQWADPBB0Y4YJK682X9X6`, pinned on domain 1239): the deals list stops asking for more when there is no more.**
   - Selldone counts 61 deals but the page after 60 brings nothing new. "Show 1 more" stayed in view and its v-intersect asked again on every frame, answered from the SDK's cache, so the list re-rendered continually (63 `list()` calls in 4 seconds here; on Besti the page froze).
   - `SProductsListing` now ends the list when a "more" page brings nothing that was not already shown when it was asked for. It is in Selldone's synced `modules/components`, kept in `patches/modules-components.kalio.patch` (regenerated).
