@@ -53,7 +53,7 @@ Digini sells everything itself. There is no "Sold by", no seller choice on the p
 
 ## Releases
 
-- **1.0.22 (10 November 2026, not uploaded yet: the Selldone CLI is signed out (`.persist` is empty)): language and currency in the header, and every amount in the shopper's currency.** The owner chose mockup B (`digini-design/region/region-b.html`): "I want it in the header; Walmart and Amazon have it in the header".
+- **1.0.22 (10 November 2026, deploy 515, release `01M73JC216MBBZYFKESV5SHW8X`, pinned on domain 1239; uploaded through `new-shop-kits/upload-guard.sh`): language and currency in the header, and every amount in the shopper's currency.** The owner chose mockup B (`digini-design/region/region-b.html`): "I want it in the header; Walmart and Amazon have it in the header".
   - **The switcher** is a shared package, `components/region-switcher/` (source and porting guide: `new-shop-kits/region-switcher/`).
     - Desktop: a pill at the end of the header's second row, after Help: a globe and "DKK", or "EN · DKK" once the shop has a second language. A click opens a small panel with Currency chips (code and sign; the chosen chip is ringed inside its box) and, from two languages on, Language chips. It has no scrim. It closes on a second click, on Esc (focus back to the pill), on a click outside and on a page change. Tab walks into it, and the arrow keys move along a group.
     - Phone: a row "Language & currency  DKK ›" in the menu, under Help. It opens a bottom sheet (teleported to `<body>`) with the same chips and Done. Esc, Done or a tap on the dim area close it, and Tab stays inside.
