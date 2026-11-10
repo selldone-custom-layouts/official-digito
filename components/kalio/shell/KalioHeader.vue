@@ -214,8 +214,12 @@
         <p class="k-eyebrow k-drawer__label">Shop by category</p>
         <router-link :to="dealsRoute" class="k-drawer__link -deals" @click="menu = false"><span class="k-drawer__ring -icon"><digito-icon name="local_offer" size="22" /></span><span class="dg-menu__txt"><b>Today’s deals</b><small>Every saving in one place</small></span></router-link>
         <router-link :to="newRoute" class="k-drawer__link" @click="menu = false"><span class="k-drawer__ring -icon"><digito-icon name="new_releases" size="22" /></span><span class="dg-menu__txt"><b>New arrivals</b><small>Just landed</small></span></router-link>
+        <!-- The first 6 categories in the merchant's order, then "Show N more"
+             (the owner's option A, 10 November 2026). 8 or fewer: all, no
+             button. The rest open inline above the button, which then reads
+             "Show fewer"; every opening of the menu starts collapsed. -->
         <router-link
-          v-for="aisle in aisleList"
+          v-for="aisle in menuAisles.shown"
           :key="aisle.id"
           :to="aisleRoute(aisle)"
           class="k-drawer__link"
@@ -226,6 +230,37 @@
           </span>
           <span class="dg-menu__txt"><b>{{ aisle.title || aisle.name }}</b><small v-if="catLine(aisle)">{{ catLine(aisle) }}</small></span>
         </router-link>
+        <template v-if="menuAisles.more.length">
+          <div id="dg-menu-more" :class="{ '-open': menuMore }" :inert="!menuMore" class="dg-menu__more">
+            <div class="dg-menu__more-in">
+              <router-link
+                v-for="(aisle, i) in menuAisles.more"
+                :key="aisle.id"
+                :style="{ '--i': i }"
+                :to="aisleRoute(aisle)"
+                class="k-drawer__link"
+                @click="menu = false"
+              >
+                <span class="k-drawer__ring">
+                  <!-- not lazy: inside the closed block a lazy picture waits
+                       for the tap, so the rows would open without photos -->
+                  <img v-if="aisle.icon" :src="aisleImage(aisle, 64)" alt="" height="30" width="30" />
+                </span>
+                <span class="dg-menu__txt"><b>{{ aisle.title || aisle.name }}</b><small v-if="catLine(aisle)">{{ catLine(aisle) }}</small></span>
+              </router-link>
+            </div>
+          </div>
+          <button
+            :aria-expanded="menuMore ? 'true' : 'false'"
+            aria-controls="dg-menu-more"
+            class="k-drawer__link dg-menu__toggle"
+            type="button"
+            @click="menuMore = !menuMore"
+          >
+            <span class="k-drawer__ring -icon"><digito-icon :name="menuMore ? 'expand_less' : 'expand_more'" size="24" /></span>
+            <span class="dg-menu__txt"><b>{{ menuMore ? "Show fewer" : `Show ${menuAisles.more.length} more` }}</b></span>
+          </button>
+        </template>
 
         <div class="k-drawer__pickers">
           <s-language-selector hide-details variant="outlined"></s-language-selector>
@@ -275,6 +310,7 @@ export default {
       mega: false,
       basket: false,
       menu: false,
+      menuMore: false,
       phone_search: false,
       windowWidth: window.innerWidth,
       avatar_failed: false,
@@ -356,9 +392,19 @@ export default {
     drawerOpen() {
       return this.basket || this.menu;
     },
+    /* The phone menu's categories: 6, then the rest behind "Show N more";
+       8 or fewer are all shown. */
+    menuAisles() {
+      const list = this.aisleList || [];
+      if (list.length <= 8) return { shown: list, more: [] };
+      return { shown: list.slice(0, 6), more: list.slice(6) };
+    },
   },
 
   watch: {
+    menu(open) {
+      if (open) this.menuMore = false;
+    },
     drawerOpen(open) {
       this.$store.commit("setForceHideNavigation", open);
     },

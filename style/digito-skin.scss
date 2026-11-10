@@ -2060,6 +2060,73 @@ html.dg-locked {
   }
 }
 
+/* The phone menu's "Show N more": a real button on the category rows' grid
+   (the same ring column and words column), a tinted chip with a chevron and
+   bold words in the brand ink. The rest open inline: height and fade, the
+   rows 20ms apart; none of it with reduced motion. */
+.k-drawer .dg-menu__toggle {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  color: var(--dg-link) !important;
+
+  b {
+    color: var(--dg-link);
+    font-weight: 800;
+  }
+}
+
+.dg-menu__more {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  visibility: hidden;
+  transition: grid-template-rows 0.28s ease, opacity 0.2s ease, visibility 0s linear 0.28s;
+
+  &.-open {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    visibility: visible;
+    transition: grid-template-rows 0.28s ease, opacity 0.2s ease, visibility 0s;
+
+    .k-drawer__link {
+      animation: dg-menu-in 0.24s ease both;
+      animation-delay: calc(var(--i, 0) * 20ms);
+    }
+  }
+}
+
+.dg-menu__more-in {
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes dg-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dg-menu__more,
+  .dg-menu__more.-open {
+    transition: none;
+
+    .k-drawer__link {
+      animation: none;
+    }
+  }
+}
+
 .dg-menu__brand .dg-logo {
   font-size: 27px;
 }

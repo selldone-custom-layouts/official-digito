@@ -53,6 +53,25 @@ Digini sells everything itself. There is no "Sold by", no seller choice on the p
 
 ## Releases
 
+- **1.0.21 (10 November 2026, deploy 503, release `01M72R11PN77W615END9PH0QVT`, pinned on domain 1239): the phone menu shows 6 categories, then "Show N more"** (the owner's option A; mockup `kalio-design/menu-more/menu-a.html`).
+  - Today's deals and New arrivals stay pinned at the top of "Shop by category" and are not counted. Then come the first 6 categories in the merchant's order, then a "Show N more" row. N is the number hidden, read from the shop's live categories (Digini: 15, so "Show 9 more").
+  - The row is a real `<button>` with `aria-expanded` and `aria-controls`, on the category rows' grid: a tinted round chip with a chevron in the ring column, and bold words in the brand ink in the words column (same left edges, 20px and 76px).
+  - A tap opens the rest inline: height and fade, with the rows 20ms apart and no motion under `prefers-reduced-motion`. The button moves to the end and reads "Show fewer" with a chevron up; another tap closes them. With 8 or fewer categories all are shown and there is no button. Each opening of the menu starts collapsed. While closed the hidden rows are `inert`, so neither Tab nor a screen reader reaches them.
+  - Their pictures are not lazy, so the rows never open without photos.
+  - The mega menu at 1440 is unchanged (`KalioHeader.vue`, `style/digito-skin.scss`).
+  - **Checked on dev:** at 390 and 360, light and dark:
+    - collapsed: 6 rows and "Show 9 more";
+    - click, Enter and Space each expand (15 rows, "Show fewer" after the last) and collapse again;
+    - reopening starts collapsed;
+    - no sideways scroll; the rows and the button share one left edge.
+  - **Contrast and rings (dev, with the fixed `contrast-audit.cjs`):** the menu open at 390, collapsed and expanded, dark in Digito blue, Emerald and custom `#ffff00`: contrast TOTAL 0, ring sweep TOTAL 0.
+  - **Checked live:**
+    - the saved block names 1.0.21;
+    - at 390, "Show 9 more" with `aria-expanded=false`, and after a tap "Show fewer" with `aria-expanded=true` and all 9 pictures loaded;
+    - at 1440, Shop opens the mega menu as before, with no toggle shown.
+
+    Screenshots: `menu-more-shots/digito-collapsed-390.png` and `digito-expanded-390.png`.
+
 - **1.0.20 (10 November 2026, deploy 498, release `01M72N7KYQ0N6BQFMFD31225QM`, pinned on domain 1239): the search badge, and the new contrast audit.**
   - Selldone's amber category badge in search suggestions now has a dark folder icon in both modes. Its rule names `html.dg-dark` as well, which keeps the build's dark-token step off it.
   - `components/theme-switcher/tools/contrast-audit.cjs` replaced by the fixed one from `new-shop-kits/theme-switcher/` (the old one read only `rgb()` colours and skipped `color-mix()` and oklab grounds).
