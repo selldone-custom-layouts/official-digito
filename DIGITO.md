@@ -53,6 +53,10 @@ Digini sells everything itself. There is no "Sold by", no seller choice on the p
 
 ## Releases
 
+- **1.0.16 (10 November 2026, deploy 469, release `01M71DQWADPBB0Y4YJK682X9X6`, pinned on domain 1239): the deals list stops asking for more when there is no more.**
+  - Selldone counts 61 deals but the page after 60 brings nothing new. "Show 1 more" stayed in view and its v-intersect asked again on every frame, answered from the SDK's cache, so the list re-rendered continually (63 `list()` calls in 4 seconds here; on Besti the page froze).
+  - `SProductsListing` now ends the list when a "more" page brings nothing that was not already shown when it was asked for. It is in Selldone's synced `modules/components`, kept in `patches/modules-components.kalio.patch` (regenerated).
+  - **Checked live:** the saved block shows 1.0.16; on the deals page after scrolling to the end, 0 `list()` calls in 4 seconds and no button.
 - **1.0.15 (10 November 2026, deploy 462, release `01M718N28QR6BFGRNNYDB8734S`, pinned on domain 1239): found by a shopper's walk-through of the live site (390 and 1440, light, dark and a custom colour).**
   - **The quick-buy sheet's price follows the capacity.** In "Choose capacity", picking 4TB still showed the 1TB price ($439.44); the cart got the right one ($769.44). Selldone's price section reads the chosen variant from an injected `$variant`. The product page provides it; the sheet did not. `KalioProductOverview` now provides its own choice.
   - **A guest's Save on a card asks for sign-in.** The heart called `this.NeedLogin()`, which the card does not have (no AuthMixin), so it threw and nothing happened. It now sends the app's `need-login` event, which opens the sign-in sheet.
