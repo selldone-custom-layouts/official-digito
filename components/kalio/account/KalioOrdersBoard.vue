@@ -43,6 +43,15 @@
       <span v-for="n in compact ? 2 : 3" :key="n" class="k-board__ghost"></span>
     </div>
 
+    <!-- A guest whose device holds no order is not an error (Selldone refuses
+         the read when the shop takes no guest orders): ask to sign in, as
+         Besti does. -->
+    <div v-else-if="account.failed && !account.orders.length && !USER()" class="k-board__empty">
+      <v-icon size="28">receipt_long</v-icon>
+      <p>No orders on this device yet. Sign in to see the orders on your account.</p>
+      <button class="k-btn k-btn--solid" type="button" @click="askSignIn">Sign in</button>
+    </div>
+
     <div v-else-if="account.failed && !account.orders.length" class="k-board__empty">
       <v-icon size="28">cloud_off</v-icon>
       <p>Your orders did not load.</p>
@@ -167,6 +176,7 @@
 
 <script>
 import NotificationService from "@selldone/components-vue/plugins/notification/NotificationService.ts";
+import { EventBus } from "@selldone/components-vue/utils/events/EventBus.ts";
 import { reorder } from "../kalio-basket";
 import { productImage, vendors } from "../kalio-catalog";
 import KalioOrderKinds from "./KalioOrderKinds.vue";
@@ -271,6 +281,10 @@ export default {
   },
 
   methods: {
+    /** The app's sign-in sheet (KalioSignIn listens for need-login). */
+    askSignIn() {
+      EventBus.$emit("need-login", true);
+    },
     standing,
     productIds,
     paidWords,

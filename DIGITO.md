@@ -53,6 +53,11 @@ Digini sells everything itself. There is no "Sold by", no seller choice on the p
 
 ## Releases
 
+- **1.0.15 (10 November 2026, deploy 462, release `01M718N28QR6BFGRNNYDB8734S`, pinned on domain 1239): found by a shopper's walk-through of the live site (390 and 1440, light, dark and a custom colour).**
+  - **The quick-buy sheet's price follows the capacity.** In "Choose capacity", picking 4TB still showed the 1TB price ($439.44); the cart got the right one ($769.44). Selldone's price section reads the chosen variant from an injected `$variant`. The product page provides it; the sheet did not. `KalioProductOverview` now provides its own choice.
+  - **A guest's Save on a card asks for sign-in.** The heart called `this.NeedLogin()`, which the card does not have (no AuthMixin), so it threw and nothing happened. It now sends the app's `need-login` event, which opens the sign-in sheet.
+  - **A guest's Track order page offers Sign in, not an error.** It said "Your orders did not load. Try again" (Selldone refuses the read when the shop takes no guest orders). It now says "No orders on this device yet" with Sign in, as Besti does since 1.0.6.
+  - **The cart badge counts units.** It counted lines: one camera plus two of another showed 2 while the cart said "3 items". The badge and its label now count units.
 - **1.0.14 (9 November 2026, deploy 446, release `01M70W18VF29X18G0CN5BZVX5A`, pinned on domain 1239): a shared-package fix, the same as Besti 1.0.13.**
   - Found by Besti's live cart audit: with a custom #ffff00 in dark, the address sheet's red "[Invalid]" note read 2.72:1. Kalio fades the cart's total to half while the bill is recalculated (`.k-cart__receipt.-busy .k-cart__total`), and it is recalculated as the address sheet opens.
   - `components/theme-switcher/theme-switcher.scss` (copied unchanged from `new-shop-kits/theme-switcher/`):

@@ -97,6 +97,7 @@
 
 <script>
 import CurrencyMixin from "@selldone/components-vue/mixin/currency/CurrencyMixin.ts";
+import { EventBus } from "@selldone/components-vue/utils/events/EventBus.ts";
 import DigitoIcon from "./DigitoIcon.vue";
 import { aisleIndex, dropSrcset, percentOff, priceOf, productImage, productSrcset } from "../kalio/kalio-catalog";
 import {
@@ -266,7 +267,9 @@ export default {
     },
     toggleSave() {
       if (!this.USER()) {
-        this.NeedLogin();
+        // The app's sign-in sheet (KalioSignIn). The card has no AuthMixin, so
+        // this.NeedLogin() threw "is not a function" and a guest's heart did nothing.
+        EventBus.$emit("need-login", true);
         return;
       }
       const id = this.product.id;

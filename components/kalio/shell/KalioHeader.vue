@@ -75,9 +75,11 @@
           </template>
         </theme-switcher-button>
 
-        <button :aria-label="`Cart, ${itemsCount} items`" class="dg-header__act -cart" type="button" @click="basket = true">
+        <!-- The badge counts units, as the drawer's "3 items" does (it counted
+             lines: 2 for one camera and two of another). -->
+        <button :aria-label="`Cart, ${basketUnits} ${basketUnits === 1 ? 'item' : 'items'}`" class="dg-header__act -cart" type="button" @click="basket = true">
           <digito-icon name="shopping_cart" size="26" />
-          <i v-if="itemsCount" class="dg-header__count">{{ itemsCount }}</i>
+          <i v-if="basketUnits" class="dg-header__count">{{ basketUnits }}</i>
           <span><small>Cart</small><b><u-price v-if="cartTotal" :amount="cartTotal.amount" :currency="cartTotal.currency" /><template v-else>Empty</template></b></span>
         </button>
       </nav>
