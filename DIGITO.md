@@ -53,6 +53,15 @@ Digini sells everything itself. There is no "Sold by", no seller choice on the p
 
 ## Releases
 
+- **1.0.23 (10 November 2026, deploy 523, release `01M73MC8ZQ9X3W248X57BFV724`, pinned on domain 1239; uploaded through `new-shop-kits/upload-guard.sh`): "Gear for every moment" follows a currency pick at once.**
+  - Found live on 1.0.22. Selldone was answering 429, so its own redraw after a pick was late. The live currency check then caught five lines still in DKK after a pick of EUR: "Up to DKK 720 off" and "From DKK 253".
+  - `DigitoMoments` made its category lines as strings when it mounted, so they waited for that redraw. They are now drawn at render (`lineOf`), from a frozen copy of the catalogue.
+  - `currency-check.cjs` now also scans the page "at once", right after the pick and before Selldone's redraw, to catch any amount that waits.
+  - **Checked live:**
+    - The saved block names 1.0.23.
+    - `currency-check` for DKK and EUR at 1440 and 390: TOTAL 0, and every "at once" scan is clean.
+    - Selldone was answering 429 ("Too Many Attempts") to the product lists while several Layouts were tested. The live category and deals pages came back empty, so the price filter was checked on dev only (all six currencies).
+
 - **1.0.22 (10 November 2026, deploy 515, release `01M73JC216MBBZYFKESV5SHW8X`, pinned on domain 1239; uploaded through `new-shop-kits/upload-guard.sh`): language and currency in the header, and every amount in the shopper's currency.** The owner chose mockup B (`digini-design/region/region-b.html`): "I want it in the header; Walmart and Amazon have it in the header".
   - **The switcher** is a shared package, `components/region-switcher/` (source and porting guide: `new-shop-kits/region-switcher/`).
     - Desktop: a pill at the end of the header's second row, after Help: a globe and "DKK", or "EN · DKK" once the shop has a second language. A click opens a small panel with Currency chips (code and sign; the chosen chip is ringed inside its box) and, from two languages on, Language chips. It has no scrim. It closes on a second click, on Esc (focus back to the pill), on a click outside and on a page change. Tab walks into it, and the arrow keys move along a group.
