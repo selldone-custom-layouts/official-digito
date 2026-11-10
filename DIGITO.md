@@ -53,6 +53,27 @@ Digini sells everything itself. There is no "Sold by", no seller choice on the p
 
 ## Releases
 
+- **1.0.20 (10 November 2026, deploy 498, release `01M72N7KYQ0N6BQFMFD31225QM`, pinned on domain 1239): the search badge, and the new contrast audit.**
+  - Selldone's amber category badge in search suggestions now has a dark folder icon in both modes. Its rule names `html.dg-dark` as well, which keeps the build's dark-token step off it.
+  - `components/theme-switcher/tools/contrast-audit.cjs` replaced by the fixed one from `new-shop-kits/theme-switcher/` (the old one read only `rgb()` colours and skipped `color-mix()` and oklab grounds).
+  - **Checked live, with the new audit, on 1.0.19:**
+    - dark home, empty cart drawer, cart page, phone menu (mega menu at 1440) and sign-in sheet in Digito blue, Emerald and custom `#ffff00`, at 1440 and 390: TOTAL 0;
+    - contrast audit on home, blue dark: TOTAL 0;
+    - the photo sweep (home, menu, cart drawer and page with three lines, compare, quick-buy, search, empty drawer, brands, 404): no contrast failure except the search badge, fixed here, and one Selldone error toast caught mid fade-in on the simulated cart (the guest refusal "Your token does not have access…"; settled it reads 6:1, as noted under 1.0.14).
+  - **Checked live on 1.0.20:** the saved block names 1.0.20; the compiled rule is intact (`#241a00` in both modes); search suggestions and the menus at 1440 and 390, dark: no contrast failure.
+
+- **1.0.19 (10 November 2026, deploy 494, release `01M72KR2ZRDCCCRY9ZGG1AAAGM`, pinned on domain 1239): product photos on light tiles in dark mode.** The owner's rule: in dark mode a packshot sits on a light tile. A sweep of every dark state (the contrast audit's photo check over home, the phone menu, the mega menu, the cart drawer and page with three lines, compare, quick-buy, search suggestions and 404, at 1440 and 390) found 49 photos on the dark ground before the fix:
+  - the home's and 404's "Shop by category" circles (`.dg-cat__ring`, on the page colour);
+  - the phone menu's category thumbnails (`.k-drawer__ring`) and the mega menu's category rings and product tiles (`.dg-mega__ring`, `.dg-mega__pimg`);
+  - the cart lines' photos in the drawer and on the cart page (`.dg-crow__pic`: its `#fff` was darkened by the build's dark-token step);
+  - the "Shop by brand" logos (`.dg-brand img`) and the empty cart's category chips (`.dg-chip img`).
+
+  Each now gets the cards' photo well (`--k-well`, white in both modes) in its own rounded shape, in `style/digito-pages.scss` (`html.dg-dark`). Icon tiles (Today's deals, New arrivals, All categories) keep their tint. The quick-buy sheet, search suggestions and compare cards already had white tiles. The only photo left on a dark colour is the shop's own mark on the blue compare cards, by design.
+  - **Two contrast fixes found by the same sweep:**
+    - the empty compare card's "Side by side" eyebrow used the link colour on the brand-coloured card (3.26:1 in dark, near 1:1 in light); it now takes the card's own words;
+    - Selldone's amber category badge in search suggestions had a white folder icon (2.04:1). The fix in this build did not take in dark (the build's dark-token step turned its dark literal into the dark ink, 1.72:1); 1.0.20 carries it.
+  - **Checked live:** the saved block names 1.0.19. The same sweep after the fix: 21 photo reports left, none a packshot on a dark ground. The brand logos and chip pictures carry their own white tile (the probe reads the parent's colour, so it still lists them); the shop's mark on the blue compare cards is the brand, not a product. Screenshots at 390 and 1440 of the phone menu, the mega menu, the cart drawer, the empty cart's chips and Shop by brand show every photo on white.
+
 - **1.0.18 (10 November 2026, deploy 487, release `01M72J6A1XTQSY6BP1ZJTYK0QX`, pinned on domain 1239): the theme switcher moves from the header to the footer.** The owner, after talking with the Selldone team: the header's Theme button takes room and does not suit every shop.
   - **Header.** The Theme button, its import and its `palette` icon are gone. The header actions (Account, Cart) are back to even gaps.
   - **Footer.** A Theme strip of its own, just above the legal row: full width, 16px top and bottom, a top hairline in the footer's line colour, on the same left edge as the link columns. It holds the five palettes, **Custom colour** (a colour wheel that opens the native picker, applied while dragging) and Light / Dark. On a phone the palettes stay on one line and the name and Light / Dark wrap under; no sideways scroll at 360px; every target is 32px or more. Its words and rings come from Digito's tokens, so they follow light and dark.

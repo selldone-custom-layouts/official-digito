@@ -1618,6 +1618,22 @@ body .u--price.u--price .small.small {
   color: var(--dg-red) !important;
 }
 
+/* The empty compare card is the brand colour in both modes: its "Side by
+   side" eyebrow takes the card's own words, not the link colour (3.3:1 in
+   dark, unreadable in light). */
+.v-application .k-cmp__empty .k-cmp__eyebrow {
+  color: var(--c-share-ink) !important;
+}
+
+/* Search suggestions: Selldone's amber category badge carried a white
+   folder icon (2.0:1); dark words on the amber, in both modes. The
+   html.dg-dark selector keeps the build's dark-token step off this rule
+   (it would turn the dark literal into the dark theme's light ink). */
+.bg-amber-soft .s---category__side .v-icon,
+html.dg-dark .bg-amber-soft .s---category__side .v-icon {
+  color: #241a00 !important;
+}
+
 /* Captions under pictures in a product's description and a post (Selldone's
    article plugin writes #ccc, 1.6:1). */
 :is(.medium-insert-images-safe, .medium-insert-images, .medium-insert-embeds) figure figcaption {
@@ -1634,5 +1650,29 @@ html.dg-dark {
   /* The black Apple mark on the sign-in sheet's dark button. */
   img[src*="apple-b"] {
     filter: invert(1);
+  }
+
+  /* Product photos sit on light tiles in dark mode (the owner's rule), the
+     cards' photo well: the home's and the 404's category circles, the phone
+     menu's and the mega menu's thumbnails, the cart lines, the brand logos
+     and the empty cart's category chips. Dark cutouts vanished on the dark
+     ground. Icons (Today's deals, New arrivals, All categories) keep theirs. */
+  .dg-cat:not(.-all) .dg-cat__ring,
+  .k-drawer__ring:not(.-icon):has(img),
+  .dg-mega__ring:has(img),
+  .dg-mega__pimg,
+  .dg-crow__pic {
+    background: var(--k-well) !important;
+  }
+
+  .dg-brand img,
+  .dg-chip img {
+    background: var(--k-well);
+    border-radius: 8px;
+    padding: 3px;
+  }
+
+  .dg-chip img {
+    border-radius: 50%;
   }
 }
