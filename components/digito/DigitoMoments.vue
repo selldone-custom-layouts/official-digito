@@ -12,7 +12,7 @@
       <router-link v-for="c in cards" :key="c.id" :to="c.to" class="dg-tall__c">
         <digito-photo :products="c.products" :src="c.photo" eager shape="portrait" />
         <span class="dg-tall__txt">
-          <small>{{ c.line }}</small>
+          <small>{{ lineOf(c) }}</small>
           <b>{{ c.title }}</b>
           <em>Shop now<digito-icon name="arrow_forward" size="17" /></em>
         </span>
@@ -33,22 +33,29 @@ export default {
   components: { DigitoIcon, DigitoPhoto },
   inject: ["$shop"],
   props: { title: { type: String, default: "Gear for every moment" } },
-  data: () => ({ cards: [] }),
+  data: () => ({ cards: [], list: [] }),
   mounted() {
     Promise.all([aisles(), allProducts()]).then(([cats, list]) => {
-      const cur = baseCurrency();
       const make = (c) => ({
         id: c.id,
         title: c.title || c.name,
         photo: photoOf("portrait", c),
         products: list.filter((p) => p.category_id === c.id),
-        line: categoryLine(c, list, (n) => money(n, cur, true)),
+        cat: c,
         to: aisleRoute(c),
       });
       let cards = cats.filter((c) => photoOf("portrait", c)).map(make).filter((c) => c.products.length);
       if (!cards.length) cards = cats.map(make).filter((c) => c.products.length >= 3).sort((a, b) => b.products.length - a.products.length);
+      this.list = Object.freeze(list); // read-only: no deep reactivity over the whole catalogue
       this.cards = cards.slice(0, 5);
     });
+  },
+  methods: {
+    /* At render, so a currency pick redraws it at once (it was a string
+       made at mount, which waited for Selldone's own redraw). */
+    lineOf(c) {
+      return categoryLine(c.cat, this.list, (n) => money(n, baseCurrency(), true));
+    },
   },
 };
 </script>
