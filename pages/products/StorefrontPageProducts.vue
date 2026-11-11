@@ -86,7 +86,7 @@
         </digito-shop-top>
 
         <div class="dg-shop__body">
-          <aside aria-label="Filters" class="dg-shop__side">
+          <aside :aria-label="t('digito.listing.filters', 'Filters')" class="dg-shop__side">
             <digito-filter-panel :filters="filters_def" :model-value="t_filter" @update:model-value="setFilter" />
           </aside>
           <div class="dg-shop__main">
@@ -106,9 +106,9 @@
           </div>
         </div>
 
-        <digito-rail v-if="catalogue && search_query" :limit="12" lazy sort="bestselling" title="Popular right now" />
+        <digito-rail v-if="catalogue && search_query" :limit="12" lazy sort="bestselling" :title="t('digito.listing.popular', 'Popular right now')" />
         <section v-if="more_aisles.length" class="dg-sec dg-keep">
-          <h2>More categories</h2>
+          <h2>{{ t("digito.listing.moreCategories", "More categories") }}</h2>
           <div class="dg-keep__list">
             <router-link v-for="a in more_aisles" :key="a.id" :to="aisleTo(a)" class="dg-chip">
               <img v-if="a.icon" :src="aisleIcon(a)" alt="" />{{ a.title || a.name }}

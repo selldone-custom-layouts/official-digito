@@ -31,8 +31,8 @@
         <slot name="header" :center="true"></slot>
 
         <!-- ⬬⬬⬬⬬ Breadcrumb: the category's path, then the product ⬬⬬⬬⬬ -->
-        <nav aria-label="Breadcrumb" class="dg-crumbs dg-page">
-          <router-link :to="{ path: '/' }">Home</router-link>
+        <nav :aria-label="t('pdp.breadcrumb', 'Breadcrumb')" class="dg-crumbs dg-page">
+          <router-link :to="{ path: '/' }">{{ t("pages.home", "Home") }}</router-link>
           <template v-if="product && product.category">
             <span aria-hidden="true" class="dg-ms">chevron_right</span>
             <router-link
@@ -67,7 +67,7 @@
         <s-product-offers class="s--product-section k-pdp-block"></s-product-offers>
 
         <section v-if="has_spec" id="dg-specs" aria-labelledby="dg-spec-h" class="dg-sec dg-specs">
-          <header class="dg-head"><h2 id="dg-spec-h">Specifications</h2></header>
+          <header class="dg-head"><h2 id="dg-spec-h">{{ t("digito.pdp.specs", "Specifications") }}</h2></header>
           <div class="dg-specs__groups">
             <div v-for="g in spec_groups" :key="g.title" class="dg-specs__g">
               <h3>{{ g.title }}</h3>
@@ -81,19 +81,19 @@
           </div>
         </section>
 
-        <section v-if="article" aria-label="About this product" class="dg-sec dg-about">
-          <header class="dg-head"><h2>About this product</h2></header>
+        <section v-if="article" :aria-label="t('pdp.about', 'About this product')" class="dg-sec dg-about">
+          <header class="dg-head"><h2>{{ t("pdp.about", "About this product") }}</h2></header>
           <s-product-article hide-title></s-product-article>
         </section>
 
         <section id="k-reviews" aria-labelledby="dg-rev-h" class="dg-sec dg-reviews">
-          <header class="dg-head"><h2 id="dg-rev-h">Reviews</h2></header>
+          <header class="dg-head"><h2 id="dg-rev-h">{{ t("reviews.title", "Reviews") }}</h2></header>
           <kalio-reviews></kalio-reviews>
         </section>
 
         <digito-fbt :product="product" />
 
-        <section v-if="has_extra" aria-label="Delivery and care" class="dg-sec dg-care">
+        <section v-if="has_extra" :aria-label="t('digito.pdp.care', 'Delivery and care')" class="dg-sec dg-care">
           <s-product-includes class="k-pdp-block"></s-product-includes>
           <s-product-shipping class="k-pdp-block"></s-product-shipping>
           <s-product-warranty class="k-pdp-block"></s-product-warranty>
@@ -114,7 +114,7 @@
             name: window.$storefront.routes.SHOP_CATEGORY_PAGE,
             params: { category_name: product.category.name },
           }"
-          :title="'More in ' + (product.category.title || product.category.name)"
+          :title="t('digito.pdp.moreFrom', 'More in {aisle}', { aisle: product.category.title || product.category.name })"
           lazy
           sort="bestselling"
         />

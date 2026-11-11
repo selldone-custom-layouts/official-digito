@@ -132,7 +132,7 @@
       <!-- ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆ Footer ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆ -->
 
       <div class="-footer">
-        Powered by
+        {{ t("digito.poweredBy", "Powered by") }}
         <a href="/Applications/Storefront/public" target="_blank">
           <img
             height="10"

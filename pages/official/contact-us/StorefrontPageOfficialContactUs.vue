@@ -25,45 +25,45 @@
 <template>
   <div class="dg-contact dg-page">
     <header class="dg-sec dg-contact__head">
-      <h1>Contact us</h1>
-      <p>Questions about a product, an order or a return? Write to us and we’ll answer by email.</p>
+      <h1>{{ t("contact.pageTitle", "Contact us") }}</h1>
+      <p>{{ t("digito.contact.lede", "Questions about a product, an order or a return? Write to us and we’ll answer by email.") }}</p>
     </header>
 
     <div class="dg-contact__grid">
       <section aria-labelledby="dg-contact-form" class="dg-sec dg-contact__form">
         <div v-if="submitted" class="dg-contact__done">
           <span class="dg-contact__ok"><digito-icon name="check_circle" size="34" /></span>
-          <h2>Thanks — your message is on its way</h2>
-          <p>We usually answer within one working day. Check your inbox (and the spam folder) for our reply.</p>
-          <button class="dg-btn -line" type="button" @click="submitted = false">Send another message</button>
+          <h2>{{ t("digito.contact.done.title", "Thanks — your message is on its way") }}</h2>
+          <p>{{ t("digito.contact.done.text", "We usually answer within one working day. Check your inbox (and the spam folder) for our reply.") }}</p>
+          <button class="dg-btn -line" type="button" @click="submitted = false">{{ t("digito.contact.done.again", "Send another message") }}</button>
         </div>
         <form v-else @submit.prevent="sendForm">
-          <h2 id="dg-contact-form">Send us a message</h2>
+          <h2 id="dg-contact-form">{{ t("digito.contact.form.title", "Send us a message") }}</h2>
           <div v-if="USER()" class="dg-contact__me">
             <img v-if="USER().id" :src="getUserAvatar(USER().id)" alt="" height="40" width="40" />
             <span><b>{{ USER().name }}</b><small>{{ USER().email }}</small></span>
           </div>
           <div v-else class="dg-contact__row">
-            <label class="dg-field"><span>Name</span><input v-model="name" autocomplete="name" placeholder="Your name" /></label>
-            <label class="dg-field"><span>Email</span><input v-model="email" autocomplete="email" placeholder="you@example.com" required type="email" /></label>
+            <label class="dg-field"><span>{{ t("digito.contact.form.name", "Name") }}</span><input v-model="name" autocomplete="name" :placeholder="t('digito.contact.form.nameHint', 'Your name')" /></label>
+            <label class="dg-field"><span>{{ t("digito.contact.form.email", "Email") }}</span><input v-model="email" autocomplete="email" placeholder="you@example.com" required type="email" /></label>
           </div>
           <div class="dg-contact__row">
-            <label class="dg-field"><span>Phone <small>(optional)</small></span><input v-model="phone" autocomplete="tel" placeholder="(305) 555-0100" type="tel" /></label>
-            <label class="dg-field"><span>Order number <small>(optional)</small></span><input v-model="order" placeholder="e.g. 1024" /></label>
+            <label class="dg-field"><span>{{ t("digito.contact.form.phone", "Phone") }} <small>{{ t("digito.contact.form.optional", "(optional)") }}</small></span><input v-model="phone" autocomplete="tel" placeholder="(305) 555-0100" type="tel" /></label>
+            <label class="dg-field"><span>{{ t("digito.contact.form.order", "Order number") }} <small>{{ t("digito.contact.form.optional", "(optional)") }}</small></span><input v-model="order" :placeholder="t('digito.contact.form.orderHint', 'e.g. 1024')" /></label>
           </div>
-          <label class="dg-field"><span>Message</span><textarea v-model="message" placeholder="How can we help?" required rows="6"></textarea></label>
+          <label class="dg-field"><span>{{ t("digito.contact.form.message", "Message") }}</span><textarea v-model="message" :placeholder="t('digito.contact.form.messageHint', 'How can we help?')" required rows="6"></textarea></label>
           <p v-if="error" class="dg-contact__err">{{ error }}</p>
-          <button :disabled="!canSend || busy_send" class="dg-btn -lg" type="submit">{{ busy_send ? "Sending…" : "Send message" }}</button>
+          <button :disabled="!canSend || busy_send" class="dg-btn -lg" type="submit">{{ busy_send ? t("digito.contact.form.sending", "Sending…") : t("digito.contact.form.send", "Send message") }}</button>
         </form>
       </section>
 
       <aside class="dg-contact__side">
         <section class="dg-sec">
-          <h2>Other ways to reach us</h2>
+          <h2>{{ t("digito.contact.ways.title", "Other ways to reach us") }}</h2>
           <ul class="dg-contact__ways">
-            <li><span><digito-icon name="receipt_long" size="22" /></span><div><b>About an order</b><small>Open the order and use its message thread: it reaches the people who packed it.</small><router-link :to="ordersRoute" class="dg-more">Track your order<digito-icon name="chevron_right" size="18" /></router-link></div></li>
-            <li><span><digito-icon name="help" size="22" /></span><div><b>Quick answers</b><small>Delivery, returns and payments in a few lines.</small><router-link :to="{ name: 'ShopFAQ' }" class="dg-more">Read the FAQ<digito-icon name="chevron_right" size="18" /></router-link></div></li>
-            <li><span><digito-icon name="schedule" size="22" /></span><div><b>When we answer</b><small>Every day, usually within one working day.</small></div></li>
+            <li><span><digito-icon name="receipt_long" size="22" /></span><div><b>{{ t("digito.contact.ways.order.title", "About an order") }}</b><small>{{ t("digito.contact.ways.order.text", "Open the order and use its message thread: it reaches the people who packed it.") }}</small><router-link :to="ordersRoute" class="dg-more">{{ t("digito.contact.ways.order.link", "Track your order") }}<digito-icon name="chevron_right" size="18" /></router-link></div></li>
+            <li><span><digito-icon name="help" size="22" /></span><div><b>{{ t("digito.contact.ways.faq.title", "Quick answers") }}</b><small>{{ t("digito.contact.ways.faq.text", "Delivery, returns and payments in a few lines.") }}</small><router-link :to="{ name: 'ShopFAQ' }" class="dg-more">{{ t("digito.contact.ways.faq.link", "Read the FAQ") }}<digito-icon name="chevron_right" size="18" /></router-link></div></li>
+            <li><span><digito-icon name="schedule" size="22" /></span><div><b>{{ t("digito.contact.ways.hours.title", "When we answer") }}</b><small>{{ t("digito.contact.ways.hours.text", "Every day, usually within one working day.") }}</small></div></li>
           </ul>
         </section>
         <section v-if="profile && profileText" class="dg-sec">
@@ -78,6 +78,7 @@
 <script lang="ts">
 import DigitoIcon from "@app-storefront/components/digito/DigitoIcon.vue";
 import { plainText } from "@app-storefront/components/kalio/pages/kalio-sample-pages";
+import { t } from "@app-storefront/components/kalio/i18n/kalio-i18n";
 
 export default {
   name: "StorefrontPageOfficialContactUs",
@@ -109,7 +110,7 @@ export default {
     },
   },
   created() {
-    this.setPageTitle("Contact us");
+    this.setPageTitle(t("contact.pageTitle", "Contact us"));
     window.axios
       .get(window.XAPI.GET_SHOP_PROFILE(this.$shop.name, "contact-us"))
       .then(({ data }) => (this.profile = data?.error ? null : data?.profile || null))
@@ -136,14 +137,14 @@ export default {
           url: window.location.href,
         })
         .then(({ data }) => {
-          if (data?.error) this.error = data.error_msg || "That didn’t go through. Try again.";
+          if (data?.error) this.error = data.error_msg || t("digito.contact.error.failed", "That didn’t go through. Try again.");
           else {
             this.message = "";
             this.order = null;
             this.submitted = true;
           }
         })
-        .catch(() => (this.error = "That didn’t go through. Try again in a minute."))
+        .catch(() => (this.error = t("digito.contact.error.offline", "That didn’t go through. Try again in a minute.")))
         .finally(() => (this.busy_send = false));
     },
   },

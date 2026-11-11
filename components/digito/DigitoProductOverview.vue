@@ -20,7 +20,7 @@
   <div class="dg-pdp">
     <div class="dg-pdp__grid">
       <!-- ▆▆▆▆ Gallery ▆▆▆▆ -->
-      <section v-if="showCover" aria-label="Product images" class="dg-pdp__gallery">
+      <section v-if="showCover" :aria-label="t('pdp.images', 'Product images')" class="dg-pdp__gallery">
         <s-shop-product-slide-show :current-variant="current_variant" :vertical="false" />
       </section>
 
@@ -30,19 +30,19 @@
         <p class="dg-pdp__meta">
           <router-link v-if="$product.brand" :to="brandRoute">{{ $product.brand }}</router-link>
           <template v-if="aisle"><i aria-hidden="true">•</i><router-link :to="aisleTo">{{ aisle.title || aisle.name }}</router-link></template>
-          <template v-if="model"><i aria-hidden="true">•</i><span>Model {{ model }}</span></template>
+          <template v-if="model"><i aria-hidden="true">•</i><span>{{ t("digito.pdp.model", "Model {model}", { model }) }}</span></template>
         </p>
 
         <div class="dg-pdp__rating">
           <template v-if="$product.rate_count && $product.rate">
             <span :style="{ '--k-rate': $product.rate }" class="k-stars"></span>
             <b>{{ numeralFormat($product.rate, "0.0") }}</b>
-            <a href="#k-reviews" @click.prevent="toReviews">{{ numeralFormat($product.rate_count, "0,0") }} {{ $product.rate_count === 1 ? "review" : "reviews" }}</a>
+            <a href="#k-reviews" @click.prevent="toReviews">{{ t("digito.pdp.reviewCount", { one: "{n} review", other: "{n} reviews" }, { n: $product.rate_count }) }}</a>
           </template>
           <template v-else>
             <span :style="{ '--k-rate': 0 }" class="k-stars"></span>
-            <span>No reviews yet</span>
-            <a href="#k-reviews" @click.prevent="toReviews">Be the first</a>
+            <span>{{ t("digito.pdp.noReviews", "No reviews yet") }}</span>
+            <a href="#k-reviews" @click.prevent="toReviews">{{ t("digito.pdp.beFirst", "Be the first") }}</a>
           </template>
         </div>
 
@@ -67,18 +67,18 @@
         </div>
 
         <div v-if="keySpecs.length" class="dg-pdp__specs">
-          <h2>Key specs</h2>
+          <h2>{{ t("digito.pdp.keySpecs", "Key specs") }}</h2>
           <dl>
             <template v-for="row in keySpecs" :key="row.key">
               <dt>{{ row.key }}</dt>
               <dd>{{ row.value }}</dd>
             </template>
           </dl>
-          <a class="dg-more" href="#dg-specs" @click.prevent="toSpecs">All specifications<digito-icon name="expand_more" size="18" /></a>
+          <a class="dg-more" href="#dg-specs" @click.prevent="toSpecs">{{ t("digito.pdp.allSpecs", "All specifications") }}<digito-icon name="expand_more" size="18" /></a>
         </div>
 
         <div v-if="highlights.length" class="dg-pdp__hl">
-          <h2>Highlights</h2>
+          <h2>{{ t("pdp.highlights", "Highlights") }}</h2>
           <ul>
             <li v-for="h in highlights" :key="h.key">
               <span class="dg-pdp__tick"><digito-icon name="check" size="15" /></span>
@@ -102,10 +102,16 @@
           <template v-else>
             <div class="dg-pdp__now">
               <b>{{ fmt(price.now) }}</b>
-              <span v-if="price.save > 0" class="dg-save">Save {{ fmt(price.save, true) }}</span>
+              <span v-if="price.save > 0" class="dg-save">{{ t("digito.card.save", "Save {amount}", { amount: fmt(price.save, true) }) }}</span>
             </div>
-            <p v-if="price.was" class="dg-pdp__was">Was <s>{{ fmt(price.was) }}</s></p>
-            <p v-if="endsAt" class="dg-pdp__ends"><digito-icon name="schedule" size="18" />Deal ends in <b>{{ endsLeft }}</b></p>
+            <p v-if="price.was" class="dg-pdp__was">
+              <template v-for="(part, i) in t('digito.card.was', 'Was {price}').split('{price}')" :key="i"><s v-if="i">{{ fmt(price.was) }}</s>{{ part }}</template>
+            </p>
+            <p v-if="endsAt" class="dg-pdp__ends">
+              <digito-icon name="schedule" size="18" /><template v-for="(part, i) in t('digito.pdp.dealEndsIn', 'Deal ends in {time}').split('{time}')" :key="i"
+                ><b v-if="i">{{ endsLeft }}</b>{{ part }}</template
+              >
+            </p>
           </template>
           <s-product-section-tax></s-product-section-tax>
           <s-product-section-cashback :amount="0" :currency="GetUserSelectedCurrency()?.code"></s-product-section-cashback>
@@ -114,18 +120,29 @@
         <ul class="dg-pdp__lines">
           <li :class="{ '-out': !stock }">
             <digito-icon :name="stock ? 'check_circle' : 'close'" size="20" />
-            <span><b>{{ stock ? "In stock" : "Out of stock" }}</b><small v-if="stock && stock <= 5">Only {{ stock }} left</small><small v-else-if="stock">Ready to ship</small><small v-else>Check back soon</small></span>
+            <span
+              ><b>{{ stock ? t("digito.pdp.inStock", "In stock") : t("card.outOfStock", "Out of stock") }}</b
+              ><small v-if="stock && stock <= 5">{{ t("digito.pdp.onlyLeft", { one: "Only {n} left", other: "Only {n} left" }, { n: stock }) }}</small
+              ><small v-else-if="stock">{{ t("digito.pdp.readyToShip", "Ready to ship") }}</small
+              ><small v-else>{{ t("digito.pdp.checkBack", "Check back soon") }}</small></span
+            >
           </li>
           <li v-for="w in ways" :key="w.key">
             <digito-icon :name="w.key === 'Pickup' ? 'storefront' : 'local_shipping'" size="20" />
             <span
-              ><b>{{ w.key === "Pickup" ? "Pickup" : w.word }}</b
-              ><small>{{ w.free ? "Free" : w.freeOver ? "Free over " + freeOver(w) : "Cost and day shown at checkout" }}</small></span
+              ><b>{{ w.key === "Pickup" ? t("digito.way.pickup", "Pickup") : w.word }}</b
+              ><small>{{
+                w.free
+                  ? t("digito.pdp.free", "Free")
+                  : w.freeOver
+                    ? t("digito.pdp.freeOver", "Free over {amount}", { amount: freeOver(w) })
+                    : t("digito.pdp.costAtCheckout", "Cost and day shown at checkout")
+              }}</small></span
             >
           </li>
           <li>
             <digito-icon name="assignment_return" size="20" />
-            <span><b>Easy returns</b><small>Ask from your order page</small></span>
+            <span><b>{{ t("digito.pdp.returns", "Easy returns") }}</b><small>{{ t("digito.pdp.returnsLine", "Ask from your order page") }}</small></span>
           </li>
         </ul>
 
@@ -175,11 +192,11 @@
           <v-menu :close-on-content-click="false" location="bottom end" max-width="360">
             <template v-slot:activator="{ props }">
               <button class="dg-pdp__share" type="button" v-bind="props">
-                <digito-icon name="share" size="18" />Share
+                <digito-icon name="share" size="18" />{{ t("digito.pdp.share", "Share") }}
               </button>
             </template>
             <div class="k-pdp__share-sheet">
-              <p class="k-eyebrow">Share</p>
+              <p class="k-eyebrow">{{ t("digito.pdp.share", "Share") }}</p>
               <u-button-share-group
                 :description="$product.title_en"
                 :media="getShopImagePath($product.icon)"

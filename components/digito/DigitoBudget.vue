@@ -5,7 +5,7 @@
 -->
 <template>
   <section v-if="bands.length" aria-labelledby="dg-bud-h" class="dg-sec">
-    <header class="dg-head"><h2 id="dg-bud-h">{{ title }}</h2></header>
+    <header class="dg-head"><h2 id="dg-bud-h">{{ title || t("digito.home.shopByBudget", "Shop by budget") }}</h2></header>
     <div :style="{ '--cols': bands.length }" class="dg-bud">
       <router-link v-for="(b, i) in bands" :key="i" :to="route(b)" class="dg-bud__c">
         <b>{{ label(b) }}</b>
@@ -18,11 +18,13 @@
 import { catalogueRoute } from "../kalio/kalio-catalog";
 import { allProducts, money, priceBands } from "./digito-home";
 import { baseCurrency } from "../region-switcher/region";
+import { t } from "../kalio/i18n/kalio-i18n";
 
 export default {
   name: "DigitoBudget",
   inject: ["$shop"],
-  props: { title: { type: String, default: "Shop by budget" } },
+  /** title: the heading; "Shop by budget" when not given. */
+  props: { title: { type: String, default: null } },
   data: () => ({ bands: [] }),
   computed: {
     currency() {
@@ -37,9 +39,9 @@ export default {
       return money(n, this.currency, true);
     },
     label(b) {
-      if (b.min == null) return `Under ${this.m(b.max)}`;
-      if (b.max == null) return `${this.m(b.min)} and up`;
-      return `${this.m(b.min)}–${this.m(b.max)}`;
+      if (b.min == null) return t("digito.budget.under", "Under {amount}", { amount: this.m(b.max) });
+      if (b.max == null) return t("digito.budget.andUp", "{amount} and up", { amount: this.m(b.min) });
+      return t("digito.budget.range", "{min}–{max}", { min: this.m(b.min), max: this.m(b.max) });
     },
     route(b) {
       return catalogueRoute({

@@ -28,26 +28,33 @@
 
     <digito-categories />
 
-    <digito-rail v-if="topDeals.length || !loaded" :items="topDeals" :more-to="dealsRoute" :pending="!loaded" more-label="See all deals" title="Top deals" />
+    <digito-rail
+      v-if="topDeals.length || !loaded"
+      :items="topDeals"
+      :more-label="t('digito.home.seeAllDeals', 'See all deals')"
+      :more-to="dealsRoute"
+      :pending="!loaded"
+      :title="t('digito.home.topDeals', 'Top deals')"
+    />
 
     <digito-doorbusters :deals="doorDeals" />
 
-    <digito-rail v-for="t in tagSlots[0]" :key="t.tag" :items="t.products" :title="t.title" />
+    <digito-rail v-for="row in tagSlots[0]" :key="row.tag" :items="row.products" :title="row.title" />
 
     <digito-bento :products="bestSellers" />
 
-    <digito-rail v-for="t in tagSlots[1]" :key="t.tag" :items="t.products" :title="t.title" />
+    <digito-rail v-for="row in tagSlots[1]" :key="row.tag" :items="row.products" :title="row.title" />
 
     <digito-sign-in-nudge />
 
     <digito-moments />
 
-    <digito-rail :exclude="early" :more-to="trendingRoute" lazy sort="most_visited" spread title="Trending now" />
+    <digito-rail :exclude="early" :more-to="trendingRoute" :title="t('digito.home.trending', 'Trending now')" lazy sort="most_visited" spread />
 
     <digito-budget />
 
-    <digito-rail v-if="newTagged.length >= 4" :items="newTagged" :more-to="newRoute" title="New arrivals" />
-    <digito-rail v-else-if="tagsKnown" :exclude="early" :more-to="newRoute" lazy sort="newest" title="New arrivals" />
+    <digito-rail v-if="newTagged.length >= 4" :items="newTagged" :more-to="newRoute" :title="t('digito.home.newArrivals', 'New arrivals')" />
+    <digito-rail v-else-if="tagsKnown" :exclude="early" :more-to="newRoute" :title="t('digito.home.newArrivals', 'New arrivals')" lazy sort="newest" />
 
     <digito-brands />
 
@@ -74,6 +81,7 @@ import DigitoBlog from "./DigitoBlog.vue";
 import DigitoTagSplit from "./DigitoTagSplit.vue";
 import { catalogueRoute, dealsRoute } from "../kalio/kalio-catalog";
 import { allProducts, dealsOf, isBestSellerTag, isNewTag, mix, tagIndex, tagTitle } from "./digito-home";
+import { t } from "../kalio/i18n/kalio-i18n";
 
 export default {
   name: "DigitoHome",
@@ -120,7 +128,7 @@ export default {
       return [...this.byTag.entries()]
         .filter(([tag, list]) => !isBestSellerTag(tag) && !isNewTag(tag) && list.length)
         .sort((a, b) => b[1].length - a[1].length)
-        .map(([tag, list]) => ({ tag, title: `${tagTitle(tag)} Items`, products: mix(list, 12) }));
+        .map(([tag, list]) => ({ tag, title: t("digito.home.tagItems", "{tag} Items", { tag: tagTitle(tag) }), products: mix(list, 12) }));
     },
     tagSlots() {
       const rows = this.tagRows;

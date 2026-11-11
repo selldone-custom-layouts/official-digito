@@ -846,7 +846,7 @@
     }
 
     &.-in-cart {
-      left: auto !important;
+      inset-inline-start: auto !important;
       width: min(460px, calc(100vw - 24px)) !important;
     }
   }

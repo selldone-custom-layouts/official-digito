@@ -3034,8 +3034,8 @@ html.dg-locked {
     }
 
     &::after {
-      left: calc(9px + (100% - 18px) * var(--a));
-      right: calc(9px + (100% - 18px) * (1 - var(--b)));
+      inset-inline-start: calc(9px + (100% - 18px) * var(--a));
+      inset-inline-end: calc(9px + (100% - 18px) * (1 - var(--b)));
       background: var(--dg-blue);
     }
 
@@ -3812,4 +3812,30 @@ html.dg-locked {
 .s--product-variants .s-product-variants__options .var-sel.selected {
   box-shadow: inset 0 0 0 2px var(--dg-blue) !important;
   border-color: var(--dg-blue) !important;
+}
+
+
+/* ━━━━━━━━━━━━ Right to left (Arabic) ━━━━━━━━━━━━
+   kalio-i18n sets <html dir="rtl">; Vuetify sets .v-locale--is-rtl inside the
+   app. Teleported panels sit outside the app, so both are listed. Icons that
+   point along the reading direction mirror; prices and clocks keep their
+   left-to-right digits (bidi isolation). */
+html[dir="rtl"] .dg-ms.-dir,
+.v-locale--is-rtl .dg-ms.-dir,
+html[dir="rtl"] .k-flip {
+  transform: scaleX(-1);
+}
+
+html[dir="rtl"] .u--price,
+html[dir="rtl"] .dg-clock,
+html[dir="rtl"] .dg-price__now {
+  unicode-bidi: isolate;
+}
+
+html[lang="ar"] {
+  --dg-font: "Plus Jakarta Sans", "Noto Sans Arabic", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+html[lang="hi"] {
+  --dg-font: "Plus Jakarta Sans", "Noto Sans Devanagari", system-ui, -apple-system, "Segoe UI", sans-serif;
 }

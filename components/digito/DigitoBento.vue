@@ -7,7 +7,7 @@
 <template>
   <section v-if="list.length >= 5" aria-labelledby="dg-best-h" class="dg-sec">
     <header class="dg-head">
-      <h2 id="dg-best-h">{{ title }}</h2>
+      <h2 id="dg-best-h">{{ heading }}</h2>
     </header>
     <div :class="'-rows' + rows" class="dg-bento">
       <div class="dg-bento__big">
@@ -17,21 +17,26 @@
       <digito-card v-for="p in small" :key="p.id" :product="p" class="dg-bento__s" no-foot />
     </div>
   </section>
-  <digito-rail v-else-if="list.length" :items="list" :title="title" />
+  <digito-rail v-else-if="list.length" :items="list" :title="heading" />
 </template>
 
 <script>
 import DigitoCard from "./DigitoCard.vue";
 import DigitoRail from "./DigitoRail.vue";
+import { t } from "../kalio/i18n/kalio-i18n";
 
 export default {
   name: "DigitoBento",
   components: { DigitoCard, DigitoRail },
   props: {
     products: { type: Array, default: () => [] },
-    title: { type: String, default: "Best sellers" },
+    /** The heading; "Best sellers" when not given. */
+    title: { type: String, default: null },
   },
   computed: {
+    heading() {
+      return this.title || t("digito.home.bestSellers", "Best sellers");
+    },
     list() {
       return this.products;
     },

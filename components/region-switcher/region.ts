@@ -65,7 +65,7 @@ const OWN: Record<string, string> = {
 
 const RTL = new Set(["ar", "fa", "he", "ur", "ps", "ckb", "ku"]);
 
-const state = reactive({ currency: "", language: "", booted: false });
+const state = reactive({ currency: "", language: "", booted: false, words: 0 });
 let opts: Required<RegionOptions> = { ...DEFAULTS };
 let store: any = null;
 let messages: Record<string, Record<string, string>> = { en: { ...OWN } };
@@ -304,10 +304,12 @@ export function defineMessages(dict: Record<string, Record<string, string>>): vo
   const out: Record<string, Record<string, string>> = { en: { ...OWN } };
   for (const [lang, m] of Object.entries(dict || {})) out[lang] = { ...(out[lang] || {}), ...m };
   messages = out;
+  state.words++; // redraw every t() that was drawn before these words arrived
 }
 
 /** A word in the visitor's language: t("header.account"), t("cart.items", { n: 3 }). Reactive. */
 export function t(key: string, vars?: Record<string, string | number>): string {
+  void state.words;
   const lang = currentLanguage();
   let s = messages[lang]?.[key] ?? messages.en?.[key] ?? key;
   if (vars) for (const [k, v] of Object.entries(vars)) s = s.split(`{${k}}`).join(String(v));

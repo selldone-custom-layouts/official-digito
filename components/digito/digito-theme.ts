@@ -21,6 +21,7 @@
  * light primary (a palette where it does not would set a pale yellow).
  */
 import type { ThemeSwitcherConfig } from "../theme-switcher/theme-switcher";
+import { t } from "../kalio/i18n/kalio-i18n";
 import { THEME_SETTINGS } from "./digito-theme.settings";
 
 export const DIGITO_THEME: ThemeSwitcherConfig = {
@@ -43,31 +44,41 @@ export const DIGITO_THEME: ThemeSwitcherConfig = {
   palettes: [
     {
       id: "blue",
-      name: "Digito blue",
+      get name() {
+        return t("digito.theme.blue", "Digito blue");
+      },
       light: { primary: "#0a4bd8", deep: "#0838a8", soft: "#e8efff", onPrimary: "#ffffff", text: "#0a4bd8", pop: "#ffd91a" },
       dark: { primary: "#2563eb", deep: "#1d4ed8", soft: "#16264d", onPrimary: "#ffffff", text: "#8fb0ff" },
     },
     {
       id: "emerald",
-      name: "Emerald",
+      get name() {
+        return t("digito.theme.emerald", "Emerald");
+      },
       light: { primary: "#05664a", deep: "#064e3b", soft: "#e3f6ee", onPrimary: "#ffffff", text: "#05664a", pop: "#ffd91a" },
       dark: { primary: "#047857", deep: "#065f46", soft: "#123a30", onPrimary: "#ffffff", text: "#6ee7b7" },
     },
     {
       id: "violet",
-      name: "Violet",
+      get name() {
+        return t("digito.theme.violet", "Violet");
+      },
       light: { primary: "#6d28d9", deep: "#5b21b6", soft: "#efe8fd", onPrimary: "#ffffff", text: "#6d28d9", pop: "#ffd91a" },
       dark: { primary: "#7c3aed", deep: "#6d28d9", soft: "#2a1d4d", onPrimary: "#ffffff", text: "#c4b5fd" },
     },
     {
       id: "teal",
-      name: "Ocean teal",
+      get name() {
+        return t("digito.theme.teal", "Ocean teal");
+      },
       light: { primary: "#0c6680", deep: "#164e63", soft: "#e0f4f8", onPrimary: "#ffffff", text: "#0c6680", pop: "#ffd91a" },
       dark: { primary: "#0e7490", deep: "#155e75", soft: "#123540", onPrimary: "#ffffff", text: "#67e8f9" },
     },
     {
       id: "orange",
-      name: "Sunset orange",
+      get name() {
+        return t("digito.theme.orange", "Sunset orange");
+      },
       light: { primary: "#a93a0b", deep: "#7c2d12", soft: "#fdeee6", onPrimary: "#ffffff", text: "#a93a0b", pop: "#ffd91a" },
       dark: { primary: "#c2410c", deep: "#9a3412", soft: "#3d2215", onPrimary: "#ffffff", text: "#fdba74" },
     },
@@ -154,7 +165,36 @@ export const DIGITO_THEME: ThemeSwitcherConfig = {
 
   metaThemeColor: "light.primary",
   ui: { ink: "var(--dg-ink)", muted: "var(--dg-muted)", line: "var(--dg-line)", surface: "var(--dg-card)", font: "var(--dg-font)" },
-  labels: { theme: "Theme", palettes: "Colour", mode: "Light or dark", modeTitle: "Mode", light: "Light", dark: "Dark", custom: "Custom colour", adjusted: "Adjusted for readability", brand: "Brand colour" },
+  /* Getters, so the Theme row's words follow the visitor's language. */
+  labels: {
+    get theme() {
+      return t("theme.title", "Theme");
+    },
+    get palettes() {
+      return t("theme.palettes", "Colour");
+    },
+    get mode() {
+      return t("theme.mode", "Light or dark");
+    },
+    get modeTitle() {
+      return t("theme.modeTitle", "Mode");
+    },
+    get light() {
+      return t("theme.light", "Light");
+    },
+    get dark() {
+      return t("theme.dark", "Dark");
+    },
+    get custom() {
+      return t("theme.custom", "Custom colour");
+    },
+    get adjusted() {
+      return t("theme.adjusted", "Adjusted for readability");
+    },
+    get brand() {
+      return t("theme.brand", "Brand colour");
+    },
+  },
 
   /* "Custom colour" (the owner, 9 November 2026): any colour, made readable
      by paletteFromColor(). Digito's header is painted with the light primary

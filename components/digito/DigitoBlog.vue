@@ -7,8 +7,8 @@
 <template>
   <section v-if="posts.length" aria-labelledby="dg-blog-h" class="dg-sec">
     <header class="dg-head">
-      <h2 id="dg-blog-h">From the {{ shopName }} blog</h2>
-      <router-link :to="allRoute" class="dg-more">All articles<digito-icon name="chevron_right" size="20" /></router-link>
+      <h2 id="dg-blog-h">{{ t("digito.blog.title", "From the {shop} blog", { shop: shopName }) }}</h2>
+      <router-link :to="allRoute" class="dg-more">{{ t("digito.blog.all", "All articles") }}<digito-icon name="chevron_right" size="20" /></router-link>
     </header>
     <div :style="{ '--cols': posts.length }" class="dg-blog">
       <router-link v-for="a in posts" :key="a.id" :to="route(a)" class="dg-post">

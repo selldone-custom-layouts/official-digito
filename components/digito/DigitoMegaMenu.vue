@@ -6,7 +6,7 @@
 -->
 <template>
   <div class="dg-mega" @keydown.esc="$emit('close')">
-    <nav aria-label="Categories" class="dg-mega__list">
+    <nav :aria-label="t('digito.mega.categories', 'Categories')" class="dg-mega__list">
       <router-link
         v-for="c in cats"
         :key="c.id"
@@ -21,19 +21,19 @@
         <span class="dg-mega__name"><b>{{ c.title || c.name }}</b><small>{{ line(c) }}</small></span>
         <digito-icon name="chevron_right" size="18" />
       </router-link>
-      <router-link :to="allRoute" class="dg-mega__all" @click="$emit('close')">All products<digito-icon name="arrow_forward" size="18" /></router-link>
+      <router-link :to="allRoute" class="dg-mega__all" @click="$emit('close')">{{ t("listing.allProducts", "All products") }}<digito-icon name="arrow_forward" size="18" /></router-link>
     </nav>
 
     <div v-if="active" class="dg-mega__side">
       <div class="dg-mega__head">
         <h3>{{ active.title || active.name }}</h3>
-        <router-link :to="route(active)" class="dg-more" @click="$emit('close')">Shop all<digito-icon name="chevron_right" size="18" /></router-link>
+        <router-link :to="route(active)" class="dg-more" @click="$emit('close')">{{ t("digito.mega.shopAll", "Shop all") }}<digito-icon name="chevron_right" size="18" /></router-link>
       </div>
       <div class="dg-mega__deals">
         <router-link v-for="p in picks" :key="p.id" :to="productRoute(p)" class="dg-mega__p" @click="$emit('close')">
           <span class="dg-mega__pimg"><img :src="pimage(p)" alt="" loading="lazy" /></span>
           <span class="dg-mega__pt">{{ p.title }}</span>
-          <span class="dg-mega__pp"><b>{{ m(finalOf(p), false) }}</b><em v-if="savingOf(p) > 0">Save {{ m(savingOf(p)) }}</em></span>
+          <span class="dg-mega__pp"><b>{{ m(finalOf(p), false) }}</b><em v-if="savingOf(p) > 0">{{ t("digito.card.save", "Save {amount}", { amount: m(savingOf(p)) }) }}</em></span>
         </router-link>
       </div>
       <router-link :to="route(active)" class="dg-mega__photo" @click="$emit('close')">

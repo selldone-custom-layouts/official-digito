@@ -25,8 +25,8 @@
     <section class="dg-about__hero">
       <digito-photo :products="packs" :src="hero" class="dg-about__photo" eager shape="wide" />
       <div class="dg-about__card">
-        <span class="dg-eyebrow">About {{ shopTitle }}</span>
-        <h1>{{ missing || busy ? sample.title : `About ${shopTitle}` }}</h1>
+        <span class="dg-eyebrow">{{ t("about.title", "About {shop}", { shop: shopTitle }) }}</span>
+        <h1>{{ missing || busy ? sample.title : t("about.title", "About {shop}", { shop: shopTitle }) }}</h1>
         <p v-if="missing || busy">{{ sample.lead }}</p>
       </div>
     </section>
@@ -34,7 +34,7 @@
     <section class="dg-sec dg-about__story">
       <div v-if="busy" aria-hidden="true" class="k-legal__loading"><span></span><span></span><span></span></div>
       <template v-else-if="missing">
-        <kalio-sample-note>This is general copy written to show the page; {{ shopTitle }} writes its own story here.</kalio-sample-note>
+        <kalio-sample-note>{{ t("digito.about.sampleNote", "This is general copy written to show the page; {shop} writes its own story here.", { shop: shopTitle }) }}</kalio-sample-note>
         <p class="dg-about__text">{{ sample.text[0] }}</p>
         <div class="dg-about__vals">
           <div v-for="(value, i) in sample.values" :key="value.title" class="dg-about__val">
@@ -47,7 +47,7 @@
       <div v-else class="k-story__real k-prose dg-about__real" v-html="profile.body"></div>
     </section>
 
-    <section aria-label="Our promises" class="dg-about__band">
+    <section :aria-label="t('digito.about.promises', 'Our promises')" class="dg-about__band">
       <div v-for="p in promises" :key="p.t"><digito-icon :name="p.i" size="28" /><span><b>{{ p.t }}</b><small>{{ p.s }}</small></span></div>
     </section>
 
@@ -55,13 +55,13 @@
 
     <section id="contact" class="dg-sec dg-about__contact">
       <div>
-        <span class="dg-eyebrow">Contact us</span>
-        <h2>We’re here to help</h2>
-        <p>For an order, the fastest way is the message thread on the order page: it reaches the people who packed it. For anything else, write to us.</p>
+        <span class="dg-eyebrow">{{ t("contact.pageTitle", "Contact us") }}</span>
+        <h2>{{ t("digito.about.contact.title", "We’re here to help") }}</h2>
+        <p>{{ t("digito.about.contact.text", "For an order, the fastest way is the message thread on the order page: it reaches the people who packed it. For anything else, write to us.") }}</p>
       </div>
       <div class="dg-about__acts">
-        <router-link :to="{ name: window.$storefront.routes.SHOP_CONTACT_US }" class="dg-btn">Write to us</router-link>
-        <router-link :to="catalogueRoute" class="dg-btn -line">Start shopping</router-link>
+        <router-link :to="{ name: window.$storefront.routes.SHOP_CONTACT_US }" class="dg-btn">{{ t("digito.about.contact.write", "Write to us") }}</router-link>
+        <router-link :to="catalogueRoute" class="dg-btn -line">{{ t("pages.startShopping", "Start shopping") }}</router-link>
       </div>
     </section>
   </div>
@@ -75,6 +75,7 @@ import { allProducts, photoOf, waysOf } from "@app-storefront/components/digito/
 import DigitoPhoto from "@app-storefront/components/digito/DigitoPhoto.vue";
 import DigitoIcon from "@app-storefront/components/digito/DigitoIcon.vue";
 import DigitoCategories from "@app-storefront/components/digito/DigitoCategories.vue";
+import { t } from "@app-storefront/components/kalio/i18n/kalio-i18n";
 
 export default {
   name: "StorefrontPageOfficialAboutUs",
@@ -93,7 +94,7 @@ export default {
 
   computed: {
     shopTitle() {
-      return this.$shop?.title || "This shop";
+      return this.$shop?.title || t("sample.thisShop", "This shop");
     },
     sample() {
       return aboutSample(this.shopTitle);
@@ -105,16 +106,24 @@ export default {
     promises() {
       const ways = waysOf(this.$shop);
       const out = [];
-      if (ways.some((w) => w.key !== "Pickup")) out.push({ i: "local_shipping", t: "Delivered to your door", s: "Cost and day shown before you pay" });
-      if (ways.some((w) => w.key === "Pickup")) out.push({ i: "storefront", t: "Pickup at the shop", s: "Order online, collect in person" });
-      out.push({ i: "lock", t: "Secure checkout", s: "Your details stay private" });
-      out.push({ i: "support_agent", t: "Real help", s: "Message us from any order" });
+      if (ways.some((w) => w.key !== "Pickup")) out.push({
+          i: "local_shipping",
+          t: t("digito.about.promise.delivery.title", "Delivered to your door"),
+          s: t("digito.about.promise.delivery.text", "Cost and day shown before you pay"),
+        });
+      if (ways.some((w) => w.key === "Pickup")) out.push({
+          i: "storefront",
+          t: t("digito.about.promise.pickup.title", "Pickup at the shop"),
+          s: t("digito.about.promise.pickup.text", "Order online, collect in person"),
+        });
+      out.push({ i: "lock", t: t("digito.about.promise.secure.title", "Secure checkout"), s: t("digito.about.promise.secure.text", "Your details stay private") });
+      out.push({ i: "support_agent", t: t("digito.about.promise.help.title", "Real help"), s: t("digito.about.promise.help.text", "Message us from any order") });
       return out.slice(0, 4);
     },
   },
 
   created() {
-    this.setPageTitle?.("About us");
+    this.setPageTitle?.(t("about.pageTitle", "About us"));
     window.axios
       .get(window.XAPI.GET_SHOP_PROFILE(this.$shop.name, "about-us"))
       .then(({ data }) => {

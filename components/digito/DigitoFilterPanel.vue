@@ -12,19 +12,19 @@
 <template>
   <div class="dg-filter">
     <div class="dg-filter__top">
-      <h2>Filters</h2>
-      <button v-if="on" class="dg-link" type="button" @click="clearAll">Clear all</button>
+      <h2>{{ t("digito.filter.title", "Filters") }}</h2>
+      <button v-if="on" class="dg-link" type="button" @click="clearAll">{{ t("digito.filter.clearAll", "Clear all") }}</button>
     </div>
 
     <label class="dg-switch">
-      <span><b>Only deals</b><small>Products with a saving</small></span>
+      <span><b>{{ t("digito.filter.onlyDeals", "Only deals") }}</b><small>{{ t("digito.filter.onlyDealsLine", "Products with a saving") }}</small></span>
       <input :checked="!!modelValue?.only_has_discount" type="checkbox" @change="toggleDeals($event.target.checked)" />
       <i aria-hidden="true"></i>
     </label>
 
     <div v-if="range" class="dg-fgroup -open">
       <button class="dg-fgroup__h" type="button" @click="openPrice = !openPrice">
-        Price<digito-icon :name="openPrice ? 'expand_less' : 'expand_more'" size="20" />
+        {{ t("digito.filter.price", "Price") }}<digito-icon :name="openPrice ? 'expand_less' : 'expand_more'" size="20" />
       </button>
       <div v-show="openPrice" class="dg-price-range">
         <div class="dg-price-range__track" :style="trackStyle">
@@ -33,7 +33,7 @@
             :min="range.min"
             :step="step"
             :value="lo"
-            aria-label="Lowest price"
+            :aria-label="t('digito.filter.lowest', 'Lowest price')"
             type="range"
             @change="commitPrice"
             @input="setLo(+$event.target.value)"
@@ -43,16 +43,16 @@
             :min="range.min"
             :step="step"
             :value="hi"
-            aria-label="Highest price"
+            :aria-label="t('digito.filter.highest', 'Highest price')"
             type="range"
             @change="commitPrice"
             @input="setHi(+$event.target.value)"
           />
         </div>
         <div class="dg-price-range__boxes">
-          <label><span>{{ symbol }}</span><input :value="lo" aria-label="Min" inputmode="numeric" @change="setLo(+$event.target.value, true)" /></label>
-          <em>to</em>
-          <label><span>{{ symbol }}</span><input :value="hi" aria-label="Max" inputmode="numeric" @change="setHi(+$event.target.value, true)" /></label>
+          <label><span>{{ symbol }}</span><input :aria-label="t('digito.filter.min', 'Min')" :value="lo" inputmode="numeric" @change="setLo(+$event.target.value, true)" /></label>
+          <em>{{ t("digito.filter.to", "to") }}</em>
+          <label><span>{{ symbol }}</span><input :aria-label="t('digito.filter.max', 'Max')" :value="hi" inputmode="numeric" @change="setHi(+$event.target.value, true)" /></label>
         </div>
       </div>
     </div>
@@ -83,7 +83,7 @@
             <span>{{ label(v) }}</span>
           </label>
           <button v-if="g.values.length > 5" class="dg-link" type="button" @click="toggleMore(g)">
-            {{ more[g.key] ? "Show fewer" : `Show ${g.values.length - 5} more` }}
+            {{ more[g.key] ? t("menu.showFewer", "Show fewer") : t("listing.showMore", "Show {n} more", { n: g.values.length - 5 }) }}
           </button>
         </template>
       </div>
@@ -95,8 +95,15 @@
 import DigitoIcon from "./DigitoIcon.vue";
 import { currentCurrency, rateOf, signOf } from "../region-switcher/region";
 import { clone, countOn, groupsOf, picked, valueLabel, withGroup } from "../tario/shop/tario-filters";
+import { t } from "../kalio/i18n/kalio-i18n";
 
-const LABELS = { volumes: "Capacity", colors: "Colour", types: "Type", styles: "Style" };
+/* Read when drawn, so a language pick redraws them. */
+const LABELS = {
+  volumes: () => t("digito.filter.capacity", "Capacity"),
+  colors: () => t("digito.filter.colour", "Colour"),
+  types: () => t("digito.filter.type", "Type"),
+  styles: () => t("digito.filter.style", "Style"),
+};
 
 export default {
   name: "DigitoFilterPanel",
@@ -114,7 +121,7 @@ export default {
 
   computed: {
     groups() {
-      return groupsOf(this.filters).map((g) => ({ ...g, label: LABELS[g.key] || g.label }));
+      return groupsOf(this.filters).map((g) => ({ ...g, label: LABELS[g.key]?.() || g.label }));
     },
     /* Selldone keeps a category's price range per product currency
        (filters.prices: [{ currency, min, max }], one row per currency) and

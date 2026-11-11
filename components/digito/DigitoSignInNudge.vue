@@ -3,9 +3,12 @@
 <template>
   <section v-if="!user && !busyUser" class="dg-signin">
     <digito-icon name="account_circle" size="34" />
-    <p><b>Sign in for a faster checkout.</b> Track your orders, keep your addresses and pick up where you left off.</p>
-    <button class="dg-btn" type="button" @click="signIn">Sign in</button>
-    <button class="dg-btn -line" type="button" @click="signIn">Create an account</button>
+    <p>
+      <b>{{ t("digito.signIn.title", "Sign in for a faster checkout.") }}</b>
+      {{ t("digito.signIn.text", "Track your orders, keep your addresses and pick up where you left off.") }}
+    </p>
+    <button class="dg-btn" type="button" @click="signIn">{{ t("common.signIn", "Sign in") }}</button>
+    <button class="dg-btn -line" type="button" @click="signIn">{{ t("digito.signIn.create", "Create an account") }}</button>
   </section>
 </template>
 

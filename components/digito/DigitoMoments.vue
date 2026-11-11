@@ -7,14 +7,14 @@
 -->
 <template>
   <section v-if="cards.length" aria-labelledby="dg-moments-h" class="dg-sec">
-    <header class="dg-head"><h2 id="dg-moments-h">{{ title }}</h2></header>
+    <header class="dg-head"><h2 id="dg-moments-h">{{ title || t("digito.home.moments", "Gear for every moment") }}</h2></header>
     <div :style="{ '--cols': cards.length }" class="dg-tall">
       <router-link v-for="c in cards" :key="c.id" :to="c.to" class="dg-tall__c">
         <digito-photo :products="c.products" :src="c.photo" eager shape="portrait" />
         <span class="dg-tall__txt">
           <small>{{ lineOf(c) }}</small>
           <b>{{ c.title }}</b>
-          <em>Shop now<digito-icon name="arrow_forward" size="17" /></em>
+          <em>{{ t("digito.home.shopNow", "Shop now") }}<digito-icon name="arrow_forward" size="17" /></em>
         </span>
       </router-link>
     </div>
@@ -32,7 +32,8 @@ export default {
   name: "DigitoMoments",
   components: { DigitoIcon, DigitoPhoto },
   inject: ["$shop"],
-  props: { title: { type: String, default: "Gear for every moment" } },
+  /** title: the heading; "Gear for every moment" when not given. */
+  props: { title: { type: String, default: null } },
   data: () => ({ cards: [], list: [] }),
   mounted() {
     Promise.all([aisles(), allProducts()]).then(([cats, list]) => {

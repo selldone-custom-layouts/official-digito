@@ -75,6 +75,7 @@ import NotificationService from "@selldone/components-vue/plugins/notification/N
 import { GtagEcommerce } from "@selldone/components-vue/plugins/gtag/GtagEcommerce";
 import { RouteMixin } from "@selldone/components-vue/mixin/route/RouteMixin.ts";
 import { Basket } from "@selldone/core-js";
+import { t } from "../../../components/kalio/i18n/kalio-i18n";
 import ULoadingEllipsis from "@selldone/components-vue/ui/loading/ellipsis/ULoadingEllipsis.vue";
 import TemplateMixin from "@selldone/components-vue/mixin/template/TemplateMixin.ts";
 
@@ -98,7 +99,7 @@ export default {
 
   watch: {},
   created() {
-    this.setPageTitle(`Order AVO-` + this.$route.params.basket_id);
+    this.setPageTitle(t("digito.order.pageTitle.avocado", "Order AVO-{id}", { id: String(this.$route.params.basket_id) }));
     this.fetchOrderInfo();
   },
   methods: {

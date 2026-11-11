@@ -12,7 +12,7 @@
   <section v-if="busy || shown.length" ref="root" :aria-labelledby="headingId" class="dg-sec dg-railsec">
     <header class="dg-head">
       <h2 :id="headingId">{{ title }}</h2>
-      <router-link v-if="moreTo" :to="moreTo" class="dg-more">{{ moreLabel }}<digito-icon name="chevron_right" size="20" /></router-link>
+      <router-link v-if="moreTo" :to="moreTo" class="dg-more">{{ moreLabel || t("common.seeAll", "See all") }}<digito-icon name="chevron_right" size="20" /></router-link>
     </header>
 
     <div class="dg-rail">
@@ -24,14 +24,14 @@
           <digito-card v-for="product in shown" :key="product.id" :product="product" />
           <router-link v-if="tile" :style="{ gridColumn: 'span ' + tile.span }" :to="tile.to" class="dg-rail__tile">
             <digito-photo :products="shown" :src="tile.photo" :shape="tile.span > 2 ? 'wide' : 'square'" />
-            <span><small v-if="tile.line">{{ tile.line }}</small><b>All {{ tile.title }}</b><em>Shop now<digito-icon name="arrow_forward" size="17" /></em></span>
+            <span><small v-if="tile.line">{{ tile.line }}</small><b>{{ t("digito.rail.allOf", "All {category}", { category: tile.title }) }}</b><em>{{ t("digito.home.shopNow", "Shop now") }}<digito-icon name="arrow_forward" size="17" /></em></span>
           </router-link>
         </template>
       </div>
-      <button v-show="!at_start" aria-label="Scroll back" class="dg-arrow -l" type="button" @click="scrollBy(-1)">
+      <button v-show="!at_start" :aria-label="t('rail.scrollBack', 'Scroll back')" class="dg-arrow -l" type="button" @click="scrollBy(-1)">
         <digito-icon name="chevron_left" size="22" />
       </button>
-      <button v-show="!at_end" aria-label="Scroll forward" class="dg-arrow -r" type="button" @click="scrollBy(1)">
+      <button v-show="!at_end" :aria-label="t('rail.scrollForward', 'Scroll forward')" class="dg-arrow -r" type="button" @click="scrollBy(1)">
         <digito-icon name="chevron_right" size="22" />
       </button>
     </div>
@@ -62,7 +62,8 @@ export default {
     tags: { type: Array, default: null },
     limit: { type: Number, default: 12 },
     moreTo: { type: Object, default: null },
-    moreLabel: { type: String, default: "See all" },
+    /** The link's words; "See all" when not given. */
+    moreLabel: { type: String, default: null },
     lazy: Boolean,
     /** Deal the products out category by category. */
     spread: Boolean,

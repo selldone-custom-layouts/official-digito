@@ -18,15 +18,15 @@
 <template>
   <header v-if="!$store.getters.getIsNative" class="k-header dg-header">
     <div class="dg-header__top">
-      <router-link :aria-label="`${shopTitle} home`" :to="homeRoute" class="dg-header__brand"><digito-wordmark /></router-link>
+      <router-link :aria-label="t('header.home', '{shop} home', { shop: shopTitle })" :to="homeRoute" class="dg-header__brand"><digito-wordmark /></router-link>
 
       <div v-if="showSearch && !compact" class="dg-header__search">
         <s-storefront-search-box
           v-model:expand-input="globalStyle.search_mode"
           :dark="false"
           :negative-qr-margin="false"
-          :placeholder="`Search ${shopTitle}`"
-          :title="`Search ${shopTitle}`"
+          :placeholder="t('digito.header.search', 'Search {shop}', { shop: shopTitle })"
+          :title="t('digito.header.search', 'Search {shop}', { shop: shopTitle })"
           color="#0f1729"
           flat
           no-qr
@@ -39,24 +39,24 @@
       </div>
       <span v-else class="dg-header__sp"></span>
 
-      <nav aria-label="Your account" class="dg-header__acts">
+      <nav :aria-label="t('header.yourAccount', 'Your account')" class="dg-header__acts">
 
-        <router-link v-if="user" :to="profileRoute" aria-label="Your account" class="dg-header__act">
+        <router-link v-if="user" :to="profileRoute" :aria-label="t('header.yourAccount', 'Your account')" class="dg-header__act">
           <img v-if="user.id && !avatar_failed" :src="getUserAvatar(user.id)" alt="" class="dg-header__avatar" height="28" width="28" @error="avatar_failed = true" />
           <digito-icon v-else name="person" size="26" />
-          <span><small>{{ t("header.account") }}</small><b>{{ firstName }}</b></span>
+          <span><small>{{ t("digito.header.account", "Account") }}</small><b>{{ firstName }}</b></span>
         </router-link>
         <button v-else :disabled="busyUser" class="dg-header__act" type="button" @click="signIn">
           <digito-icon name="person" size="26" />
-          <span><small>{{ t("header.account") }}</small><b>{{ busyUser ? "…" : t("header.signIn") }}</b></span>
+          <span><small>{{ t("digito.header.account", "Account") }}</small><b>{{ busyUser ? "…" : t("digito.header.signIn", "Sign in") }}</b></span>
         </button>
 
         <!-- The badge counts units, as the drawer's "3 items" does (it counted
              lines: 2 for one camera and two of another). -->
-        <button :aria-label="`Cart, ${basketUnits} ${basketUnits === 1 ? 'item' : 'items'}`" class="dg-header__act -cart" type="button" @click="basket = true">
+        <button :aria-label="t('digito.header.cartAria', { one: 'Cart, {n} item', other: 'Cart, {n} items' }, { n: basketUnits })" class="dg-header__act -cart" type="button" @click="basket = true">
           <digito-icon name="shopping_cart" size="26" />
           <i v-if="basketUnits" class="dg-header__count">{{ basketUnits }}</i>
-          <span><small>{{ t("header.cart") }}</small><b><template v-if="cartTotal">{{ money(cartTotal.amount, cartTotal.currency) }}</template><template v-else>{{ t("header.empty") }}</template></b></span>
+          <span><small>{{ t("digito.header.cart", "Cart") }}</small><b><template v-if="cartTotal">{{ money(cartTotal.amount, cartTotal.currency) }}</template><template v-else>{{ t("digito.header.empty", "Empty") }}</template></b></span>
         </button>
       </nav>
 
@@ -69,8 +69,8 @@
           :dark="false"
           :expand-input="true"
           :negative-qr-margin="false"
-          :placeholder="`Search ${shopTitle}`"
-          :title="`Search ${shopTitle}`"
+          :placeholder="t('digito.header.search', 'Search {shop}', { shop: shopTitle })"
+          :title="t('digito.header.search', 'Search {shop}', { shop: shopTitle })"
           color="#0f1729"
           flat
           no-qr
@@ -81,12 +81,12 @@
           @onSearch="(event) => { phone_search = false; $emit('search', event); }"
         />
         <button v-else class="dg-header__pill-search" type="button" @click="phone_search = true">
-          <span>Search {{ shopTitle }}</span><digito-icon name="search" size="22" />
+          <span>{{ t("digito.header.search", "Search {shop}", { shop: shopTitle }) }}</span><digito-icon name="search" size="22" />
         </button>
       </div>
     </div>
 
-    <nav aria-label="Shop" class="dg-header__nav">
+    <nav :aria-label="t('digito.header.shop', 'Shop')" class="dg-header__nav">
       <v-menu
         v-if="!compact"
         v-model="mega"
@@ -98,19 +98,19 @@
       >
         <template v-slot:activator="{ props }">
           <button :aria-expanded="mega" :class="{ '-on': mega }" class="dg-pill -shop" type="button" v-bind="props">
-            <digito-icon name="menu" size="18" />Shop<digito-icon :name="mega ? 'expand_less' : 'expand_more'" size="18" />
+            <digito-icon name="menu" size="18" />{{ t("digito.header.shop", "Shop") }}<digito-icon :name="mega ? 'expand_less' : 'expand_more'" size="18" />
           </button>
         </template>
         <digito-mega-menu @close="mega = false" />
       </v-menu>
       <button v-else class="dg-pill -shop" type="button" @click="menu = true">
-        <digito-icon name="menu" size="18" />Shop<digito-icon name="expand_more" size="18" />
+        <digito-icon name="menu" size="18" />{{ t("digito.header.shop", "Shop") }}<digito-icon name="expand_more" size="18" />
       </button>
-      <router-link :to="dealsRoute" class="dg-pill">{{ t("header.deals") }}</router-link>
-      <router-link :to="newRoute" class="dg-pill">{{ t("header.new") }}</router-link>
+      <router-link :to="dealsRoute" class="dg-pill">{{ t("header.deals", "Deals") }}</router-link>
+      <router-link :to="newRoute" class="dg-pill">{{ t("digito.header.new", "New arrivals") }}</router-link>
       <v-menu v-if="brandList.length" :scrim="false" content-class="dg-brands-pop" location="bottom start" offset="8">
         <template v-slot:activator="{ props }">
-          <button class="dg-pill" type="button" v-bind="props">{{ t("header.brands") }}</button>
+          <button class="dg-pill" type="button" v-bind="props">{{ t("digito.header.brands", "Brands") }}</button>
         </template>
         <div class="dg-brandmenu">
           <router-link v-for="b in brandList" :key="b" :to="brandRoute(b)">{{ b }}</router-link>
@@ -119,9 +119,9 @@
       <span class="dg-header__sep"></span>
       <router-link v-for="c in navCats" :key="c.id" :to="aisleRoute(c)" class="dg-header__txt -cat">{{ c.title || c.name }}</router-link>
       <span class="dg-header__grow"></span>
-      <router-link :to="ordersRoute" class="dg-header__txt -end"><digito-icon name="local_shipping" size="18" />{{ t("header.track") }}</router-link>
-      <router-link :to="blogRoute" class="dg-header__txt -end">{{ t("header.blog") }}</router-link>
-      <router-link :to="helpRoute" class="dg-header__txt -end">{{ t("header.help") }}</router-link>
+      <router-link :to="ordersRoute" class="dg-header__txt -end"><digito-icon name="local_shipping" size="18" />{{ t("digito.header.track", "Track order") }}</router-link>
+      <router-link :to="blogRoute" class="dg-header__txt -end">{{ t("digito.header.blog", "Blog") }}</router-link>
+      <router-link :to="helpRoute" class="dg-header__txt -end">{{ t("digito.header.help", "Help") }}</router-link>
       <!-- Language and currency (the owner's choice B, 10 November 2026):
            "🌐 EN · DKK", a small panel of chips. Hidden with one of each. -->
       <region-switcher-button v-if="!compact" button-class="dg-header__region" />
@@ -138,9 +138,9 @@
       >
         <div class="k-drawer__head">
           <p class="k-drawer__title">
-            Your cart<small v-if="basketUnits">{{ basketUnits }} {{ basketUnits === 1 ? "item" : "items" }}</small>
+            {{ t("digito.cart.title", "Your cart") }}<small v-if="basketUnits">{{ t("cart.units", { one: "{n} item", other: "{n} items" }, { n: basketUnits }) }}</small>
           </p>
-          <button aria-label="Close" class="k-header__icon" type="button" @click="basket = false">
+          <button :aria-label="t('region.close', 'Close')" class="k-header__icon" type="button" @click="basket = false">
             <v-icon>close</v-icon>
           </button>
         </div>
@@ -148,15 +148,15 @@
              nowhere to go; Kalio's offers the way back to the shelves. -->
         <div v-if="!itemsCount" class="k-drawer__empty">
           <span aria-hidden="true" class="k-drawer__empty-mark"><v-icon size="30">shopping_bag</v-icon></span>
-          <p class="k-drawer__empty-title">Your cart is empty</p>
-          <p class="k-drawer__empty-text">Pick something you like and it will wait for you here.</p>
+          <p class="k-drawer__empty-title">{{ t("digito.cart.empty.title", "Your cart is empty") }}</p>
+          <p class="k-drawer__empty-text">{{ t("digito.cart.empty.text", "Pick something you like and it will wait for you here.") }}</p>
           <div class="k-drawer__empty-ctas">
-            <router-link :to="dealsRoute" class="dg-btn" @click="basket = false">Shop today’s deals</router-link>
-            <router-link :to="catalogueRoute" class="dg-btn -line" @click="basket = false">Continue shopping</router-link>
+            <router-link :to="dealsRoute" class="dg-btn" @click="basket = false">{{ t("cart.empty.deals", "Shop today’s deals") }}</router-link>
+            <router-link :to="catalogueRoute" class="dg-btn -line" @click="basket = false">{{ t("digito.cart.continue", "Continue shopping") }}</router-link>
           </div>
           <template v-if="aisleList.length">
-            <p class="k-eyebrow k-drawer__empty-label">Or start with a category</p>
-            <nav aria-label="Categories" class="k-drawer__empty-aisles">
+            <p class="k-eyebrow k-drawer__empty-label">{{ t("digito.cart.empty.categories", "Or start with a category") }}</p>
+            <nav :aria-label="t('digito.menu.categories', 'Categories')" class="k-drawer__empty-aisles">
               <router-link
                 v-for="aisle in aisleList.slice(0, 8)"
                 :key="aisle.id"
@@ -182,29 +182,29 @@
         temporary
       >
         <div class="k-drawer__head">
-          <router-link :aria-label="shopTitle + ' home'" :to="homeRoute" class="dg-menu__brand" @click="menu = false"><digito-wordmark /></router-link>
-          <button aria-label="Close" class="k-header__icon" type="button" @click="menu = false">
+          <router-link :aria-label="t('header.home', '{shop} home', { shop: shopTitle })" :to="homeRoute" class="dg-menu__brand" @click="menu = false"><digito-wordmark /></router-link>
+          <button :aria-label="t('region.close', 'Close')" class="k-header__icon" type="button" @click="menu = false">
             <v-icon>close</v-icon>
           </button>
         </div>
 
         <div class="k-drawer__account">
           <template v-if="user">
-            <router-link :to="profileRoute" class="k-drawer__link" @click="menu = false"><v-icon size="20">person_outline</v-icon>My account</router-link>
-            <router-link :to="ordersRoute" class="k-drawer__link" @click="menu = false"><v-icon size="20">receipt_long</v-icon>Orders</router-link>
-            <router-link :to="savedRoute" class="k-drawer__link" @click="menu = false"><v-icon size="20">favorite_border</v-icon>Saved</router-link>
+            <router-link :to="profileRoute" class="k-drawer__link" @click="menu = false"><v-icon size="20">person_outline</v-icon>{{ t("header.myAccount", "My account") }}</router-link>
+            <router-link :to="ordersRoute" class="k-drawer__link" @click="menu = false"><v-icon size="20">receipt_long</v-icon>{{ t("header.orders", "Orders") }}</router-link>
+            <router-link :to="savedRoute" class="k-drawer__link" @click="menu = false"><v-icon size="20">favorite_border</v-icon>{{ t("header.saved", "Saved") }}</router-link>
           </template>
-          <button v-else class="dg-btn -block" type="button" @click="menu = false; signIn()">Sign in</button>
-          <router-link :to="ordersRoute" class="k-drawer__link" @click="menu = false"><v-icon size="20">local_shipping</v-icon>Track order</router-link>
-          <router-link :to="blogRoute" class="k-drawer__link" @click="menu = false"><v-icon size="20">article</v-icon>Blog</router-link>
-          <router-link :to="helpRoute" class="k-drawer__link" @click="menu = false"><v-icon size="20">help_outline</v-icon>Help</router-link>
+          <button v-else class="dg-btn -block" type="button" @click="menu = false; signIn()">{{ t("digito.header.signIn", "Sign in") }}</button>
+          <router-link :to="ordersRoute" class="k-drawer__link" @click="menu = false"><v-icon size="20">local_shipping</v-icon>{{ t("digito.header.track", "Track order") }}</router-link>
+          <router-link :to="blogRoute" class="k-drawer__link" @click="menu = false"><v-icon size="20">article</v-icon>{{ t("digito.header.blog", "Blog") }}</router-link>
+          <router-link :to="helpRoute" class="k-drawer__link" @click="menu = false"><v-icon size="20">help_outline</v-icon>{{ t("digito.header.help", "Help") }}</router-link>
           <!-- "Language & currency  EN · DKK ›": a bottom sheet over the menu. -->
           <region-sheet row-class="k-drawer__link dg-menu__region" />
         </div>
 
-        <p class="k-eyebrow k-drawer__label">{{ t("menu.shopByCategory") }}</p>
-        <router-link :to="dealsRoute" class="k-drawer__link -deals" @click="menu = false"><span class="k-drawer__ring -icon"><digito-icon name="local_offer" size="22" /></span><span class="dg-menu__txt"><b>{{ t("menu.todaysDeals") }}</b><small>{{ t("menu.todaysDealsLine") }}</small></span></router-link>
-        <router-link :to="newRoute" class="k-drawer__link" @click="menu = false"><span class="k-drawer__ring -icon"><digito-icon name="new_releases" size="22" /></span><span class="dg-menu__txt"><b>{{ t("header.new") }}</b><small>{{ t("menu.newLine") }}</small></span></router-link>
+        <p class="k-eyebrow k-drawer__label">{{ t("digito.menu.shopByCategory", "Shop by category") }}</p>
+        <router-link :to="dealsRoute" class="k-drawer__link -deals" @click="menu = false"><span class="k-drawer__ring -icon"><digito-icon name="local_offer" size="22" /></span><span class="dg-menu__txt"><b>{{ t("header.todaysDeals", "Today’s deals") }}</b><small>{{ t("digito.menu.dealsLine", "Every saving in one place") }}</small></span></router-link>
+        <router-link :to="newRoute" class="k-drawer__link" @click="menu = false"><span class="k-drawer__ring -icon"><digito-icon name="new_releases" size="22" /></span><span class="dg-menu__txt"><b>{{ t("digito.header.new", "New arrivals") }}</b><small>{{ t("digito.menu.newLine", "Just landed") }}</small></span></router-link>
         <!-- The first 6 categories in the merchant's order, then "Show N more"
              (the owner's option A, 10 November 2026). 8 or fewer: all, no
              button. The rest open inline above the button, which then reads
@@ -249,7 +249,7 @@
             @click="menuMore = !menuMore"
           >
             <span class="k-drawer__ring -icon"><digito-icon :name="menuMore ? 'expand_less' : 'expand_more'" size="24" /></span>
-            <span class="dg-menu__txt"><b>{{ menuMore ? t("menu.showFewer") : t("menu.showMore", { n: menuAisles.more.length }) }}</b></span>
+            <span class="dg-menu__txt"><b>{{ menuMore ? t("menu.showFewer", "Show fewer") : t("menu.showMore", "Show {n} more", { n: menuAisles.more.length }) }}</b></span>
           </button>
         </template>
 
@@ -267,7 +267,7 @@ import DigitoIcon from "../../digito/DigitoIcon.vue";
 import DigitoMegaMenu from "../../digito/DigitoMegaMenu.vue";
 import RegionSwitcherButton from "../../region-switcher/RegionSwitcherButton.vue";
 import RegionSheet from "../../region-switcher/RegionSheet.vue";
-import { t } from "../../region-switcher/region";
+import { t } from "../i18n/kalio-i18n";
 import { EventBus } from "@selldone/components-vue/utils/events/EventBus.ts";
 import { aisleImage, aisleRoute, aisles, catalogueRoute, dealsRoute } from "../kalio-catalog";
 import { allProducts, categoryLine, money, savingOf } from "../../digito/digito-home";
@@ -309,7 +309,7 @@ export default {
     },
     firstName() {
       const name = String(this.user?.name || "").trim().split(/\s+/)[0];
-      return name ? "Hi, " + name : "Your account";
+      return name ? t("digito.header.hi", "Hi, {name}", { name }) : t("header.yourAccount", "Your account");
     },
     busyUser() {
       return this.$store.getters.getBusyUser;
@@ -415,7 +415,6 @@ export default {
 
   methods: {
     money,
-    t, // Digito's own words, per language (components/digito/i18n)
     aisleRoute,
     aisleImage,
     catLine(aisle) {

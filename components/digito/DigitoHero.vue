@@ -27,16 +27,26 @@
       @mouseleave="paused = false"
     >
       <div ref="track" class="dg-bill__track" @scroll.passive="onScroll">
-        <article v-for="(s, i) in slides" :key="s.category.id" :aria-label="`${i + 1} of ${slides.length}`" aria-roledescription="slide" class="dg-bill__slide">
+        <article v-for="(s, i) in slides" :key="s.category.id" :aria-label="t('digito.hero.slideOf', '{n} of {total}', { n: i + 1, total: slides.length })" aria-roledescription="slide" class="dg-bill__slide">
           <digito-photo :alt="s.title" :eager="i === 0" :products="s.products" :src="s.photo" class="dg-bill__photo" shape="wide" />
           <div class="dg-bill__txt">
-            <span class="dg-eyebrow"><digito-icon fill name="bolt" size="16" />{{ s.saving ? "Deals of the week" : "Top picks" }}</span>
+            <span class="dg-eyebrow"><digito-icon fill name="bolt" size="16" />{{ s.saving ? t("digito.hero.dealsOfWeek", "Deals of the week") : t("digito.hero.topPicks", "Top picks") }}</span>
             <h2 class="dg-bill__h">
-              <template v-if="s.saving">Up to <mark>{{ money(s.saving) }} off</mark> {{ s.title }}</template>
-              <template v-else>{{ s.title }} from <mark>{{ money(s.from) }}</mark></template>
+              <template v-if="s.saving"
+                ><template v-for="(part, k) in t('digito.hero.upTo', 'Up to {deal} {category}', { category: s.title }).split('{deal}')" :key="k"
+                  ><mark v-if="k">{{ t("digito.hero.amountOff", "{amount} off", { amount: money(s.saving) }) }}</mark>{{ part }}</template
+                ></template
+              >
+              <template v-else
+                ><template v-for="(part, k) in t('digito.hero.from', '{category} from {price}', { category: s.title }).split('{price}')" :key="k"
+                  ><mark v-if="k">{{ money(s.from) }}</mark>{{ part }}</template
+                ></template
+              >
             </h2>
-            <p>{{ s.line }}</p>
-            <router-link :to="s.to" class="dg-btn -lg">Shop {{ s.title }}{{ s.saving ? " deals" : "" }}</router-link>
+            <p>{{ lineOf(s) }}</p>
+            <router-link :to="s.to" class="dg-btn -lg">{{
+              s.saving ? t("digito.hero.shopDeals", "Shop {category} deals", { category: s.title }) : t("digito.hero.shop", "Shop {category}", { category: s.title })
+            }}</router-link>
           </div>
         </article>
       </div>
@@ -52,15 +62,19 @@
             @click="go(i)"
           ></button>
         </div>
-        <button aria-label="Previous slide" class="dg-bill__nav -l" type="button" @click="go(at - 1)"><digito-icon name="chevron_left" size="22" /></button>
-        <button aria-label="Next slide" class="dg-bill__nav -r" type="button" @click="go(at + 1)"><digito-icon name="chevron_right" size="22" /></button>
+        <button :aria-label="t('digito.hero.prev', 'Previous slide')" class="dg-bill__nav -l" type="button" @click="go(at - 1)"><digito-icon name="chevron_left" size="22" /></button>
+        <button :aria-label="t('digito.hero.next', 'Next slide')" class="dg-bill__nav -r" type="button" @click="go(at + 1)"><digito-icon name="chevron_right" size="22" /></button>
       </template>
     </div>
 
     <article v-if="dotd" class="dg-dotd">
       <div class="dg-dotd__head">
-        <h2>Deal of the Day</h2>
-        <span v-if="dotdEnd" class="dg-clock"><digito-icon name="schedule" size="16" />Ends in <b>{{ dotdLeft }}</b></span>
+        <h2>{{ t("digito.hero.dotd", "Deal of the Day") }}</h2>
+        <span v-if="dotdEnd" class="dg-clock"
+          ><digito-icon name="schedule" size="16" /><template v-for="(part, k) in t('digito.clock.endsIn', 'Ends in {time}').split('{time}')" :key="k"
+            ><b v-if="k">{{ dotdLeft }}</b>{{ part }}</template
+          ></span
+        >
       </div>
       <digito-card :max-swatches="6" :product="dotd" big class="-dotd" no-foot no-timer />
     </article>
@@ -74,6 +88,7 @@ import DigitoPhoto from "./DigitoPhoto.vue";
 import { aisleRoute, aisles } from "../kalio/kalio-catalog";
 import { allProducts, dealsOf, finalOf, money, photoOf, savingOf } from "./digito-home";
 import { clock, dealEnd, leftText, releaseClock, useClock } from "./digito-clock";
+import { t } from "../kalio/i18n/kalio-i18n";
 
 export default {
   name: "DigitoHero",
@@ -115,6 +130,19 @@ export default {
     money(n) {
       return money(n, null, true);
     },
+    /** The category's description and its brands ("From A, B and C."),
+     *  read when drawn so a language pick redraws it. */
+    lineOf(s) {
+      const b = s.brands;
+      const by = !b.length
+        ? ""
+        : b.length === 1
+          ? t("digito.hero.byOne", "From {a}.", { a: b[0] })
+          : b.length === 2
+            ? t("digito.hero.byTwo", "From {a} and {b}.", { a: b[0], b: b[1] })
+            : t("digito.hero.byThree", "From {a}, {b} and {c}.", { a: b[0], b: b[1], c: b[2] });
+      return [s.desc && !/[.!?]$/.test(s.desc) ? s.desc + "." : s.desc, by].filter(Boolean).join(" ");
+    },
     build(cats, list) {
       const brandsOf = (id) => [...new Set(list.filter((p) => p.category_id === id).map((p) => p.brand).filter(Boolean))];
       const make = (c) => {
@@ -124,13 +152,13 @@ export default {
         const brands = brandsOf(c.id).slice(0, 3);
         const title = c.title || c.name;
         const desc = (c.description || "").trim();
-        const by = brands.length ? `From ${brands.length > 1 ? brands.slice(0, -1).join(", ") + " and " + brands[brands.length - 1] : brands[0]}.` : "";
         return {
           category: c,
           title,
           saving,
           from: Math.min(...ps.map(finalOf)),
-          line: [desc && !/[.!?]$/.test(desc) ? desc + "." : desc, by].filter(Boolean).join(" "),
+          desc,
+          brands,
           photo: photoOf("wide", c),
           products: [...ps].sort((a, b) => savingOf(b) - savingOf(a)),
           to: saving ? { ...aisleRoute(c), query: { filter: JSON.stringify({ only_has_discount: true }) } } : aisleRoute(c),
@@ -158,7 +186,12 @@ export default {
       this.at = ((i % n) + n) % n;
       const track = this.$refs.track;
       const slide = track?.children[this.at];
-      if (track && slide) track.scrollTo({ left: slide.offsetLeft, behavior: this.reduced ? "auto" : "smooth" });
+      if (!track || !slide) return;
+      // Measured on screen, so it works left to right and right to left.
+      const rtl = getComputedStyle(track).direction === "rtl";
+      const a = slide.getBoundingClientRect();
+      const b = track.getBoundingClientRect();
+      track.scrollBy({ left: rtl ? a.right - b.right : a.left - b.left, behavior: this.reduced ? "auto" : "smooth" });
     },
     onScroll() {
       const track = this.$refs.track;

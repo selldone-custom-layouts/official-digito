@@ -6,9 +6,9 @@
 <template>
   <section v-if="brands.length" aria-labelledby="dg-brands-h" class="dg-sec">
     <header class="dg-head">
-      <h2 id="dg-brands-h">{{ title }}</h2>
+      <h2 id="dg-brands-h">{{ title || t("digito.home.shopByBrand", "Shop by brand") }}</h2>
       <button v-if="brands.length > perRow" class="dg-more" type="button" @click="open = !open">
-        {{ open ? "Show fewer" : "See all brands" }}<digito-icon :name="open ? 'expand_less' : 'expand_more'" size="20" />
+        {{ open ? t("menu.showFewer", "Show fewer") : t("digito.brands.seeAll", "See all brands") }}<digito-icon :name="open ? 'expand_less' : 'expand_more'" size="20" />
       </button>
     </header>
     <div :style="{ '--cols': cols }" class="dg-brands">
@@ -28,7 +28,8 @@ import { allProducts } from "./digito-home";
 export default {
   name: "DigitoBrands",
   components: { DigitoIcon },
-  props: { title: { type: String, default: "Shop by brand" } },
+  /** title: the heading; "Shop by brand" when not given. */
+  props: { title: { type: String, default: null } },
   data: () => ({ brands: [], open: false, perRow: 8 }),
   computed: {
     shown() {

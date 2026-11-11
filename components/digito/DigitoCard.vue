@@ -27,19 +27,19 @@
         loading="lazy"
         @error="dropSrcset"
       />
-      <span v-if="off > 0 && !noFlag" class="dg-flag">{{ off }}% off</span>
+      <span v-if="off > 0 && !noFlag" class="dg-flag">{{ t("digito.card.pctOff", "{percent}% off", { percent: off }) }}</span>
     </router-link>
 
-    <div v-if="capacities.length" class="dg-caps" aria-label="Capacities">
+    <div v-if="capacities.length" :aria-label="t('digito.card.capacities', 'Capacities')" class="dg-caps">
       <span v-for="c in capacities.slice(0, 4)" :key="c">{{ c }}</span>
       <em v-if="capacities.length > 4">+{{ capacities.length - 4 }}</em>
     </div>
-    <div v-else class="dg-swrow" :aria-label="colours.length ? 'Colours' : null" :role="colours.length ? 'radiogroup' : null">
+    <div v-else class="dg-swrow" :aria-label="colours.length ? t('digito.card.colours', 'Colours') : null" :role="colours.length ? 'radiogroup' : null">
       <button
         v-for="(c, i) in colours.slice(0, maxSwatches)"
         :key="c"
         :aria-checked="i === picked"
-        :aria-label="`Colour ${i + 1}`"
+        :aria-label="t('digito.card.colourN', 'Colour {n}', { n: i + 1 })"
         :class="{ '-on': i === picked }"
         :style="{ '--sw': swatchBg(c) }"
         class="dg-sw"
@@ -55,41 +55,41 @@
 
     <div class="dg-price">
       <b class="dg-price__now">{{ fmt(now) }}</b>
-      <span v-if="save > 0" class="dg-save">Save {{ fmt(save, true) }}</span>
+      <span v-if="save > 0" class="dg-save">{{ t("digito.card.save", "Save {amount}", { amount: fmt(save, true) }) }}</span>
     </div>
     <div :class="{ '-none': !was }" class="dg-was">
-      <template v-if="was">Was <s>{{ fmt(was) }}</s></template>
+      <template v-if="was"><template v-for="(part, i) in t('digito.card.was', 'Was {price}').split('{price}')" :key="i"><s v-if="i">{{ fmt(was) }}</s>{{ part }}</template></template>
     </div>
     <div v-if="!noTimer" :class="{ '-none': !endsAt }" class="dg-ends">
-      <template v-if="endsAt"><digito-icon name="schedule" size="14" />Ends in <b>{{ endsLeft }}</b></template>
+      <template v-if="endsAt"><digito-icon name="schedule" size="14" /><template v-for="(part, i) in t('digito.clock.endsIn', 'Ends in {time}').split('{time}')" :key="i"><b v-if="i">{{ endsLeft }}</b>{{ part }}</template></template>
     </div>
 
     <div class="dg-card__buy" @click.prevent.stop>
-      <div v-if="shown > 0" :class="{ '-busy': busy }" aria-label="Quantity in cart" class="dg-step" role="group">
-        <button :aria-label="shown > 1 ? 'One fewer' : 'Remove from cart'" :disabled="!!line?.pending" type="button" @click="step(-1)">
+      <div v-if="shown > 0" :aria-label="t('digito.card.qtyInCart', 'Quantity in cart')" :class="{ '-busy': busy }" class="dg-step" role="group">
+        <button :aria-label="shown > 1 ? t('cart.qty.fewer', 'One fewer') : t('digito.card.removeFromCart', 'Remove from cart')" :disabled="!!line?.pending" type="button" @click="step(-1)">
           <digito-icon :name="shown > 1 ? 'remove' : 'delete'" size="20" />
         </button>
-        <output aria-live="polite"><b>{{ shown }}</b><span> in cart</span></output>
-        <button :disabled="!!line?.pending" aria-label="One more" type="button" @click="step(1)">
+        <output aria-live="polite"><b>{{ shown }}</b><span>&nbsp;{{ t("digito.card.inCart", "in cart") }}</span></output>
+        <button :aria-label="t('cart.qty.more', 'One more')" :disabled="!!line?.pending" type="button" @click="step(1)">
           <digito-icon name="add" size="20" />
         </button>
       </div>
-      <button v-else-if="soldOut" class="dg-btn -block -off" disabled type="button">Out of stock</button>
+      <button v-else-if="soldOut" class="dg-btn -block -off" disabled type="button">{{ t("card.outOfStock", "Out of stock") }}</button>
       <button v-else-if="capacities.length" class="dg-btn -block" type="button" @click="choose">
-        <digito-icon name="tune" size="19" /><span class="-long">Choose capacity</span><span class="-short">Choose</span>
+        <digito-icon name="tune" size="19" /><span class="-long">{{ t("digito.card.chooseCapacity", "Choose capacity") }}</span><span class="-short">{{ t("digito.card.choose", "Choose") }}</span>
       </button>
       <button v-else class="dg-btn -block" type="button" @click="add">
-        <digito-icon name="add_shopping_cart" size="19" /><span class="-long">Add to cart</span><span class="-short">Add</span>
+        <digito-icon name="add_shopping_cart" size="19" /><span class="-long">{{ t("digito.card.addToCart", "Add to cart") }}</span><span class="-short">{{ t("card.add", "Add") }}</span>
       </button>
     </div>
 
     <div v-if="!noFoot" class="dg-card__foot">
       <label :class="{ '-on': comparing }" class="dg-cmp" @click.stop>
         <input :checked="comparing" type="checkbox" @change="toggleCompare" />
-        <i><digito-icon name="check" size="15" /></i>{{ comparing ? "Comparing" : "Compare" }}
+        <i><digito-icon name="check" size="15" /></i>{{ comparing ? t("card.compare.on", "Comparing") : t("digito.card.compare", "Compare") }}
       </label>
       <button :aria-pressed="saved" :class="{ '-on': saved }" class="dg-heart" type="button" @click.prevent.stop="toggleSave">
-        <digito-icon :fill="saved" name="favorite" size="18" /><span>{{ saved ? "Saved" : "Save" }}</span>
+        <digito-icon :fill="saved" name="favorite" size="18" /><span>{{ saved ? t("pdp.saved", "Saved") : t("pdp.save", "Save") }}</span>
       </button>
     </div>
   </article>

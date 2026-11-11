@@ -196,7 +196,7 @@ export function customPalette() {
   const built = paletteFromColor(hex, opts);
   const palette = {
     id: CUSTOM_ID,
-    name: { ...DEFAULT_LABELS, ...(cfg.labels || {}) }.custom,
+    name: liveLabels().custom,
     light: built.light as PaletteValues,
     dark: built.dark as PaletteValues,
     picked: built.picked,
@@ -363,12 +363,25 @@ export function setTheme(next: { palette?: string; mode?: ThemeMode; custom?: st
   save();
 }
 
+/* The words, read each time they are drawn: a Layout's labels may be getters
+   (e.g. t("theme.title", "Theme")) that follow the visitor's language, so they
+   are never copied into plain strings here. */
+function liveLabels(): typeof DEFAULT_LABELS {
+  return new Proxy({} as typeof DEFAULT_LABELS, {
+    get: (_t, key: string) => {
+      const own = cfg?.labels as Record<string, string> | undefined;
+      return own && key in own ? own[key] : (DEFAULT_LABELS as Record<string, string>)[key];
+    },
+    has: (_t, key: string) => key in DEFAULT_LABELS || !!(cfg?.labels && key in cfg.labels),
+  });
+}
+
 /** For the footer row. */
 export function useThemeSwitcher() {
   return {
     state: themeState,
     palettes: paletteList(),
-    labels: { ...DEFAULT_LABELS, ...(cfg?.labels || {}) },
+    labels: liveLabels(),
     customEnabled: !!cfg && cfg.custom != null && cfg.custom !== false,
     customPalette,
     setTheme,

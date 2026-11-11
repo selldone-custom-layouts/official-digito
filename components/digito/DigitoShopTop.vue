@@ -12,11 +12,11 @@
 -->
 <template>
   <div class="dg-shoptop">
-    <nav aria-label="Breadcrumb" class="dg-crumbs">
-      <router-link :to="{ path: '/' }">Home</router-link>
+    <nav :aria-label="t('listing.breadcrumb', 'Breadcrumb')" class="dg-crumbs">
+      <router-link :to="{ path: '/' }">{{ t("pages.home", "Home") }}</router-link>
       <digito-icon name="chevron_right" size="16" />
       <template v-if="mode === 'aisle' && aisle">
-        <router-link :to="allRoute">All products</router-link>
+        <router-link :to="allRoute">{{ t("listing.allProducts", "All products") }}</router-link>
         <digito-icon name="chevron_right" size="16" />
         <span aria-current="page">{{ aisle.title || aisle.name }}</span>
       </template>
@@ -25,7 +25,11 @@
 
     <header :class="{ '-deals': mode === 'deals' }" class="dg-shoptop__head">
       <div class="dg-shoptop__txt">
-        <span v-if="mode === 'deals' && dealsEnd" class="dg-clock"><digito-icon name="schedule" size="16" />{{ dealsLeftLabel }} <b>{{ dealsLeft }}</b></span>
+        <span v-if="mode === 'deals' && dealsEnd" class="dg-clock"
+          ><digito-icon name="schedule" size="16" /><template v-for="(part, i) in dealsLeftLabel.split('{time}')" :key="i"
+            ><b v-if="i">{{ dealsLeft }}</b>{{ part }}</template
+          ></span
+        >
         <h1>{{ title }}</h1>
         <p v-if="line">{{ line }}</p>
       </div>
@@ -47,11 +51,11 @@
 
     <div class="dg-toolbar">
       <button class="dg-toolbar__filter" type="button" @click="sheet = true">
-        <digito-icon name="tune" size="20" />Filter<b v-if="onCount">{{ onCount }}</b>
+        <digito-icon name="tune" size="20" />{{ t("digito.shopTop.filter", "Filter") }}<b v-if="onCount">{{ onCount }}</b>
       </button>
       <label class="dg-sort">
-        <span>Sort by</span>
-        <select :value="sort || ''" aria-label="Sort by" @change="$emit('update:sort', $event.target.value || null)">
+        <span>{{ t("digito.shopTop.sortBy", "Sort by") }}</span>
+        <select :aria-label="t('digito.shopTop.sortBy', 'Sort by')" :value="sort || ''" @change="$emit('update:sort', $event.target.value || null)">
           <option value="">{{ fallbackSort }}</option>
           <option v-for="s in sorts" :key="s.val" :value="s.val">{{ s.name }}</option>
         </select>
@@ -64,16 +68,16 @@
         <div v-if="sheet" class="dg-sheet-scrim" @click="sheet = false"></div>
       </transition>
       <transition name="dg-slide">
-        <aside v-if="sheet" aria-label="Filters" aria-modal="true" class="dg-sheet -filter" role="dialog">
+        <aside v-if="sheet" :aria-label="t('digito.filter.title', 'Filters')" aria-modal="true" class="dg-sheet -filter" role="dialog">
           <div class="dg-sheet__head">
-            <b>Filter</b>
-            <button aria-label="Close" class="dg-x" type="button" @click="sheet = false"><digito-icon name="close" size="22" /></button>
+            <b>{{ t("digito.shopTop.filter", "Filter") }}</b>
+            <button :aria-label="t('common.close', 'Close')" class="dg-x" type="button" @click="sheet = false"><digito-icon name="close" size="22" /></button>
           </div>
           <div class="dg-sheet__body">
             <slot name="panel" />
           </div>
           <div class="dg-sheet__foot">
-            <button class="dg-btn -block" type="button" @click="sheet = false">Show results</button>
+            <button class="dg-btn -block" type="button" @click="sheet = false">{{ t("digito.shopTop.showResults", "Show results") }}</button>
           </div>
         </aside>
       </transition>
@@ -88,6 +92,7 @@ import { aisleImage, aisleRoute, aisles, catalogueRoute } from "../kalio/kalio-c
 import { allProducts, money, savingOf } from "./digito-home";
 import { baseCurrency } from "../region-switcher/region";
 import { clock, dealEnd, leftText, releaseClock, soonestEnd, useClock } from "./digito-clock";
+import { t } from "../kalio/i18n/kalio-i18n";
 
 export default {
   name: "DigitoShopTop",
@@ -113,7 +118,7 @@ export default {
       return SORTS;
     },
     fallbackSort() {
-      return this.mode === "search" ? "Best match" : "Featured";
+      return this.mode === "search" ? t("digito.shopTop.bestMatch", "Best match") : t("digito.shopTop.featured", "Featured");
     },
     onCount() {
       return countOn(this.filter);
@@ -122,28 +127,31 @@ export default {
       return catalogueRoute();
     },
     crumb() {
-      return { search: "Search", deals: "Today’s deals" }[this.mode] || "All products";
+      if (this.mode === "search") return t("common.search", "Search");
+      if (this.mode === "deals") return t("listing.todaysDeals", "Today’s deals");
+      return t("listing.allProducts", "All products");
     },
     title() {
       if (this.mode === "aisle") return this.aisle?.title || this.aisle?.name || "";
-      if (this.mode === "search") return `Results for “${this.search}”`;
-      if (this.mode === "deals") return "Today’s deals";
-      return "All products";
+      if (this.mode === "search") return t("digito.shopTop.resultsFor", "Results for “{search}”", { search: this.search });
+      if (this.mode === "deals") return t("listing.todaysDeals", "Today’s deals");
+      return t("listing.allProducts", "All products");
     },
     line() {
       if (this.mode === "aisle") return this.aisle?.description || "";
-      if (this.mode === "deals") return "Real savings on the shop’s own prices. A new Deal of the Day every midnight.";
+      if (this.mode === "deals") return t("digito.shopTop.dealsLine", "Real savings on the shop’s own prices. A new Deal of the Day every midnight.");
       if (this.mode === "search") return "";
-      return "Everything in the shop, ready to filter.";
+      return t("digito.shopTop.allLine", "Everything in the shop, ready to filter.");
     },
     /** The soonest end among the shop's running deals (Selldone's dates). */
     dealsEnd() {
       return this.mode === "deals" ? soonestEnd(this.all.filter((p) => savingOf(p) > 0)) : null;
     },
-    /** One end for every deal reads "Deals end in"; different ends, the next. */
+    /** One end for every deal reads "Deals end in"; different ends, the
+        next. The words keep "{time}", where the clock is drawn. */
     dealsLeftLabel() {
       const ends = new Set(this.all.filter((p) => savingOf(p) > 0).map((p) => dealEnd(p)).filter((e) => e != null));
-      return ends.size > 1 ? "Next deal ends in" : "Deals end in";
+      return ends.size > 1 ? t("digito.shopTop.nextEndsIn", "Next deal ends in {time}") : t("digito.shopTop.dealsEndIn", "Deals end in {time}");
     },
     dealsLeft() {
       return leftText(this.dealsEnd, clock.now);
@@ -166,7 +174,7 @@ export default {
               ? {
                   key: c.id,
                   label: c.title || c.name,
-                  note: `Up to ${money(best, this.currency, true)} off`,
+                  note: t("digito.line.upTo", "Up to {amount} off", { amount: money(best, this.currency, true) }),
                   icon: c.icon ? aisleImage(c, 64) : null,
                   to: { ...aisleRoute(c), query: { filter: JSON.stringify({ only_has_discount: true }) } },
                   best,

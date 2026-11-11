@@ -9,8 +9,8 @@
 <template>
   <section v-if="tiles.shown.length" aria-labelledby="dg-cats-h" class="dg-sec">
     <header class="dg-head">
-      <h2 id="dg-cats-h">{{ title }}</h2>
-      <router-link v-if="!tiles.all" :to="allRoute" class="dg-more">All products<digito-icon name="chevron_right" size="20" /></router-link>
+      <h2 id="dg-cats-h">{{ title || t("digito.home.shopByCategory", "Shop by category") }}</h2>
+      <router-link v-if="!tiles.all" :to="allRoute" class="dg-more">{{ t("listing.allProducts", "All products") }}<digito-icon name="chevron_right" size="20" /></router-link>
     </header>
     <div :style="{ '--cols': tiles.cols }" class="dg-cats">
       <router-link v-for="c in tiles.shown" :key="c.id" :to="route(c)" class="dg-cat">
@@ -19,7 +19,7 @@
       </router-link>
       <router-link v-if="tiles.all" :to="allRoute" class="dg-cat -all">
         <span class="dg-cat__ring"><digito-icon name="apps" size="40" /></span>
-        <b>All categories</b>
+        <b>{{ t("digito.home.allCategories", "All categories") }}</b>
       </router-link>
     </div>
   </section>
@@ -34,7 +34,8 @@ export default {
   name: "DigitoCategories",
   components: { DigitoIcon },
   props: {
-    title: { type: String, default: "Shop by category" },
+    /** The heading; "Shop by category" when not given. */
+    title: { type: String, default: null },
     /** Categories to show; when null, the shop's own. */
     list: { type: Array, default: null },
   },

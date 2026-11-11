@@ -8,30 +8,30 @@
 -->
 <template>
   <section v-if="items.length > 1" aria-labelledby="dg-fbt-h" class="dg-sec dg-fbt">
-    <header class="dg-head"><h2 id="dg-fbt-h">Frequently bought together</h2></header>
+    <header class="dg-head"><h2 id="dg-fbt-h">{{ t("digito.fbt.title", "Frequently bought together") }}</h2></header>
     <div class="dg-fbt__row">
       <template v-for="(it, i) in items" :key="it.p.id">
         <span v-if="i" aria-hidden="true" class="dg-fbt__plus"><digito-icon name="add" size="20" /></span>
         <div :class="{ '-off': !it.on }" class="dg-fbt__item">
           <router-link :to="route(it.p)" class="dg-fbt__img"><img :src="image(it.p)" alt="" loading="lazy" /></router-link>
           <div class="dg-fbt__txt">
-            <small>{{ i === 0 ? "This item" : catName(it.p) }}</small>
+            <small>{{ i === 0 ? t("digito.fbt.thisItem", "This item") : catName(it.p) }}</small>
             <router-link :to="route(it.p)" class="dg-fbt__t">{{ it.p.title }}</router-link>
-            <span class="dg-fbt__p"><b>{{ fmt(finalOf(it.p)) }}</b><em v-if="savingOf(it.p) > 0" class="dg-save">Save {{ fmt(savingOf(it.p), true) }}</em></span>
+            <span class="dg-fbt__p"><b>{{ fmt(finalOf(it.p)) }}</b><em v-if="savingOf(it.p) > 0" class="dg-save">{{ t("digito.card.save", "Save {amount}", { amount: fmt(savingOf(it.p), true) }) }}</em></span>
             <label class="dg-check">
               <input v-model="it.on" type="checkbox" />
               <i><digito-icon name="check" size="15" /></i>
-              <span>Include</span>
+              <span>{{ t("digito.fbt.include", "Include") }}</span>
             </label>
           </div>
         </div>
       </template>
       <div class="dg-fbt__sum">
-        <small>Price for {{ picked.length === items.length ? "all " + words[items.length] : picked.length + " selected" }}</small>
+        <small>{{ priceFor }}</small>
         <b>{{ fmt(total) }}</b>
-        <span v-if="saved > 0" class="dg-save">Save {{ fmt(saved, true) }}</span>
+        <span v-if="saved > 0" class="dg-save">{{ t("digito.card.save", "Save {amount}", { amount: fmt(saved, true) }) }}</span>
         <button :disabled="!picked.length || busy" class="dg-btn -block" type="button" @click="addAll">
-          <digito-icon name="add_shopping_cart" size="19" />{{ done ? "Added — see your cart" : picked.length === items.length ? "Add all " + words[items.length] : "Add selected" }}
+          <digito-icon name="add_shopping_cart" size="19" />{{ addLabel }}
         </button>
       </div>
     </div>
@@ -44,6 +44,7 @@ import { aisleIndex, aisles, productImage } from "../kalio/kalio-catalog";
 import { addColour, quickAdd } from "../kalio/kalio-basket";
 import { allProducts, finalOf, money, savingOf } from "./digito-home";
 import { openQuickBuy } from "./digito-quick";
+import { t } from "../kalio/i18n/kalio-i18n";
 
 const hasCapacity = (p) => (p.variants || p.product_variants || []).some((v) => v.volume);
 const firstColour = (p) => (p.variants || p.product_variants || []).find((v) => v.color)?.color || null;
@@ -53,7 +54,7 @@ export default {
   components: { DigitoIcon },
   inject: { $shop: { default: null } },
   props: { product: { type: Object, required: true } },
-  data: () => ({ items: [], cats: new Map(), busy: false, done: false, words: ["", "one", "two", "three"] }),
+  data: () => ({ items: [], cats: new Map(), busy: false, done: false }),
   computed: {
     picked() {
       return this.items.filter((it) => it.on);
@@ -63,6 +64,23 @@ export default {
     },
     saved() {
       return this.picked.reduce((s, it) => s + savingOf(it.p), 0);
+    },
+    /** "Price for all three" (or two), else "Price for 1 selected". */
+    priceFor() {
+      if (this.picked.length === this.items.length) {
+        return this.items.length === 3
+          ? t("digito.fbt.priceForAllThree", "Price for all three")
+          : t("digito.fbt.priceForAllTwo", "Price for all two");
+      }
+      const n = this.picked.length;
+      return t("digito.fbt.priceForSelected", { one: "Price for {n} selected", other: "Price for {n} selected" }, { n });
+    },
+    addLabel() {
+      if (this.done) return t("digito.fbt.added", "Added — see your cart");
+      if (this.picked.length === this.items.length) {
+        return this.items.length === 3 ? t("digito.fbt.addAllThree", "Add all three") : t("digito.fbt.addAllTwo", "Add all two");
+      }
+      return t("digito.fbt.addSelected", "Add selected");
     },
   },
   watch: {

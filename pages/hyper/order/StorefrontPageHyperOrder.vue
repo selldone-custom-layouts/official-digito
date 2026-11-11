@@ -136,7 +136,7 @@
       <!-- ................ Footer ................ -->
 
       <div class="-footer">
-        Powered by
+        {{ t("digito.poweredBy", "Powered by") }}
         <a href="/public" target="_blank">
           <img
             height="10"
