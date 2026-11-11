@@ -5,7 +5,7 @@
   one place and the mark follows.
 -->
 <template>
-  <span :aria-label="name" class="dg-logo" role="img">
+  <span :aria-label="name" class="dg-logo" dir="ltr" lang="en" role="img">
     <template v-for="(ch, i) in letters" :key="i">
       <span v-if="ch === 'i' || ch === 'j'" aria-hidden="true" class="dg-logo__i">{{ ch === "i" ? "ı" : "ȷ" }}</span>
       <template v-else>{{ ch }}</template>

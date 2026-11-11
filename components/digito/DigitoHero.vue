@@ -43,7 +43,7 @@
                 ></template
               >
             </h2>
-            <p>{{ lineOf(s) }}</p>
+            <p><span v-if="descOf(s)" class="dg-bill__desc">{{ descOf(s) }}</span>{{ descOf(s) && byOf(s) ? " " : "" }}{{ byOf(s) }}</p>
             <router-link :to="s.to" class="dg-btn -lg">{{
               s.saving ? t("digito.hero.shopDeals", "Shop {category} deals", { category: s.title }) : t("digito.hero.shop", "Shop {category}", { category: s.title })
             }}</router-link>
@@ -132,7 +132,11 @@ export default {
     },
     /** The category's description and its brands ("From A, B and C."),
      *  read when drawn so a language pick redraws it. */
-    lineOf(s) {
+    /** The merchant's own category description (any language; isolated in RTL by .dg-bill__desc). */
+    descOf(s) {
+      return s.desc && !/[.!?]$/.test(s.desc) ? s.desc + "." : s.desc || "";
+    },
+    byOf(s) {
       const b = s.brands;
       const by = !b.length
         ? ""
@@ -141,7 +145,7 @@ export default {
           : b.length === 2
             ? t("digito.hero.byTwo", "From {a} and {b}.", { a: b[0], b: b[1] })
             : t("digito.hero.byThree", "From {a}, {b} and {c}.", { a: b[0], b: b[1], c: b[2] });
-      return [s.desc && !/[.!?]$/.test(s.desc) ? s.desc + "." : s.desc, by].filter(Boolean).join(" ");
+      return by;
     },
     build(cats, list) {
       const brandsOf = (id) => [...new Set(list.filter((p) => p.category_id === id).map((p) => p.brand).filter(Boolean))];

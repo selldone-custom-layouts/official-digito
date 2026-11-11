@@ -3826,10 +3826,17 @@ html[dir="rtl"] .k-flip {
   transform: scaleX(-1);
 }
 
+/* An amount reads left to right as one piece ("589 US$"), wherever it sits
+   in a right-to-left sentence; money() also wraps its text in isolates. */
 html[dir="rtl"] .u--price,
-html[dir="rtl"] .dg-clock,
 html[dir="rtl"] .dg-price__now {
+  direction: ltr;
   unicode-bidi: isolate;
+}
+
+/* The hero's words sit on the photo's darkened side: the right in Arabic. */
+html[dir="rtl"] .dg-bill__slide::before {
+  background: linear-gradient(270deg, rgba(7, 22, 52, 0.84) 0%, rgba(7, 22, 52, 0.62) 30%, rgba(7, 22, 52, 0) 58%);
 }
 
 html[lang="ar"] {
@@ -3838,4 +3845,109 @@ html[lang="ar"] {
 
 html[lang="hi"] {
   --dg-font: "Plus Jakarta Sans", "Noto Sans Devanagari", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* ── Merchant text in RTL (Senso lesson, 1.0.26) ───────────────────────────────────────────────
+   Product, category, brand, vendor, spec and article text comes from the merchant in whatever
+   language they typed it. Under <html dir="rtl"> an English title such as "Smart TVs for movies."
+   would take the page's direction and put its full stop on the left. `unicode-bidi: plaintext`
+   lets each of these elements take its direction from its own first letter, so English stays
+   left-to-right inside an Arabic page and Arabic merchant text stays right-to-left. Only elements
+   that print merchant data alone are listed; mixed sentences built from our own Arabic templates
+   (hero headline, "From {amount}" lines) keep the page direction. `.dg-merch` is the same rule for
+   templates that print merchant text only in some modes. */
+html[dir="rtl"] {
+  :is(
+      .dg-merch,
+      .dg-card__t,
+      .dg-crow__name,
+      .dg-header__txt.-cat,
+      .dg-menu__txt b,
+      .dg-mega__name b,
+      .dg-mega__head h3,
+      .dg-mega__pt,
+      .dg-mega__photo b,
+      .dg-cat b,
+      .dg-brand b,
+      .dg-tall__txt b,
+      .dg-door__name,
+      .dg-fbt__t,
+      .dg-split__half > .dg-head h2,
+      .dg-post h3,
+      .dg-post p,
+      .dg-bill__desc,
+      .dg-pdp__title,
+      .dg-pdp__meta a,
+      .dg-crumbs a,
+      .dg-crumbs [aria-current],
+      .dg-chip,
+      .dg-footer__col a,
+      .dg-specs__g h3,
+      .dg-specs__g dt,
+      .dg-specs__g dd,
+      .k-pdp__title,
+      .k-pdp__sub,
+      .k-pdp__aisle,
+      .k-again__name,
+      .k-cmp__nm,
+      .k-cmp-add__nm,
+      .k-lines__title,
+      .k-mini__name,
+      .k-often__name,
+      .k-offer__name,
+      .k-rv span[title],
+      .k-topic,
+      .k-who,
+      .k-post__head h1,
+      .k-post__lede,
+      .k-post__cardtitle,
+      .t-chip,
+      .t-feat h2,
+      .t-feat p,
+      .t-posts h3,
+      .t-posts p,
+      .v-list-item-title,
+      .v-list-item-subtitle
+    ) {
+    unicode-bidi: plaintext;
+  }
+  /* Long merchant copy (product article, journal post): every paragraph on its own. */
+  :is(.dg-about, .k-prose) :is(p, li, h1, h2, h3, h4, h5, h6, blockquote, figcaption, td, th, dt, dd) {
+    unicode-bidi: plaintext;
+  }
+}
+
+/* ── Signed numbers and photo scrims in RTL (Walio lessons, 1.0.27) ───────────────────────────
+   "-20%" read "20%-" and "+3" read "3+" in Arabic: a sign takes the page's direction unless the
+   number is a left-to-right island. The minus amounts on the receipts (`.k-neg`), the "+N" after
+   capacities and swatches and the compare page's "-N%" are such islands; the Arabic percent
+   badges carry their own LRI…PDI in digito.ar.ts. The hero's scrim already moved to the right in
+   1.0.25 (where the words are); the photos behind words now frame their subject on the other side
+   too, so it is not under the text. */
+html[dir="rtl"] {
+  :is(.k-neg, .dg-caps em, .dg-swrow em, .k-cmp__off) {
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+  .dg-bill__photo .dg-photo__img,
+  .dg-about__photo .dg-photo__img {
+    object-position: 30% 50%;
+  }
+}
+
+/* ── No letter-spacing on joined scripts (1.0.28) ───────────────────────────────────────────────
+   Arabic letters join and Devanagari letters hang from one line: any tracking, wide on eyebrows
+   and buttons or tight on headings, pulls them apart. In Arabic and Hindi every element sets
+   tracking to 0 and word spacing to normal. `:not(#dg-joined)` gives the rule an id's weight so it
+   wins over the few `!important` trackings of two classes. Two keep theirs: the Latin wordmark
+   (it carries lang="en") and Selldone's "20 %" discount badge, whose word spacing closes that gap. */
+:is(:lang(ar), :lang(hi)):not(#dg-joined),
+:is(:lang(ar), :lang(hi)):not(#dg-joined)::before,
+:is(:lang(ar), :lang(hi)):not(#dg-joined)::after {
+  letter-spacing: 0 !important;
+}
+:is(:lang(ar), :lang(hi)):not(#dg-joined):not(.discount-percent),
+:is(:lang(ar), :lang(hi)):not(#dg-joined):not(.discount-percent)::before,
+:is(:lang(ar), :lang(hi)):not(#dg-joined):not(.discount-percent)::after {
+  word-spacing: normal !important;
 }

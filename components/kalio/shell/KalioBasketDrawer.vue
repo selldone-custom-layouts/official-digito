@@ -21,7 +21,7 @@
 
       <div :class="{ '-settling': group.settling }" class="dg-receipt">
         <p class="dg-receipt__row"><span>{{ t("digito.cart.subtotal", { one: "Subtotal ({n} item)", other: "Subtotal ({n} items)" }, { n: group.units }) }}</span><span class="u--price">{{ money(group.total + group.saved, group.currency) }}</span></p>
-        <p v-if="group.saved >= 0.01" class="dg-receipt__row -save"><span>{{ t("digito.cart.youSave", "You save") }}</span><span>−<span class="u--price">{{ money(group.saved, group.currency) }}</span></span></p>
+        <p v-if="group.saved >= 0.01" class="dg-receipt__row -save"><span>{{ t("digito.cart.youSave", "You save") }}</span><span class="k-neg">−<span class="u--price">{{ money(group.saved, group.currency) }}</span></span></p>
         <p class="dg-receipt__row -muted"><span>{{ t("digito.cart.delivery", "Delivery") }}</span><span>{{ t("digito.cart.atCheckout", "Calculated at checkout") }}</span></p>
         <p class="dg-receipt__row -tot"><span>{{ t("basket.bar.total", "Total") }}</span><span class="u--price">{{ money(group.total, group.currency) }}</span></p>
         <div class="dg-receipt__btns">

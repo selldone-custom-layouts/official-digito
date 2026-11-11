@@ -184,8 +184,9 @@ export function formatMoney(amount: number, code: string = currentCurrency(), op
   const n = Number(amount) || 0;
   const short = options.short === "auto" ? Math.abs(n - Math.round(n)) < 0.005 : !!options.short;
   const floats = short ? 0 : ((Currency as any)[code]?.floats ?? 2);
+  let out: string;
   try {
-    return new Intl.NumberFormat(locale(), {
+    out = new Intl.NumberFormat(locale(), {
       style: "currency",
       currency: code,
       currencyDisplay: opts.currencyDisplay,
@@ -193,8 +194,12 @@ export function formatMoney(amount: number, code: string = currentCurrency(), op
       maximumFractionDigits: floats,
     }).format(n);
   } catch {
-    return `${code} ${n.toFixed(floats)}`;
+    out = `${code} ${n.toFixed(floats)}`;
   }
+  /* In a right-to-left language an amount is one left-to-right piece inside
+     the sentence (LRI … PDI); otherwise the bidi algorithm splits "US$" around
+     the number ("$US 589"). */
+  return isRtl() ? `\u2066${out.replace(/[\u200e\u200f\u061c]/g, "")}\u2069` : out;
 }
 
 /** THE money helper: `amount` is in `from` (default: the shop's base

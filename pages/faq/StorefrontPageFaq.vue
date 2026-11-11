@@ -184,12 +184,26 @@ export default {
     signIn() {
       EventBus.$emit("need-login", true);
     },
+    /** Selldone answers 429 when it is busy: try once more after a pause (at most once in 10 s per
+     *  request), and never leave the rejection uncaught. Other errors leave the list as it is. */
+    retryOn429(error, key, again) {
+      if (error?.response?.status !== 429) return;
+      const now = Date.now();
+      const last = (this.$options.__retried ||= {});
+      if (now - (last[key] || 0) < 10000) return;
+      last[key] = now;
+      setTimeout(again, 3000);
+    },
+
     //――――――――――――――――――――――― FAQ Tags ―――――――――――――――――――――――
 
     fetchFAQTags() {
-      axios.get(window.XAPI.GET_FAQ_TAGS(this.shop.name)).then(({ data }) => {
-        this.tags = data.tags;
-      });
+      axios
+        .get(window.XAPI.GET_FAQ_TAGS(this.shop.name))
+        .then(({ data }) => {
+          this.tags = data.tags;
+        })
+        .catch((error) => this.retryOn429(error, "tags", () => this.fetchFAQTags()));
     },
 
     //――――――――――――――――――――――― FAQs ―――――――――――――――――――――――
@@ -209,6 +223,7 @@ export default {
           this.faqs = data.faqs;
           this.total = data.total;
         })
+        .catch((error) => this.retryOn429(error, "faqs", () => this.fetchFAQData()))
         .finally(() => {
           this.busy_fetch = false;
         });

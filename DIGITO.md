@@ -53,12 +53,78 @@ Digini sells everything itself. There is no "Sold by", no seller choice on the p
 
 ## Releases
 
-- **1.0.24 (11 November 2026, DEPLOY_LINE): every word Digito writes is in the shop's languages — Arabic (right to left), Hindi and Danish.** The owner enabled ar, hi and da on Digini. After a pick in the header pill or the phone menu's sheet, every word Digito writes changes; product data (titles, descriptions, categories, brands) stays as the merchant wrote it.
+- **1.0.28 (11 November 2026, deploy 573, release `01M74B57H7D18TS5QSAFKZW5ZY`, pinned on domain 1239; uploaded through `new-shop-kits/upload-guard.sh`; the release script's own verify step died, so it was run again and showed js_match and css_match): no letter-spacing on joined scripts.** Arabic letters join and Devanagari letters hang from one line, so any tracking pulls them apart: wide tracking on eyebrows and buttons, tight tracking on headings. Under `:lang(ar)` and `:lang(hi)`, every element now has `letter-spacing: 0` and `word-spacing: normal`.
+  - The rule carries an id's weight (`:not(#dg-joined)`), so it beats the few `!important` trackings of two classes.
+  - The Latin wordmark carries `lang="en"` and keeps its tight tracking.
+  - Selldone's "20 %" badge keeps the word spacing that closes its gap.
+  - LIVE28
+
+- **1.0.27 (11 November 2026, deploy 569, release `01M74A5ZB50Q9DEVMD165FW7HH`, pinned on domain 1239; uploaded through `new-shop-kits/upload-guard.sh`; the first try waited the guard's full 30 minutes behind other Layouts' uploads and was run again): signed numbers, photo framing and the FAQ under load, in Arabic.**
+  - **Signed numbers** (Walio's lesson): in Arabic, Unicode turns the digits after an Arabic word into Arabic numbers and moves the sign to the other side, so the badges read "%22" and a "-20%" would read "20%-". The fixes:
+    - the Arabic percent badges ("خصم {percent}%" on cards and doorbusters) wrap the number and its sign in LRI…PDI, written as `⁦`/`⁩` escapes in `digito.ar.ts`;
+    - the receipt's minus amounts (cart page, cart drawer, order receipt; class `k-neg`), the "+N" after capacities and swatches, and the compare page's "-N%" are left-to-right isolates.
+  - **Photo scrims** (Walio's lesson): the hero's dark scrim already moved to the words' side in 1.0.25. The hero and About photos now also frame their subject on the other side in Arabic (`object-position: 30%`), so it is not under the words.
+  - Checked by eye on the Arabic shots at 1440 and 390. The phone hero showing two half slides was autoplay caught mid-scroll: the pane shows each slide snapping to 0.
+  - **FAQ under load:** both FAQ requests now catch Selldone's 429 and try once more after 3 s. Before, the rejection went uncaught (a page error) and the list stayed empty.
+  - **The cart page in Arabic** (Dino's lesson), checked in the pane with an item in the basket: the line, the two delivery ways and Pay are drawn, a way opens the address map, Pay opens sign-in, and there are no errors. A guest cannot add on Digini ("Add to cart" opens sign-in), so the walk uses i18n-check's store stub for the basket.
+  - **Checked live:**
+    - The saved block names 1.0.27.
+    - Arabic console walk (`dir` is `rtl` on every page, 1440 and 390), with 0 page errors and 0 script errors on: home, a category, a product, the cart page with a line (its two delivery ways, one opening the address map), checkout up to sign-in, FAQ, About, Contact, Terms, Privacy, compare, the blog, a post and 404.
+    - `region.ts` matches the kit's (amounts in LRI…PDI on right-to-left pages).
+
+- **1.0.26 (11 November 2026, deploy 558, release `01M746SGGQNX14DTBQ6AMJPZ46`, pinned on domain 1239; uploaded through `new-shop-kits/upload-guard.sh`; the first upload got Cloudflare's 524 after 134 s and never landed, so the same build went again with `scripts/ship-built.sh`): merchant text keeps its own direction in Arabic.**
+  - **The problem:** product, category, brand, spec and article text comes from the merchant in the language they typed it in, mostly English on Digini. Under `<html dir="rtl">` an English line such as a category description took the page's direction, so its full stop landed on the left.
+  - **The fix:** `style/digito-skin.scss` gives every element that prints only merchant data `unicode-bidi: plaintext` in right-to-left pages. Each one now takes its direction from its own first letter. The elements:
+    - card, cart and compare titles;
+    - header, menu and mega-menu category names;
+    - category, brand and moment tiles;
+    - doorbusters and Frequently bought together;
+    - tag-row titles;
+    - blog cards and posts;
+    - the product title, its brand and aisle links, and the breadcrumbs;
+    - spec names and values;
+    - footer category links;
+    - search suggestions;
+    - each paragraph of the product article and journal posts.
+  - Sentences built from Digito's own Arabic templates keep the page direction, since an English category name at their start would otherwise flip them. Examples are the hero headline and the "From {amount}" lines.
+  - The hero line was one string: the merchant's description plus "From {brands}." It is now two spans, so only the description (`.dg-bill__desc`) is isolated.
+  - The shop-top title and line get `.dg-merch` only on a category page; there they are the category's own name and description.
+  - **Already in place from 1.0.24/1.0.25** (the other two Senso lessons):
+    - the Arabic audits pick the language through the UI and check `document.documentElement.dir === "rtl"`. Selldone's saved-language key is case-sensitive, `local-shop-digini-hZGabLru`, and is ignored while `/info` answers 429.
+    - the region pill and the menu's region row redraw when the language file arrives (`state.words` in the region package's `t()`).
+  - **Checked live:**
+    - The saved block names 1.0.26.
+    - An Arabic console walk on 1.0.26 (every page, 1440 and 390) found no script errors on any page.
+    - It also found two things, both handled in 1.0.27:
+      - the filled cart page had not been drawn, because a guest's "Add to cart" opens sign-in on Digini;
+      - the FAQ let Selldone's 429 go uncaught.
+
+- **1.0.25 (11 November 2026, deploy 548, release `01M7449MQQKNY9AGWWA9VRG198`, pinned on domain 1239; uploaded through `new-shop-kits/upload-guard.sh`): Arabic polish from the live walk.**
+  - **Wordmark:** "digito" read "toigid" right to left. The letters are laid out in a row, so `DigitoWordmark` now sets `dir="ltr"` on it.
+  - **Amounts:** they read "$US 589". In a right-to-left language, `money()` (the region package, kit first) now wraps each amount in Unicode isolates (LRI…PDI), and `.u--price` / `.dg-price__now` are left-to-right isolates, so "589 US$" stays one piece inside an Arabic sentence.
+  - **Hero:** the dark gradient now sits on the right in Arabic, where the words are.
+  - **Checked live:**
+    - The saved block names 1.0.25.
+    - With Arabic picked through the pill or the sheet, `<html dir>` was `rtl` on every page.
+    - Light and dark, home and a category, 1440 and 390: contrast 0 and rings 0.
+    - box-check found the same 45 hero overlaps as in English.
+
+- **1.0.24 (11 November 2026, deploy 541, release `01M74260MNS7Y244DKE7HC93V3`, pinned on domain 1239; uploaded through `new-shop-kits/upload-guard.sh`): every word Digito writes is in the shop's languages — Arabic (right to left), Hindi and Danish.** The owner enabled ar, hi and da on Digini. After a pick in the header pill or the phone menu's sheet, every word Digito writes changes; product data (titles, descriptions, categories, brands) stays as the merchant wrote it.
   - **On the shared Kalio i18n** (`new-shop-kits/i18n`, Molino's phase 3a): `components/kalio/i18n/kalio-i18n.ts` (the runtime: `t()` with plurals, `<html lang dir>`, the script's font on demand), `base/{en,ar,hi,da}.ts` (the shared Kalio words; Digito uses 724 of the 941, every one with the base's exact English) and Digito's own `digito.{en,ar,hi,da}.ts` (346 strings, `digito.*` keys), plus `digito-overrides.ts` for the region note ("cards, filters, cart and checkout"). English is bundled; each other language is one lazy chunk. Digito's earlier `components/digito/i18n` structure (1.0.22) is gone; its keys moved here.
   - **The wrapping:** 26 shared files were identical to Molino's and took its wrapped copies; the rest took Molino's diff where it applied and were wrapped by hand where Digito's wording differs ("cart", "categories", one seller) under `digito.*` keys, so no English changed. Digito's own components, the header, footer, cart drawer and sign-in, the pages (cart, product, blog, 404, about, contact, listings) and the Selldone components Kalio patches (Save, compare, "Show N more", empty listings, the update banner) all go through `t()`. Words built at import time are getters (`digito-theme.ts` labels and palette names, `tario-filters.ts` group and sort names, the delivery ways).
   - **Shared package fixes** (kit first, then copied): the theme switcher no longer copies its labels into plain strings (`liveLabels()`), and the region package's `t()` redraws when a language's words arrive (`state.words`); both had left the Theme row and "Language & currency" in English until the next redraw.
   - **Right to left:** 38 one-sided `left/right/margin/padding` declarations became logical (`inset-inline-*`, `margin-inline-*`); centred and symmetric ones stay. Directional icons mirror (`DigitoIcon` marks chevrons and arrows; `k-flip` on 19 `v-icon` ligatures). The hero carousel moves by measured offsets, so its arrows and dots work in both directions; the rails already did. Drawers open from the reading side. Prices and clocks keep left-to-right digits (bidi isolation). Arabic and Hindi get Noto Sans Arabic / Devanagari after Digito's face.
-  - TESTS_LINE
+  - **Checked:**
+    - All 110 changed files compile.
+    - `i18n-lint`: OK for `digito.{ar,hi,da}` and `base/{ar,hi,da}`.
+    - The extractor reports 0 clashes, and every base key Digito uses has the base's English.
+    - Live `i18n-check`, ar, hi and da at 1440 and 390 (home, footer, a category, a product, the cart drawer empty and filled, the phone menu, sign-in, FAQ, 404): TOTAL 0. `IGNORE` covers the merchant's own footer menu ("Home", "Shop", "Privacy", "Blog", "About Us") and two product description lines that match base patterns.
+    - In Arabic, with the language picked through the pill (light and dark, home and a category, 1440 and 390):
+      - contrast 0;
+      - rings 0;
+      - box-check: 45 overlaps at 1440 home, the same 45 as in English (the hero and bento words drawn over their photos by design).
+    - `card-edge-check` finds no boxed cards on Digito in any language, so it does not apply.
+    - The Arabic walk found the reversed wordmark and the split "US$". Both are fixed in 1.0.25.
 
 - **1.0.23 (10 November 2026, deploy 523, release `01M73MC8ZQ9X3W248X57BFV724`, pinned on domain 1239; uploaded through `new-shop-kits/upload-guard.sh`): "Gear for every moment" follows a currency pick at once.**
   - Found live on 1.0.22. Selldone was answering 429, so its own redraw after a pick was late. The live currency check then caught five lines still in DKK after a pick of EUR: "Up to DKK 720 off" and "From DKK 253".

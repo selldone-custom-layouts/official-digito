@@ -30,8 +30,8 @@
             ><b v-if="i">{{ dealsLeft }}</b>{{ part }}</template
           ></span
         >
-        <h1>{{ title }}</h1>
-        <p v-if="line">{{ line }}</p>
+        <h1 :class="{ 'dg-merch': mode === 'aisle' }">{{ title }}</h1>
+        <p v-if="line" :class="{ 'dg-merch': mode === 'aisle' }">{{ line }}</p>
       </div>
       <div v-if="chips.length" class="dg-shoptop__chips">
         <component
