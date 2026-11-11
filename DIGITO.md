@@ -57,7 +57,23 @@ Digini sells everything itself. There is no "Sold by", no seller choice on the p
   - The rule carries an id's weight (`:not(#dg-joined)`), so it beats the few `!important` trackings of two classes.
   - The Latin wordmark carries `lang="en"` and keeps its tight tracking.
   - Selldone's "20 %" badge keeps the word spacing that closes its gap.
-  - LIVE28
+  - **Checked live** (with the language picked through the pill or the sheet):
+    - The saved block names 1.0.28.
+    - Arabic, light and dark, home and a category, 1440 and 390, `dir` `rtl` throughout: contrast 0 and rings 0.
+    - box-check finds 51 overlaps at 1440 home: the hero's words over its photo by design. Five of the six more than in 1.0.25 are the new description spans, one per slide.
+    - The text check (`digito-ar-bidi.cjs`, home, a category and a product at 1440 and 390):
+      - in Arabic: 418 elements, 0 tracked, 0 signs on the wrong side, and every Latin merchant line reads left to right;
+      - in Hindi: 0 tracked and 0 signs on the wrong side.
+    - The only lines it flags are the product article's paragraphs at 390. Selldone's article editor forces `unicode-bidi: embed !important` on them and sets the direction from the article's own language, so they read correctly anyway (none reversed).
+    - By eye, on the Arabic and Hindi shots at 1440 and 390:
+      - the badges read "22% خصم" and the prices "162.90 US$";
+      - the English hero description has its full stop on the right;
+      - the scrim sits behind the words;
+      - eyebrows, buttons and headings join with no gaps.
+    - `currency-check`, DKK and EUR at 1440 and 390:
+      - every DKK line was ok;
+      - the price filter was not drawn in DKK (Selldone's 429; not counted);
+      - one EUR step at 1440, the cart drawer, found the whole page back in USD. The EUR steps before it had passed and so had the drawer at 390. A re-run of EUR at 1440 (home, price filter "€", category, product, deals, cart drawer, mega menu) gave TOTAL 0.
 
 - **1.0.27 (11 November 2026, deploy 569, release `01M74A5ZB50Q9DEVMD165FW7HH`, pinned on domain 1239; uploaded through `new-shop-kits/upload-guard.sh`; the first try waited the guard's full 30 minutes behind other Layouts' uploads and was run again): signed numbers, photo framing and the FAQ under load, in Arabic.**
   - **Signed numbers** (Walio's lesson): in Arabic, Unicode turns the digits after an Arabic word into Arabic numbers and moves the sign to the other side, so the badges read "%22" and a "-20%" would read "20%-". The fixes:
